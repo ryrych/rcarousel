@@ -1,0 +1,32 @@
+.rcarousel {
+	margin: 0;
+	padding: 0;
+}
+
+.rcarousel .wrapper {
+	height: 240px;
+	margin: 0;
+	overflow: auto;
+	padding: 0;
+	position: relative;
+	width: 500px
+}
+
+.rcarousel .wrapper ul li a img {
+	border: 0;
+	display: block;
+}
+
+.rcarousel .wrapper ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	width: 9999px;
+}
+
+.rcarousel .wrapper ul li {
+	display: block;
+	float: left;
+	padding: 10px;
+}
