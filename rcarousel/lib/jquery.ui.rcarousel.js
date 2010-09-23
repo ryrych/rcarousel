@@ -89,16 +89,27 @@
 			// populate carousel with elements
 			// 'path' is a path to local or remote file
 			// only xml and json formats are valid
+			// populate removes old elements when called in a row
 			var self = this,
 				structure = self.structure,
 				options = self.options,
 				_lists = "",
 				_object, _path, _nodes, _format;
 
+			// if populate is used as a public method
+			// check options validity
+			if (obj) {
+				self._checkOptionsValidity({remote: obj});
+			}
+
 			_object = obj || {};
 			_path = _object.path || options.remote.path;
 			_format = _object.format || options.remote.format;
 
+			// remove old LI elements before populating
+			$(structure.list).empty()
+
+			// ...and populate with new ones
 			// if used format is 'json' parse file under 'path'
 			if (_format === "json") {
 				$.getJSON(_path, function(data) {
@@ -108,7 +119,7 @@
 						_lists += "/></a></li>";
 					});
 					// populate the list
-					$(self.structure.list).append(_lists);
+					$(structure.list).append(_lists);
 				});
 
 			} else if (_format === "xml") {
@@ -119,7 +130,7 @@
 						_lists += "'" + $(item).text() + "'";
 						_lists += "/></a></li>";
 					});
-					$(self.structure.list).append(_lists);
+					$(structure.list).append(_lists);
 				});
 			}
 		},
@@ -149,6 +160,7 @@
 				structure = self.structure;
 
 			structure.wrapper = $("div.wrapper", _root);
+			structure.list = $("ul", structure.wrapper);
 		},
 		_setCarouselWidth: function(obj) {
 			var self = this,
