@@ -21,14 +21,16 @@
 				}
 				// everything is OK
 				self._setStructure();
-				// if everyting is OK set new width
+				// if everyting is OK set new width & height
 				self._setCarouselWidth();
+				self._setCarouselHeight();
 
 			} else if ($(_root).children().length === 0) {
 				// structure hasn't been created yet - create it
 				self._createStructure();
 				self.populate();
 				self._setCarouselWidth();
+				self._setCarouselHeight();
 			}
 		},
 		_checkOptionsValidity: function(options) {
@@ -42,6 +44,12 @@
 					case "width":
 						if (isNaN(_value)) {
 							throw new Error("Value of visible option should be a number!");
+						}
+						break;
+
+					case "height":
+						if (isNaN(_value) || typeof _value !== "number") {
+							throw new Error("height should be a number!");
 						}
 						break;
 
@@ -162,6 +170,15 @@
 			structure.wrapper = $("div.wrapper", _root);
 			structure.list = $("ul", structure.wrapper);
 		},
+		_setCarouselHeight: function(h) {
+			var self = this,
+				options = self.options,
+				structure = self.structure,
+				_height;
+
+			_height = h || options.height;
+			$(structure.wrapper).height(_height);
+		},
 		_setCarouselWidth: function(obj) {
 			var self = this,
 				options = self.options,
@@ -180,6 +197,7 @@
 			});
 		},
 		options: {
+			height: 300,
 			visible: 3,
 			width: 200
 		},
