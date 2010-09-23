@@ -42,8 +42,8 @@
 				_value = options[_key];
 				switch (_key) {
 					case "width":
-						if (isNaN(_value)) {
-							throw new Error("Value of visible option should be a number!");
+						if (isNaN(_value) || typeof _value !== "number") {
+							throw new Error("width should be a number!");
 						}
 						break;
 
@@ -55,7 +55,7 @@
 
 					case "visible":
 						if (isNaN(_value)) {
-							throw new Error("Value of visible option should be a number!");
+							throw new Error("visible should be a number!");
 						}
 						break;
 
