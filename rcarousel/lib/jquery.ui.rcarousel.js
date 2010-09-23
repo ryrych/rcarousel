@@ -93,7 +93,7 @@
 				structure = self.structure,
 				options = self.options,
 				_lists = "",
-				_object, _path, _format;
+				_object, _path, _nodes, _format;
 
 			_object = obj || {};
 			_path = _object.path || options.remote.path;
@@ -102,15 +102,25 @@
 			// if used format is 'json' parse file under 'path'
 			if (_format === "json") {
 				$.getJSON(_path, function(data) {
-					//console.log(data);
 					$.each(data.paths, function(i, item) {
 						_lists += "<li><a href='#'><img src=";
 						_lists += "'" + item + "'";
 						_lists += "/></a></li>";
 					});
+					// populate the list
 					$(self.structure.list).append(_lists);
 				});
 
+			} else if (_format === "xml") {
+				$.get(_path, function(data) {
+					_nodes = $(data).find("path");
+					$.each(_nodes, function(i, item) {
+						_lists += "<li><a href='#'><img src=";
+						_lists += "'" + $(item).text() + "'";
+						_lists += "/></a></li>";
+					});
+					$(self.structure.list).append(_lists);
+				});
 			}
 		},
 		_setOption: function(key, value) {
