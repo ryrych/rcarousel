@@ -27,6 +27,7 @@
 			} else if ($(_root).children().length === 0) {
 				// structure hasn't been created yet - create it
 				self._createStructure();
+				self.populate();
 				self._setCarouselWidth();
 			}
 		},
@@ -49,6 +50,22 @@
 							throw new Error("Value of visible option should be a number!");
 						}
 						break;
+
+					case "remote":
+						if (!_value || !(typeof _value === "object")) {
+							throw new Error("remote should be defined as object with path and format properties in it!");
+						}
+
+						if (!(typeof _value.path === "string")) {
+							throw new Error("remote.path should be defined as string!");
+						}
+
+						if (!(typeof _value.format === "string")) {
+							throw new Error("remote.format should be defined as a string!");
+						} else if (!(_value.format === "json" || _value.format === "xml")) {
+							throw new Error("remote.format: '" + _value.format + "' is not valid. Only remote.format: 'json' and remote.format: 'xml' are valid!");
+						}
+						break;
 				}
 			}
 		},
@@ -56,16 +73,45 @@
 			var	self = this,
 				structure = self.structure,
 				_carousel = $(this.element),
-				_wrapper;
+				_wrapper, _list;
 
 			_wrapper = $("<div class='wrapper'></div>")
 				.appendTo(_carousel);
 			structure.wrapper = _wrapper;
 
-			$("<ul><li><a href='#'><img src='images/a.png' /></a></li> <li><a href='#'><img src='images/b.png' /></a></li> <li><a href='#'><img src='images/c.png' /></a></li></ul>")
+			_list = $("<ul></ul>")
 				.appendTo(_wrapper);
+			structure.list = _list;
 
 			$(_carousel).appendTo("body");
+		},
+		populate: function(obj) {
+			// populate carousel with elements
+			// 'path' is a path to local or remote file
+			// only xml and json formats are valid
+			var self = this,
+				structure = self.structure,
+				options = self.options,
+				_lists = "",
+				_object, _path, _format;
+
+			_object = obj || {};
+			_path = _object.path || options.remote.path;
+			_format = _object.format || options.remote.format;
+
+			// if used format is 'json' parse file under 'path'
+			if (_format === "json") {
+				$.getJSON(_path, function(data) {
+					//console.log(data);
+					$.each(data.paths, function(i, item) {
+						_lists += "<li><a href='#'><img src=";
+						_lists += "'" + item + "'";
+						_lists += "/></a></li>";
+					});
+					$(self.structure.list).append(_lists);
+				});
+
+			}
 		},
 		_setOption: function(key, value) {
 			var self = this,
