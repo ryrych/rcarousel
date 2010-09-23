@@ -198,8 +198,8 @@
 		},
 		options: {
 			height: 300,
-			visible: 3,
-			width: 200
+			visible: null,
+			width: 500
 		},
 		structure: {}
 	});
