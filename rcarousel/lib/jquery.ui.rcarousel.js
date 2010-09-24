@@ -67,16 +67,16 @@
 								throw new Error("mode.visible should be defined as a positive number!");
 							}
 						} else {
-							if (typeof _value.step !== "number" || _value.visible <= 0) {
+							if (_value.step && typeof _value.step !== "number" || _value.step <= 0) {
 								throw new Error("mode.step should be a positive number");
 							}
 						}
 						// width & height is defined by default so you can omit them to some extent
-						if (isNaN(_value.width) || typeof _value.width !== "number" || _value.width <= 0) {
+						if (_value.width && (isNaN(_value.width) || typeof _value.width !== "number" || _value.width <= 0)) {
 							throw new Error("mode.width should be a positive number!");
 						}
 
-						if (isNaN(_value.height) || typeof _value.height !== "number" || _value.height <= 0) {
+						if (_value.height && (isNaN(_value.height) || typeof _value.height !== "number" || _value.height <= 0)) {
 							throw new Error("mode.height should be a positive number!");
 						}
 						break;
@@ -102,9 +102,9 @@
 							throw new Error("navigation should be defined as object with 'prev' and 'next' properties in it!");
 						}
 
-						if (!_value.prev || typeof _value.prev !== "string") {
+						if (_value.prev && typeof _value.prev !== "string") {
 							throw new Error("navigation.prev should be defined as a string and points to '.class' or '#id' of an element");
-						} else if (!_value.next || typeof _value.next !== "string") {
+						} else if (_value.next && typeof _value.next !== "string") {
 							throw new Error("navigation.next should be defined as a string and points to '.class' or '#id' of an element");
 						}
 						break;
@@ -123,7 +123,9 @@
 			}
 			self._setCarouselWidth();
 			self._setCarouselHeight();
-			self._setEventHandlers();
+			// TODO ujednolicić
+			self._setEventHandlers("next");
+			self._setEventHandlers("prev");
 			self._setStep();
 		},
 		_createStructure: function() {
@@ -207,25 +209,52 @@
 		},
 		_setOption: function(key, value) {
 			var self = this,
+				structure = self.structure;
 				options = self.options;
 
 			switch (key) {
-				case "visible":
-					self._checkOptionsValidity({visible: value});
-					options.visible = value;
-					self._setCarouselWidth({visible: value});
+				case "mode":
+					self._checkOptionsValidity({mode: value});
+					if (value.name) {
+						options.mode.name = value.name;
+					}
+
+					if (value.visible || value.visible === null) {
+						options.mode.visible = value.visible;
+					}
+
+					if (value.width) {
+						options.mode.width = value.width;
+						self._setCarouselWidth({width: value.width, visible: value.visible});
+					}
+
+					if (value.height) {
+						options.mode.height = value.height;
+						self._setCarouselHeight({height: value.height});
+					}
+
+					if (value.step) {
+						self._setStep(value.step);
+					}
 					break;
 
-				case "width":
-					self._checkOptionsValidity({width: value});
-					self.options.width = value;
-					self._setCarouselWidth({width: value});
+				case "navigation":
+					self._checkOptionsValidity({navigation: value});
+					if (value.next) {
+						options.navigation.next = $(value.next);
+						self._setEventHandlers("next");
+					}
+
+					if (value.prev) {
+						options.navigation.prev = $(value.prev);
+						self._setEventHandlers("prev");
+					}
 					break;
 			}
 			$.Widget.prototype._setOption.apply(this, arguments);
 
 		},
-		_setStep: function() {
+		_setStep: function(s) {
 			// calculate a step
 			// the step for carousel with fixed mode except set 'step' is
 			// amount of visible elements times element's width
@@ -236,16 +265,19 @@
 				_mode, _step;
 
 			_mode = options.mode;
+			_step = s || _mode.step
 
 			// initial step for calculation purposes
 			structure.currentStep = 0;
 
 			if (_mode.name === "fixed") {
-				if (!_mode.step) {
+				if (!_step) {
 					structure.step = _mode.visible * _mode.width;
 				} else {
 					structure.step = _mode.width * _mode.step;
 				}
+			} else {
+				structure.step = _step;
 			}
 		},
 		_setStructure: function() {
@@ -259,7 +291,6 @@
 			structure.list = $("ul", structure.wrapper);
 
 			// save basic navigation
-			structure.navigation = {};
 			structure.navigation.next = $(options.navigation.next);
 			structure.navigation.prev = $(options.navigation.prev);
 		},
@@ -289,17 +320,22 @@
 				overflow: "hidden"
 			});
 		},
-		_setEventHandlers: function() {
+		_setEventHandlers: function(action) {
 			// basic navigation: next and previous item
 			var self = this,
 				options = self.options;
 
-			$(options.navigation.next).click(function() {
-				self.next();
-			});
-			$(options.navigation.prev).click(function() {
-				self.prev();
-			});
+			if (action === "next") {
+				$(options.navigation.next).click(function() {
+					self.next();
+				});
+			}
+
+			if (action === "prev") {
+				$(options.navigation.prev).click(function() {
+					self.prev();
+				});
+			}
 		},
 		options: {
 			mode: {
@@ -316,6 +352,8 @@
 				prev: ".carouselPrev"
 			}
 		},
-		structure: {}
+		structure: {
+			navigation: {}
+		}
 	});
 } (jQuery));
