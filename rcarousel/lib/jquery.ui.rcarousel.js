@@ -39,18 +39,7 @@
 					case "mode":
 						if (_value.name !== "fixed" && _value.name !== "variable") {
 							throw new Error("Only mode.name: 'fixed' and mode.name: 'variable' are valid");
-						}
-
-						if (isNaN(_value.width) || typeof _value.width !== "number") {
-							throw new Error("mode.width should be a number!");
-						}
-
-						if (isNaN(_value.height) || typeof _value.height !== "number") {
-							throw new Error("mode.height should be a number!");
-						}
-
-
-						if (_value.name === "fixed") {
+						} else if (_value.name === "fixed") {
 							// default 'step' for 'fixed' mode will probably be invalid
 							// 'step' for 'fixed' mode is optional so can be reseted to null
 							if (_value.step === _value.defaultStep) {
@@ -73,16 +62,22 @@
 									throw new Error("Only following mode.step values are correct: " + _correctSteps);
 								}
 							}
+
+							if (typeof _value.visible !== "number" || _value.visible <= 0) {
+								throw new Error("mode.visible should be defined as a positive number!");
+							}
+						} else {
+							if (typeof _value.step !== "number" || _value.visible <= 0) {
+								throw new Error("mode.step should be a positive number");
+							}
+						}
+						// width & height is defined by default so you can omit them to some extent
+						if (isNaN(_value.width) || typeof _value.width !== "number" || _value.width <= 0) {
+							throw new Error("mode.width should be a positive number!");
 						}
 
-
-
-						if (_value.name === "fixed" && typeof _value.visible !== "number") {
-							throw new Error("mode.visible should be defined as a number!");
-						}
-
-						if (_value.name === "variable" && typeof _value.step !== "number") {
-							throw new Error("mode.step should be a number");
+						if (isNaN(_value.height) || typeof _value.height !== "number" || _value.height <= 0) {
+							throw new Error("mode.height should be a positive number!");
 						}
 						break;
 
