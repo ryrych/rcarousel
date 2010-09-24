@@ -3,6 +3,7 @@
 		_create: function () {
 			var self = this,
 				structure = self.structure,
+				options = self.options,
 				_root = $(this.element);
 
 			// if options were default there should be no problem
@@ -20,17 +21,10 @@
 					throw new Error("Inside DIV.wrapper you should have placed UL element with at least one LI element");
 				}
 				// everything is OK
-				self._setStructure();
-				// if everyting is OK set new width & height
-				self._setCarouselWidth();
-				self._setCarouselHeight();
-
+				self._configure(true);
 			} else if ($(_root).children().length === 0) {
 				// structure hasn't been created yet - create it
-				self._createStructure();
-				self.populate();
-				self._setCarouselWidth();
-				self._setCarouselHeight();
+				options._configure(false);
 			}
 		},
 		_checkOptionsValidity: function(options) {
@@ -93,6 +87,20 @@
 				}
 			}
 		},
+		_configure: function(hardcoded) {
+			// configuration depends on if carousel was hardcoded or not
+			var self = this;
+
+			if (hardcoded) {
+				self._setStructure();
+			} else {
+				self._createStructure();
+				self.populate();
+			}
+			self._setCarouselWidth();
+			self._setCarouselHeight();
+			self._setEventHandlers();
+		},
 		_createStructure: function() {
 			var	self = this,
 				structure = self.structure,
@@ -108,6 +116,13 @@
 			structure.list = _list;
 
 			$(_carousel).appendTo("body");
+		},
+		next: function() {
+			var	self = this,
+				structure = self.structure;
+
+			structure.i += 30;
+			$(structure.wrapper).scrollLeft(structure.i);
 		},
 		populate: function(obj) {
 			// populate carousel with elements
@@ -158,6 +173,13 @@
 				});
 			}
 		},
+		prev: function() {
+			var	self = this,
+				structure = self.structure;
+
+			structure.i -= 30;
+			$(structure.wrapper).scrollLeft(structure.i);
+		},
 		_setOption: function(key, value) {
 			var self = this,
 				options = self.options;
@@ -181,10 +203,17 @@
 		_setStructure: function() {
 			var self = this,
 				_root = $(this.element),
+				options = self.options,
 				structure = self.structure;
 
+			// wrapper holds UL with LIs
 			structure.wrapper = $("div.wrapper", _root);
 			structure.list = $("ul", structure.wrapper);
+
+			// save basic navigation
+			structure.navigation = {};
+			structure.navigation.next = $(options.navigation.next);
+			structure.navigation.prev = $(options.navigation.prev);
 		},
 		_setCarouselHeight: function(h) {
 			var self = this,
@@ -212,6 +241,18 @@
 				overflow: "hidden"
 			});
 		},
+		_setEventHandlers: function() {
+			// basic navigation: next and previous item
+			var self = this,
+				options = self.options;
+
+			$(options.navigation.next).click(function() {
+				self.next();
+			});
+			$(options.navigation.prev).click(function() {
+				self.prev();
+			});
+		},
 		options: {
 			mode: {
 				name: "variable",
@@ -219,8 +260,14 @@
 				height: 300,
 				step: 30,
 				visible: null
+			},
+			navigation: {
+				next: ".carouselNext",
+				prev: ".carouselPrev"
 			}
 		},
-		structure: {}
+		structure: {
+			i: 0
+		}
 	});
 } (jQuery));
