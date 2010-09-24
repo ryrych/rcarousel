@@ -29,7 +29,8 @@
 		},
 		_checkOptionsValidity: function(options) {
 			var	self = this,
-				_key, _value;
+				_correctSteps = "",
+				_key, _value, i, _lastCorrectStep;
 
 			// for every element in options object check its validity
 			for (_key in options) {
@@ -47,6 +48,34 @@
 						if (isNaN(_value.height) || typeof _value.height !== "number") {
 							throw new Error("mode.height should be a number!");
 						}
+
+
+						if (_value.name === "fixed") {
+							// default 'step' for 'fixed' mode will probably be invalid
+							// 'step' for 'fixed' mode is optional so can be reseted to null
+							if (_value.step === _value.defaultStep) {
+								_value.step = null;
+							} else if (_value.step && typeof _value.step !== "number" || _value.step <= 0) {
+								throw new Error("mode.step should be a positive number");
+							} else {
+								// step exists and is not default value
+								// for example for visible: 3.5 the following array of values for 'step' is valid
+								// 3.5 <= step >= 1 by 1 ==> [1,2,3,3.5]
+								if (_value.step < 1 || _value.step > _value.visible) {
+									// output correct values
+									for (i = 1; i<= Math.floor(_value.visible); i++) {
+										_correctSteps += (i < Math.floor(_value.visible)) ? i + ", " : i;
+									}
+									// last correct value e.g 3.5
+									_lastCorrectStep = (Math.ceil(_value.visible) - _value.visible === 0) ? "" : _value.visible;
+									_correctSteps += _lastCorrectStep;
+
+									throw new Error("Only following mode.step values are correct: " + _correctSteps);
+								}
+							}
+						}
+
+
 
 						if (_value.name === "fixed" && typeof _value.visible !== "number") {
 							throw new Error("mode.visible should be defined as a number!");
@@ -100,6 +129,7 @@
 			self._setCarouselWidth();
 			self._setCarouselHeight();
 			self._setEventHandlers();
+			self._setStep();
 		},
 		_createStructure: function() {
 			var	self = this,
@@ -121,8 +151,8 @@
 			var	self = this,
 				structure = self.structure;
 
-			structure.i += 30;
-			$(structure.wrapper).scrollLeft(structure.i);
+			structure.currentStep += structure.step;
+			$(structure.wrapper).scrollLeft(structure.currentStep);
 		},
 		populate: function(obj) {
 			// populate carousel with elements
@@ -177,8 +207,8 @@
 			var	self = this,
 				structure = self.structure;
 
-			structure.i -= 30;
-			$(structure.wrapper).scrollLeft(structure.i);
+			structure.currentStep -= structure.step;
+			$(structure.wrapper).scrollLeft(structure.currentStep);
 		},
 		_setOption: function(key, value) {
 			var self = this,
@@ -199,6 +229,29 @@
 			}
 			$.Widget.prototype._setOption.apply(this, arguments);
 
+		},
+		_setStep: function() {
+			// calculate a step
+			// the step for carousel with fixed mode except set 'step' is
+			// amount of visible elements times element's width
+			// for 'fixed' mode with set 'step': width * step
+			var self = this,
+				structure = self.structure,
+				options = self.options,
+				_mode, _step;
+
+			_mode = options.mode;
+
+			// initial step for calculation purposes
+			structure.currentStep = 0;
+
+			if (_mode.name === "fixed") {
+				if (!_mode.step) {
+					structure.step = _mode.visible * _mode.width;
+				} else {
+					structure.step = _mode.width * _mode.step;
+				}
+			}
 		},
 		_setStructure: function() {
 			var self = this,
@@ -259,6 +312,8 @@
 				width: 500,
 				height: 300,
 				step: 30,
+				// should not be changed!
+				defaultStep: 30,
 				visible: null
 			},
 			navigation: {
@@ -266,8 +321,6 @@
 				prev: ".carouselPrev"
 			}
 		},
-		structure: {
-			i: 0
-		}
+		structure: {}
 	});
 } (jQuery));
