@@ -41,21 +41,25 @@
 			for (_key in options) {
 				_value = options[_key];
 				switch (_key) {
-					case "width":
-						if (isNaN(_value) || typeof _value !== "number") {
-							throw new Error("width should be a number!");
+					case "mode":
+						if (_value.name !== "fixed" && _value.name !== "variable") {
+							throw new Error("Only mode.name: 'fixed' and mode.name: 'variable' are valid");
 						}
-						break;
 
-					case "height":
-						if (isNaN(_value) || typeof _value !== "number") {
-							throw new Error("height should be a number!");
+						if (isNaN(_value.width) || typeof _value.width !== "number") {
+							throw new Error("mode.width should be a number!");
 						}
-						break;
 
-					case "visible":
-						if (isNaN(_value)) {
-							throw new Error("visible should be a number!");
+						if (isNaN(_value.height) || typeof _value.height !== "number") {
+							throw new Error("mode.height should be a number!");
+						}
+
+						if (_value.name === "fixed" && typeof _value.visible !== "number") {
+							throw new Error("mode.visible should be defined as a number!");
+						}
+
+						if (_value.name === "variable" && typeof _value.step !== "number") {
+							throw new Error("mode.step should be a number");
 						}
 						break;
 
@@ -72,6 +76,18 @@
 							throw new Error("remote.format should be defined as a string!");
 						} else if (!(_value.format === "json" || _value.format === "xml")) {
 							throw new Error("remote.format: '" + _value.format + "' is not valid. Only remote.format: 'json' and remote.format: 'xml' are valid!");
+						}
+						break;
+
+					case "navigation":
+						if (!_value || typeof _value !== "object") {
+							throw new Error("navigation should be defined as object with 'prev' and 'next' properties in it!");
+						}
+
+						if (!_value.prev || typeof _value.prev !== "string") {
+							throw new Error("navigation.prev should be defined as a string and points to '.class' or '#id' of an element");
+						} else if (!_value.next || typeof _value.next !== "string") {
+							throw new Error("navigation.next should be defined as a string and points to '.class' or '#id' of an element");
 						}
 						break;
 				}
@@ -176,7 +192,7 @@
 				structure = self.structure,
 				_height;
 
-			_height = h || options.height;
+			_height = h || options.mode.height;
 			$(structure.wrapper).height(_height);
 		},
 		_setCarouselWidth: function(obj) {
@@ -186,8 +202,8 @@
 				_width, _newWidth, _visible, _object;
 
 			_object = obj || {};
-			_width = _object.width || options.width;
-			_visible = _object.visible || options.visible;
+			_width = _object.width || options.mode.width;
+			_visible = _object.visible || options.mode.visible;
 
 			_newWidth = _visible ? _visible * _width : _width;
 			// set carousel width and disable overflow: auto
@@ -197,9 +213,13 @@
 			});
 		},
 		options: {
-			height: 300,
-			visible: null,
-			width: 500
+			mode: {
+				name: "variable",
+				width: 500,
+				height: 300,
+				step: 30,
+				visible: null
+			}
 		},
 		structure: {}
 	});
