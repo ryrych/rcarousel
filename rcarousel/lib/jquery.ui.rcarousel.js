@@ -147,6 +147,39 @@
 
 			$(_carousel).appendTo("body");
 		},
+		load: function(obj) {
+			var self = this,
+				structure = self.structure;
+
+			// check object validity
+			if (obj) {
+				self._checkOptionsValidity({remote: obj});
+			}
+
+			_object = obj || {};
+			_path = _object.path || options.remote.path;
+			_format = _object.format || options.remote.format;
+
+			// load a file
+			if (_format === "json") {
+				$.getJSON(_path, function(data) {
+					$.each(data.paths, function(i, item) {
+						// store path to a file
+						structure.paths.push(item);
+					});
+				});
+
+			} else if (_format === "xml") {
+				$.get(_path, function(data) {
+					_nodes = $(data).find("path");
+					$.each(_nodes, function(i, item) {
+						structure.paths.push($(item).text());
+					});
+				});
+			}
+
+
+		},
 		next: function() {
 			var	self = this,
 				structure = self.structure;
@@ -398,7 +431,8 @@
 			}
 		},
 		structure: {
-			navigation: {}
+			navigation: {},
+			paths: []
 		}
 	});
 } (jQuery));
