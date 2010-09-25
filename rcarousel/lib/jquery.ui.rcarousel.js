@@ -24,7 +24,7 @@
 				self._configure(true);
 			} else if ($(_root).children().length === 0) {
 				// structure hasn't been created yet - create it
-				options._configure(false);
+				self._configure(false);
 			}
 		},
 		_checkOptionsValidity: function(options) {
@@ -113,13 +113,16 @@
 		},
 		_configure: function(hardcoded) {
 			// configuration depends on if carousel was hardcoded or not
-			var self = this;
+			var self = this,
+				structure = self.structure;
 
 			if (hardcoded) {
 				self._setStructure();
+				structure.hardcoded = true;
 			} else {
 				self._createStructure();
 				self.populate();
+				structure.hardcoded = false;
 			}
 			self._setCarouselWidth();
 			self._setCarouselHeight();
@@ -148,8 +151,10 @@
 			var	self = this,
 				structure = self.structure;
 
-			structure.currentStep += structure.step;
-			$(structure.wrapper).scrollLeft(structure.currentStep);
+			if (structure.currentStep < structure.innerWidth) {
+				structure.currentStep += structure.step;
+				$(structure.wrapper).scrollLeft(structure.currentStep);
+			}
 		},
 		populate: function(obj) {
 			// populate carousel with elements
@@ -186,6 +191,8 @@
 					});
 					// populate the list
 					$(structure.list).append(_lists);
+					// and finally change UL (structure.list) width
+					self._setInnerWidth();
 				});
 
 			} else if (_format === "xml") {
@@ -197,6 +204,8 @@
 						_lists += "/></a></li>";
 					});
 					$(structure.list).append(_lists);
+					// and finally change UL (structure.list) width
+					self._setInnerWidth();
 				});
 			}
 		},
@@ -204,8 +213,40 @@
 			var	self = this,
 				structure = self.structure;
 
-			structure.currentStep -= structure.step;
-			$(structure.wrapper).scrollLeft(structure.currentStep);
+			if (structure.currentStep > 0) {
+				structure.currentStep -= structure.step;
+				$(structure.wrapper).scrollLeft(structure.currentStep);
+			}
+		},
+		_setInnerWidth: function() {
+			// recalculate UL's width to fit all elements
+			// in case of fixed mode with hardcoded elements it's simple:
+			// all elements are known for the beginning so only count them and multiply by common width
+			var self = this,
+				structure = self.structure,
+				options = self.options,
+				_sum = 0,
+				_counter, _innerWidth, _lis;
+
+			if (structure.hardcoded) {
+				_counter = $("li", structure.list).length;
+				if (options.mode.name === "fixed") {
+					// set the width
+					_innerWidth = _counter * options.mode.width;
+					$(structure.list).width(_innerWidth);
+					// save UL width for navigation purposes
+					structure.innerWidth = _innerWidth;
+				} else if (options.mode.name === "variable") {
+					// we must to compute width of all single elements cuz their width is different
+					_lis = $("li", structure.list);
+					$.each(_lis, function(i, el) {
+						_sum += $(el).width();
+					});
+					_innerWidth = _sum;
+					structure.innerWidth = _innerWidth;
+					$(structure.list).width(_innerWidth);
+				}
+			}
 		},
 		_setOption: function(key, value) {
 			var self = this,
@@ -313,12 +354,16 @@
 			_width = _object.width || options.mode.width;
 			_visible = _object.visible || options.mode.visible;
 
-			_newWidth = _visible ? _visible * _width : _width;
+			_newWidth = _visible  && options.mode.name === "fixed" ? _visible * _width : _width;
 			// set carousel width and disable overflow: auto
 			$(structure.wrapper).css({
 				width: _newWidth,
 				overflow: "hidden"
 			});
+			// change UL width
+			self._setInnerWidth();
+
+
 		},
 		_setEventHandlers: function(action) {
 			// basic navigation: next and previous item
