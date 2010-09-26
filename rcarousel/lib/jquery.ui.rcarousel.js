@@ -131,6 +131,17 @@
 			self._setEventHandlers("prev");
 			self._setStep();
 		},
+		_createNewElement: function(image) {
+			// create new LI element with IMG inside it
+			var self = this,
+				structure = self.structure;
+
+			$("<li></li>")
+				.append(image)
+				.appendTo(structure.list);
+			// change UL width to fit newly created elements
+			self._setInnerWidth();
+		},
 		_createStructure: function() {
 			var	self = this,
 				structure = self.structure,
@@ -160,6 +171,12 @@
 			_path = _object.path || options.remote.path;
 			_format = _object.format || options.remote.format;
 
+			// remove old LI elements before populating
+			$(structure.list).empty()
+
+			// now elements are not hardcoded
+			structure.hardcoded = false;
+
 			// load a file
 			if (_format === "json") {
 				$.getJSON(_path, function(data) {
@@ -167,6 +184,8 @@
 						// store path to a file
 						structure.paths.push(item);
 					});
+					// now load new items
+					self._loadElements();
 				});
 
 			} else if (_format === "xml") {
@@ -175,18 +194,60 @@
 					$.each(_nodes, function(i, item) {
 						structure.paths.push($(item).text());
 					});
+					self._loadElements();
 				});
 			}
+		},
+		_loadElement: function (path) {
+			var _image = new Image(),
+				_loadWatch;
 
+			_image.src = path;
 
+			function _watch() {
+				if (_image.complete) {
+					clearInterval(_loadWatch);
+				}
+			}
+			_loadWatch = setInterval(_watch, 100);
+			return _image;
+		},
+		_loadElements: function(start) {
+			var self = this,
+				options = self.options,
+				structure = self.structure,
+				i, _howMany, _start;
+
+			// from which element to start
+			_start = start || 0;
+			console.log("zaczynam od: " + _start);
+
+			// how many elements to load
+			_howMany = options.mode.step ? options.mode.step : options.mode.visible;
+
+			for (i = _start; i < _start + _howMany; i++) {
+				self._createNewElement(self._loadElement(structure.paths[i]));
+			}
+			// remember the last loaded element
+			structure.lastElement += _howMany - 1;
+			console.log("kończę na: " + structure.lastElement);
 		},
 		next: function() {
 			var	self = this,
 				structure = self.structure;
 
-			if (structure.currentStep < structure.innerWidth) {
-				structure.currentStep += structure.step;
-				$(structure.wrapper).scrollLeft(structure.currentStep);
+			if (structure.hardcoded) {
+				if (structure.currentStep < structure.innerWidth) {
+					structure.currentStep += structure.step;
+					$(structure.wrapper).scrollLeft(structure.currentStep);
+				}
+			} else {
+				if (structure.lastElement < structure.paths.length - 1) {
+					self._loadElements(++structure.lastElement);
+					$(structure.wrapper).scrollLeft(structure.step * 2);
+					self._removeOldElements();
+					$(structure.wrapper).scrollLeft(0);
+				}
 			}
 		},
 		populate: function(obj) {
@@ -251,6 +312,19 @@
 				$(structure.wrapper).scrollLeft(structure.currentStep);
 			}
 		},
+		_removeOldElements: function() {
+			// remove 'step' elements
+			var self = this,
+				structure = self.structure,
+				options = self.options,
+				i, _step;
+
+			_step = !_step ? options.mode.visible : options.mode.step;
+
+			for (i = 0; i < _step; i++) {
+				$("li", structure.list).eq(0).remove();
+			}
+		},
 		_setInnerWidth: function() {
 			// recalculate UL's width to fit all elements
 			// in case of fixed mode with hardcoded elements it's simple:
@@ -261,8 +335,8 @@
 				_sum = 0,
 				_counter, _innerWidth, _lis;
 
+			_counter = $("li", structure.list).length;
 			if (structure.hardcoded) {
-				_counter = $("li", structure.list).length;
 				if (options.mode.name === "fixed") {
 					// set the width
 					_innerWidth = _counter * options.mode.width;
@@ -280,6 +354,14 @@
 					$(structure.list).width(_innerWidth);
 				}
 			}
+			else {
+				if (options.mode.name === "fixed") {
+					_innerWidth = _counter * options.mode.width;
+					$(structure.list).width(_innerWidth);
+					structure.innerWidth = _innerWidth;
+				}
+			}
+
 		},
 		_setOption: function(key, value) {
 			var self = this,
@@ -432,7 +514,8 @@
 		},
 		structure: {
 			navigation: {},
-			paths: []
+			paths: [],
+			lastElement: 0
 		}
 	});
 } (jQuery));
