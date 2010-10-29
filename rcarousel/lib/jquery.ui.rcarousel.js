@@ -121,7 +121,7 @@
 				structure.hardcoded = true;
 			} else {
 				self._createStructure();
-				self.populate();
+				self.load();
 				structure.hardcoded = false;
 			}
 			self._setCarouselWidth();
@@ -131,14 +131,18 @@
 			self._setEventHandlers("prev");
 			self._setStep();
 		},
-		_createNewElement: function(image) {
+		_createNewElement: function(image, dir) {
 			// create new LI element with IMG inside it
 			var self = this,
-				structure = self.structure;
+				structure = self.structure,
+				_li = $("<li></li>");
 
-			$("<li></li>")
-				.append(image)
-				.appendTo(structure.list);
+			$(_li).append(image);
+			if (dir === "prev") {
+				$(structure.list).prepend(_li);
+			} else {
+				$(_li).appendTo(structure.list);
+			}
 			// change UL width to fit newly created elements
 			self._setInnerWidth();
 		},
@@ -160,7 +164,8 @@
 		},
 		load: function(obj) {
 			var self = this,
-				structure = self.structure;
+				structure = self.structure,
+				options = self.options;
 
 			// check object validity
 			if (obj) {
@@ -185,7 +190,7 @@
 						structure.paths.push(item);
 					});
 					// now load new items
-					self._loadElements();
+					self._loadElements(0);
 				});
 
 			} else if (_format === "xml") {
@@ -194,7 +199,7 @@
 					$.each(_nodes, function(i, item) {
 						structure.paths.push($(item).text());
 					});
-					self._loadElements();
+					self._loadElements(0);
 				});
 			}
 		},
@@ -212,29 +217,43 @@
 			_loadWatch = setInterval(_watch, 100);
 			return _image;
 		},
-		_loadElements: function(start) {
+		_loadElements: function(start, end) {
 			var self = this,
 				options = self.options,
 				structure = self.structure,
-				i, _howMany, _start;
+				i, _howMany, _start, _end, _dir;
 
 			// from which element to start
 			_start = start || 0;
+			_end = end || options.mode.visible - 1;
+			_howMany = Math.abs(_end - _start);
+			_dir = _end - _start > 0 ? "next" : "prev";
+
 			console.log("zaczynam od: " + _start);
-
-			// how many elements to load
-			_howMany = options.mode.step ? options.mode.step : options.mode.visible;
-
-			for (i = _start; i < _start + _howMany; i++) {
-				self._createNewElement(self._loadElement(structure.paths[i]));
+			console.log("end wynosi: " + _end);
+			if (_dir === "next") {
+				for (i = _start; i <= _end; i++) {
+					self._createNewElement(self._loadElement(structure.paths[i]), _dir);
+				}
+				// remember the last loaded element
+				structure.lastFirstElement = _start;
+				structure.lastEndElement = _end;
+				console.log("zakończyłem na: " + structure.lastEndElement);
+			} else {
+				for (i = _start; i >= _end; i--) {
+					self._createNewElement(self._loadElement(structure.paths[i]), _dir);
+				}
+				structure.lastEndElement = _end === 0 ? 1 : end + 1;
+				structure.lastFirstElement = i + 1;
 			}
-			// remember the last loaded element
-			structure.lastElement += _howMany - 1;
-			console.log("kończę na: " + structure.lastElement);
+
+
 		},
 		next: function() {
 			var	self = this,
-				structure = self.structure;
+				structure = self.structure,
+				options = self.options,
+				_step = options.mode.step ? options.mode.step : options.mode.visible;
 
 			if (structure.hardcoded) {
 				if (structure.currentStep < structure.innerWidth) {
@@ -242,87 +261,53 @@
 					$(structure.wrapper).scrollLeft(structure.currentStep);
 				}
 			} else {
-				if (structure.lastElement < structure.paths.length - 1) {
-					self._loadElements(++structure.lastElement);
+				if (structure.lastEndElement < structure.paths.length - 1) {
+					++structure.lastEndElement;
+					self._loadElements(structure.lastEndElement, structure.lastEndElement + _step - 1);
 					$(structure.wrapper).scrollLeft(structure.step * 2);
-					self._removeOldElements();
+					self._removeOldElements(0);
 					$(structure.wrapper).scrollLeft(0);
 				}
 			}
 		},
-		populate: function(obj) {
-			// populate carousel with elements
-			// 'path' is a path to local or remote file
-			// only xml and json formats are valid
-			// populate removes old elements when called in a row
-			var self = this,
-				structure = self.structure,
-				options = self.options,
-				_lists = "",
-				_object, _path, _nodes, _format;
-
-			// if populate is used as a public method
-			// check options validity
-			if (obj) {
-				self._checkOptionsValidity({remote: obj});
-			}
-
-			_object = obj || {};
-			_path = _object.path || options.remote.path;
-			_format = _object.format || options.remote.format;
-
-			// remove old LI elements before populating
-			$(structure.list).empty()
-
-			// ...and populate with new ones
-			// if used format is 'json' parse file under 'path'
-			if (_format === "json") {
-				$.getJSON(_path, function(data) {
-					$.each(data.paths, function(i, item) {
-						_lists += "<li><a href='#'><img src=";
-						_lists += "'" + item + "'";
-						_lists += "/></a></li>";
-					});
-					// populate the list
-					$(structure.list).append(_lists);
-					// and finally change UL (structure.list) width
-					self._setInnerWidth();
-				});
-
-			} else if (_format === "xml") {
-				$.get(_path, function(data) {
-					_nodes = $(data).find("path");
-					$.each(_nodes, function(i, item) {
-						_lists += "<li><a href='#'><img src=";
-						_lists += "'" + $(item).text() + "'";
-						_lists += "/></a></li>";
-					});
-					$(structure.list).append(_lists);
-					// and finally change UL (structure.list) width
-					self._setInnerWidth();
-				});
-			}
-		},
 		prev: function() {
 			var	self = this,
-				structure = self.structure;
+				structure = self.structure,
+				options = self.options,
+				_step = options.mode.step ? options.mode.step : options.mode.visible;
 
-			if (structure.currentStep > 0) {
-				structure.currentStep -= structure.step;
-				$(structure.wrapper).scrollLeft(structure.currentStep);
+			if (structure.hardcoded) {
+				if (structure.currentStep > 0) {
+					structure.currentStep -= structure.currentStep;
+					$(structure.wrapper).scrollLeft(structure.currentStep);
+				}
+			} else {
+				if (structure.lastFirstElement > 0) {
+					--structure.lastFirstElement;
+					self._loadElements(structure.lastFirstElement, structure.lastFirstElement - _step + 1);
+					$(structure.wrapper).scrollLeft(0);
+					self._removeOldElements(_step)
+				}
 			}
 		},
-		_removeOldElements: function() {
+		_removeOldElements: function(start) {
 			// remove 'step' elements
 			var self = this,
 				structure = self.structure,
 				options = self.options,
-				i, _step;
+				i, _step, _whichRemove, _arr, _len;
 
 			_step = !_step ? options.mode.visible : options.mode.step;
+			_whichRemove = start > 0 ? "last" : "first"
 
-			for (i = 0; i < _step; i++) {
-				$("li", structure.list).eq(0).remove();
+			for (i = start; i < start + _step; i++) {
+				if (_whichRemove === "first") {
+					$("li", structure.list).eq(0).remove();
+				} else {
+					_arr = $("li", structure.list);
+					_len = $(_arr).length;
+					$(_arr).eq(_len - 1).remove();
+				}
 			}
 		},
 		_setInnerWidth: function() {
@@ -391,6 +376,11 @@
 
 					if (value.step) {
 						self._setStep(value.step);
+					}
+
+					if (value.remote) {
+						options.remote.path = value.remote.path;
+						options.remote.format = value.remote.format;
 					}
 					break;
 
@@ -515,7 +505,8 @@
 		structure: {
 			navigation: {},
 			paths: [],
-			lastElement: 0
+			lastFirstElement: 0,
+			lastEndElement: 0
 		}
 	});
 } (jQuery));
