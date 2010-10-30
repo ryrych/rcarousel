@@ -10,7 +10,6 @@
 			options.structure = self._createStructureObject();
 			structure = options.structure;
 
-
 			// if options were default there should be no problem
 			// check if user set options before init: $('element').rcarousel({with: "foo", visible: 3});
 			// in above example exception will be thrown bacause 'with' should be a number!
@@ -18,9 +17,9 @@
 
 			// check if structure is hardcoded and valid
 			if ($(_root).children().length > 0) {
-				if ($(_root).children("div.wrapper:first-child").length === 0) {
+				if ($(_root).children("div.wrapper").length === 0) {
 					throw new Error("Structure should have contained DIV.wrapper");
-				} else if ($(_root).children("div.wrapper:first-child").find("ul > li").length < 1) {
+				} else if ($(_root).children("div.wrapper").find("ul > li").length < 1) {
 					// there is DIV element inside element rcarousel is invoked on; check if it contains
 					// UL and at least one LI element
 					throw new Error("Inside DIV.wrapper you should have placed UL element with at least one LI element");
