@@ -2,9 +2,14 @@
 	$.widget("ui.rcarousel", {
 		_create: function () {
 			var self = this,
-				structure = self.structure,
 				options = self.options,
-				_root = $(this.element);
+				_root = $(this.element),
+				structure;
+
+			// for every carousel create a structure object and keep its reference in options
+			options.structure = self._createStructureObject();
+			structure = options.structure;
+
 
 			// if options were default there should be no problem
 			// check if user set options before init: $('element').rcarousel({with: "foo", visible: 3});
@@ -114,7 +119,8 @@
 		_configure: function(hardcoded) {
 			// configuration depends on if carousel was hardcoded or not
 			var self = this,
-				structure = self.structure;
+				options = self.options,
+				structure = options.structure;
 
 			if (hardcoded) {
 				self._setStructure();
@@ -134,7 +140,8 @@
 		_createNewElement: function(image, dir) {
 			// create new LI element with IMG inside it
 			var self = this,
-				structure = self.structure,
+				options = self.options,
+				structure = options.structure,
 				_li = $("<li></li>");
 
 			$(_li).append(image);
@@ -148,7 +155,8 @@
 		},
 		_createStructure: function() {
 			var	self = this,
-				structure = self.structure,
+				options = self.options,
+				structure = options.structure,
 				_carousel = $(this.element),
 				_wrapper, _list;
 
@@ -162,17 +170,33 @@
 
 			$(_carousel).appendTo("body");
 		},
+		_createStructureObject: function() {
+			var self = this;
+
+			self.carousels[self.carousels.length] = {
+				paths: [],
+				pathsLen: 0,
+				startIndex: 0,
+				endIndex: 0,
+				dir: "right",
+				oldDir: "right",
+				navigation: {}
+			}
+
+			return self.carousels[self.carousels.length - 1];
+		},
 		_firstLoad: function() {
 			var self = this,
-				structure = self.structure;
+				options = self.options,
+				structure = options.structure;
 
 			structure.endIndex = options.mode.visible;
 			structure.pathsLen = structure.paths.length;
 		},
 		load: function(obj) {
 			var self = this,
-				structure = self.structure,
-				options = self.options;
+				options = self.options,
+				structure = options.structure;
 
 			// check object validity
 			if (obj) {
@@ -241,7 +265,7 @@
 		_loadElements: function(start, end) {
 			var self = this,
 				options = self.options,
-				structure = self.structure,
+				structure = options.structure,
 				i, _start, _end, _dir;
 
 			// from which element to start
@@ -261,8 +285,8 @@
 		},
 		next: function() {
 			var	self = this,
-				structure = self.structure,
 				options = self.options,
+				structure = options.structure,
 				_step = options.mode.step ? options.mode.step : options.mode.visible,
 				i, j, _diff;
 
@@ -313,8 +337,8 @@
 		},
 		prev: function() {
 			var	self = this,
-				structure = self.structure,
 				options = self.options,
+				structure = options.structure,
 				_step = options.mode.step ? options.mode.step : options.mode.visible;
 
 			if (structure.hardcoded) {
@@ -365,8 +389,8 @@
 		_removeOldElements: function(position, length) {
 			// remove 'step' elements
 			var self = this,
-				structure = self.structure,
 				options = self.options,
+				structure = options.structure,
 				i, _arr, _len;
 
 			for (i = 0; i < length; i++) {
@@ -384,8 +408,8 @@
 			// in case of fixed mode with hardcoded elements it's simple:
 			// all elements are known for the beginning so only count them and multiply by common width
 			var self = this,
-				structure = self.structure,
 				options = self.options,
+				structure = options.structure,
 				_sum = 0,
 				_counter, _innerWidth, _lis;
 
@@ -419,8 +443,8 @@
 		},
 		_setOption: function(key, value) {
 			var self = this,
-				structure = self.structure;
-				options = self.options;
+				options = self.options,
+				structure = options.structure;
 
 			switch (key) {
 				case "mode":
@@ -475,8 +499,8 @@
 			// amount of visible elements times element's width
 			// for 'fixed' mode with set 'step': width * step
 			var self = this,
-				structure = self.structure,
 				options = self.options,
+				structure = options.structure,
 				_mode, _step;
 
 			_mode = options.mode;
@@ -499,7 +523,7 @@
 			var self = this,
 				_root = $(this.element),
 				options = self.options,
-				structure = self.structure,
+				structure = options.structure,
 				_lis;
 
 			// wrapper holds UL with LIs
@@ -518,7 +542,7 @@
 		_setCarouselHeight: function(h) {
 			var self = this,
 				options = self.options,
-				structure = self.structure,
+				structure = options.structure,
 				_height;
 
 			_height = h || options.mode.height;
@@ -527,7 +551,7 @@
 		_setCarouselWidth: function(obj) {
 			var self = this,
 				options = self.options,
-				structure = self.structure,
+				structure = options.structure,
 				_width, _newWidth, _visible, _object;
 
 			_object = obj || {};
@@ -575,16 +599,9 @@
 			navigation: {
 				next: ".carouselNext",
 				prev: ".carouselPrev"
-			}
+			},
+			structure: null
 		},
-		structure: {
-			navigation: {},
-			paths: [],
-			pathsLen: 0,
-			startIndex: 0,
-			endIndex: 0,
-			dir: "right",
-			oldDir: "right"
-		}
+		carousels: []
 	});
 } (jQuery));
