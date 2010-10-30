@@ -209,6 +209,9 @@
 			// remove old LI elements before populating
 			$(structure.list).empty()
 
+			// we don't want to manipulate doubled elements
+			structure.paths.length = 0;
+
 			// now elements are not hardcoded
 			structure.hardcoded = false;
 
@@ -289,7 +292,7 @@
 				_step = options.mode.step ? options.mode.step : options.mode.visible,
 				i, j, _diff;
 
-			if (structure.hardcoded) {
+			if (options.mode.name === "variable") {
 				if (structure.currentStep < structure.innerWidth) {
 					structure.currentStep += structure.step;
 					$(structure.wrapper).scrollLeft(structure.currentStep);
@@ -340,7 +343,7 @@
 				structure = options.structure,
 				_step = options.mode.step ? options.mode.step : options.mode.visible;
 
-			if (structure.hardcoded) {
+			if (options.mode.name === "variable") {
 				if (structure.currentStep > 0) {
 					structure.currentStep -= structure.currentStep;
 					$(structure.wrapper).scrollLeft(structure.currentStep);
@@ -523,7 +526,7 @@
 				_root = $(this.element),
 				options = self.options,
 				structure = options.structure,
-				_lis;
+				_lis, _li, i;
 
 			// wrapper holds UL with LIs
 			structure.wrapper = $("div.wrapper", _root);
@@ -533,6 +536,24 @@
 			if (_lis.length < options.mode.visible) {
 				throw new Error("At least " + options.mode.visible + " elements are required");
 			}
+
+			// hold only n visible elements in the UL list
+			// save all paths (src attribute) in paths array
+			for (i = _lis.length - 1; i >= 0; i--) {
+				_lis = $("li", structure.list);
+				if (i >= options.mode.visible) {
+					_li = $(_lis).eq(_lis.length - 1);
+					// remove li
+					$(_li).remove();
+				} else {
+					_li = $(_lis).eq(i);
+				}
+				// save the path
+				structure.paths.unshift($("img", _li).attr("src"));
+			}
+
+			// just init
+			self._firstLoad();
 
 			// save basic navigation
 			structure.navigation.next = $(options.navigation.next);
