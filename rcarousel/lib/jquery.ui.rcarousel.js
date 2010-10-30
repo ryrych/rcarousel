@@ -179,7 +179,8 @@
 				endIndex: 0,
 				dir: "right",
 				oldDir: "right",
-				navigation: {}
+				navigation: {},
+				animated: false
 			}
 
 			return self.carousels[self.carousels.length - 1];
@@ -290,48 +291,53 @@
 				options = self.options,
 				structure = options.structure,
 				_step = options.mode.step ? options.mode.step : options.mode.visible,
-				i, j, _diff;
+				_diff;
 
-			if (options.mode.name === "variable") {
-				if (structure.currentStep < structure.innerWidth) {
-					structure.currentStep += structure.step;
-					$(structure.wrapper).scrollLeft(structure.currentStep);
-				}
-			} else {
-				if (structure.startIndex < structure.pathsLen && options.mode.visible !== structure.pathsLen) {
-					structure.dir = "right";
-					// if we get to a boundary moving from right
-					if (structure.startIndex === -1) {
-						structure.startIndex += options.mode.visible + 1;
-					} else if (structure.startIndex === 0) {
-						structure.startIndex += options.mode.visible;
-					} else if (structure.dir !== structure.oldDir) {
-						// direction change
-						structure.startIndex += options.mode.visible - _step + 1;
-					} else {
-						structure.startIndex += _step;
+			if (!structure.animated) {
+				if (options.mode.name === "variable") {
+					if (structure.currentStep < structure.innerWidth) {
+						structure.currentStep += structure.step;
+						$(structure.wrapper).scrollLeft(structure.currentStep);
 					}
+				} else {
+					if (structure.startIndex < structure.pathsLen && options.mode.visible !== structure.pathsLen) {
+						structure.dir = "right";
+						structure.animated = true;
+						// if we get to a boundary moving from right
+						if (structure.startIndex === -1) {
+							structure.startIndex += options.mode.visible + 1;
+						} else if (structure.startIndex === 0) {
+							structure.startIndex += options.mode.visible;
+						} else if (structure.dir !== structure.oldDir) {
+							// direction change
+							structure.startIndex += options.mode.visible - _step + 1;
+						} else {
+							structure.startIndex += _step;
+						}
 
-					if (structure.startIndex + _step >= structure.pathsLen) {
-						structure.endIndex = structure.pathsLen;
-					} else {
-						structure.endIndex = structure.startIndex + _step;
-					}
-
-					if (structure.startIndex !== structure.pathsLen) {
-						_diff = structure.endIndex - structure.startIndex;
-						self._loadElements(structure.startIndex, structure.endIndex);
-
-						var _dist = options.mode.width * _step;
-						$(structure.wrapper).animate({scrollLeft: "+=" + _dist}, 1000, function() {
-							self._removeOldElements("first", _diff);
-							$(structure.wrapper).scrollLeft(0);
-						});
-
-						structure.oldDir = "right";
-						// next step
 						if (structure.startIndex + _step >= structure.pathsLen) {
-							structure.startIndex = structure.pathsLen;
+							structure.endIndex = structure.pathsLen;
+						} else {
+							structure.endIndex = structure.startIndex + _step;
+						}
+
+						if (structure.startIndex !== structure.pathsLen) {
+							_diff = structure.endIndex - structure.startIndex;
+							self._loadElements(structure.startIndex, structure.endIndex);
+
+							var _dist = options.mode.width * _step;
+							$(structure.wrapper)
+								.animate({scrollLeft: "+=" + _dist}, 1000, function() {
+								self._removeOldElements("first", _diff);
+								$(structure.wrapper).scrollLeft(0);
+								structure.animated = false;
+							});
+
+							structure.oldDir = "right";
+							// next step
+							if (structure.startIndex + _step >= structure.pathsLen) {
+								structure.startIndex = structure.pathsLen;
+							}
 						}
 					}
 				}
@@ -341,49 +347,53 @@
 			var	self = this,
 				options = self.options,
 				structure = options.structure,
-				_step = options.mode.step ? options.mode.step : options.mode.visible;
+				_step = options.mode.step ? options.mode.step : options.mode.visible,
+				_diff;
 
-			if (options.mode.name === "variable") {
-				if (structure.currentStep > 0) {
-					structure.currentStep -= structure.currentStep;
-					$(structure.wrapper).scrollLeft(structure.currentStep);
-				}
-			} else {
-				var i, j, _diff;
-
-				if (structure.startIndex >= 0 && options.mode.visible !== structure.pathsLen) {
-					structure.dir = "left";
-
-					if (structure.startIndex === structure.pathsLen) {
-						structure.startIndex = structure.pathsLen - options.mode.visible - 1;
-					} else if (structure.dir !== structure.oldDir) {
-						structure.startIndex -= options.mode.visible - _step + 1;
-					} else {
-						structure.startIndex -= _step;
+			if (!structure.animated) {
+				if (options.mode.name === "variable") {
+					if (structure.currentStep > 0) {
+						structure.currentStep -= structure.currentStep;
+						$(structure.wrapper).scrollLeft(structure.currentStep);
 					}
+				} else {
+					if (structure.startIndex >= 0 && options.mode.visible !== structure.pathsLen) {
+						structure.dir = "left";
+						structure.animated = true;
 
-					if (structure.startIndex - _step + 1 <= 0) {
-						structure.endIndex = 0;
-					} else {
-						structure.endIndex = structure.startIndex - _step + 1;
-					}
+						if (structure.startIndex === structure.pathsLen) {
+							structure.startIndex = structure.pathsLen - options.mode.visible - 1;
+						} else if (structure.dir !== structure.oldDir) {
+							structure.startIndex -= options.mode.visible - _step + 1;
+						} else {
+							structure.startIndex -= _step;
+						}
 
-					if (structure.startIndex > -1) {
-						_diff = structure.startIndex - structure.endIndex;
-						self._loadElements(structure.startIndex, structure.endIndex);
+						if (structure.startIndex - _step + 1 <= 0) {
+							structure.endIndex = 0;
+						} else {
+							structure.endIndex = structure.startIndex - _step + 1;
+						}
 
-						var _dist = options.mode.width * _step;
-						$(structure.wrapper).scrollLeft(_dist);
-						$(structure.wrapper).animate({scrollLeft: 0}, 1000, function() {
-							self._removeOldElements("last", _diff + 1);
-						});
+						if (structure.startIndex > -1) {
+							_diff = structure.startIndex - structure.endIndex;
+							self._loadElements(structure.startIndex, structure.endIndex);
 
-						structure.oldDir = "left";
-					}
-					
-					// next step
-					if (structure.startIndex - _step < 0) {
-						structure.startIndex = -1;
+							var _dist = options.mode.width * _step;
+							$(structure.wrapper).scrollLeft(_dist);
+							$(structure.wrapper)
+								.animate({scrollLeft: 0}, 1000, function() {
+								self._removeOldElements("last", _diff + 1);
+								structure.animated = false;
+							});
+
+							structure.oldDir = "left";
+						}
+
+						// next step
+						if (structure.startIndex - _step < 0) {
+							structure.startIndex = -1;
+						}
 					}
 				}
 			}
