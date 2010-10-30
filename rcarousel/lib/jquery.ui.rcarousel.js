@@ -368,7 +368,7 @@
 						structure.endIndex = structure.startIndex - _step + 1;
 					}
 
-					if (structure.startIndex !== -1) {
+					if (structure.startIndex > -1) {
 						_diff = structure.startIndex - structure.endIndex;
 						self._loadElements(structure.startIndex, structure.endIndex);
 
@@ -379,11 +379,11 @@
 						});
 
 						structure.oldDir = "left";
-
-						// next step
-						if (structure.startIndex - _step < 0) {
-							structure.startIndex = -1;
-						}
+					}
+					
+					// next step
+					if (structure.startIndex - _step < 0) {
+						structure.startIndex = -1;
 					}
 				}
 			}
