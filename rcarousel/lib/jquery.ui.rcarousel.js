@@ -16,17 +16,17 @@
 			self._checkOptionsValidity(self.options);
 
 			// check if structure is hardcoded and valid
-			if ($(_root).children().length > 0) {
-				if ($(_root).children("div.wrapper").length === 0) {
-					throw new Error("Structure should have contained DIV.wrapper");
-				} else if ($(_root).children("div.wrapper").find("ul > li").length < 1) {
+			if ($(_root).children("div.wrapper").length === 1) {
+				if ($(_root).children("div.wrapper").find("ul > li").length < 1) {
 					// there is DIV element inside element rcarousel is invoked on; check if it contains
 					// UL and at least one LI element
 					throw new Error("Inside DIV.wrapper you should have placed UL element with at least one LI element");
+				} else {
+					self._configure(true);
 				}
-				// everything is OK
-				self._configure(true);
-			} else if ($(_root).children().length === 0) {
+			} else if ($(_root).children("div.wrapper").length > 1) {
+				throw new Error("You are not allowed to use more than one div.wrapper in carousel's container!");
+			} else if ($(_root).children("div.wrapper").length < 1) {
 				// structure hasn't been created yet - create it
 				self._configure(false);
 			}
