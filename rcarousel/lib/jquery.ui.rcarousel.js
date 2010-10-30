@@ -162,6 +162,13 @@
 
 			$(_carousel).appendTo("body");
 		},
+		_firstLoad: function() {
+			var self = this,
+				structure = self.structure;
+
+			structure.endIndex = options.mode.visible;
+			structure.pathsLen = structure.paths.length;
+		},
 		load: function(obj) {
 			var self = this,
 				structure = self.structure,
@@ -189,6 +196,13 @@
 						// store path to a file
 						structure.paths.push(item);
 					});
+
+					// check if we had enough elements
+					if (structure.paths.length < options.mode.visible) {
+						throw new Error("At least " + options.mode.visible + " elements are required");
+					}
+
+					self._firstLoad();
 					// now load new items
 					self._loadElements(0);
 				});
@@ -199,6 +213,13 @@
 					$.each(_nodes, function(i, item) {
 						structure.paths.push($(item).text());
 					});
+
+					// check if we had enough elements
+					if (structure.paths.length < options.mode.visible) {
+						throw new Error("At least " + options.mode.visible + " elements are required");
+					}
+
+					self._firstLoad();
 					self._loadElements(0);
 				});
 			}
@@ -221,39 +242,29 @@
 			var self = this,
 				options = self.options,
 				structure = self.structure,
-				i, _howMany, _start, _end, _dir;
+				i, _start, _end, _dir;
 
 			// from which element to start
 			_start = start || 0;
-			_end = end || options.mode.visible - 1;
-			_howMany = Math.abs(_end - _start);
+			_end = end || (end === 0 ? 0 : options.mode.visible);
 			_dir = _end - _start > 0 ? "next" : "prev";
 
-			console.log("zaczynam od: " + _start);
-			console.log("end wynosi: " + _end);
 			if (_dir === "next") {
-				for (i = _start; i <= _end; i++) {
+				for (i = _start; i < _end; i++) {
 					self._createNewElement(self._loadElement(structure.paths[i]), _dir);
 				}
-				// remember the last loaded element
-				structure.lastFirstElement = _start;
-				structure.lastEndElement = _end;
-				console.log("zakończyłem na: " + structure.lastEndElement);
 			} else {
 				for (i = _start; i >= _end; i--) {
 					self._createNewElement(self._loadElement(structure.paths[i]), _dir);
 				}
-				structure.lastEndElement = _end === 0 ? 1 : end + 1;
-				structure.lastFirstElement = i + 1;
 			}
-
-
 		},
 		next: function() {
 			var	self = this,
 				structure = self.structure,
 				options = self.options,
-				_step = options.mode.step ? options.mode.step : options.mode.visible;
+				_step = options.mode.step ? options.mode.step : options.mode.visible,
+				i, j, _diff;
 
 			if (structure.hardcoded) {
 				if (structure.currentStep < structure.innerWidth) {
@@ -261,12 +272,42 @@
 					$(structure.wrapper).scrollLeft(structure.currentStep);
 				}
 			} else {
-				if (structure.lastEndElement < structure.paths.length - 1) {
-					++structure.lastEndElement;
-					self._loadElements(structure.lastEndElement, structure.lastEndElement + _step - 1);
-					$(structure.wrapper).scrollLeft(structure.step * 2);
-					self._removeOldElements(0);
-					$(structure.wrapper).scrollLeft(0);
+				if (structure.startIndex < structure.pathsLen && options.mode.visible !== structure.pathsLen) {
+					structure.dir = "right";
+					// if we get to a boundary moving from right
+					if (structure.startIndex === -1) {
+						structure.startIndex += options.mode.visible + 1;
+					} else if (structure.startIndex === 0) {
+						structure.startIndex += options.mode.visible;
+					} else if (structure.dir !== structure.oldDir) {
+						// direction change
+						structure.startIndex += options.mode.visible - _step + 1;
+					} else {
+						structure.startIndex += _step;
+					}
+
+					if (structure.startIndex + _step >= structure.pathsLen) {
+						structure.endIndex = structure.pathsLen;
+					} else {
+						structure.endIndex = structure.startIndex + _step;
+					}
+
+					if (structure.startIndex !== structure.pathsLen) {
+						_diff = structure.endIndex - structure.startIndex;
+						self._loadElements(structure.startIndex, structure.endIndex);
+
+						var _dist = options.mode.width * _step;
+						$(structure.wrapper).animate({scrollLeft: "+=" + _dist}, 1000, function() {
+							self._removeOldElements("first", _diff);
+							$(structure.wrapper).scrollLeft(0);
+						});
+
+						structure.oldDir = "right";
+						// next step
+						if (structure.startIndex + _step >= structure.pathsLen) {
+							structure.startIndex = structure.pathsLen;
+						}
+					}
 				}
 			}
 		},
@@ -282,26 +323,54 @@
 					$(structure.wrapper).scrollLeft(structure.currentStep);
 				}
 			} else {
-				if (structure.lastFirstElement > 0) {
-					--structure.lastFirstElement;
-					self._loadElements(structure.lastFirstElement, structure.lastFirstElement - _step + 1);
-					$(structure.wrapper).scrollLeft(0);
-					self._removeOldElements(_step)
+				var i, j, _diff;
+
+				if (structure.startIndex >= 0 && options.mode.visible !== structure.pathsLen) {
+					structure.dir = "left";
+
+					if (structure.startIndex === structure.pathsLen) {
+						structure.startIndex = structure.pathsLen - options.mode.visible - 1;
+					} else if (structure.dir !== structure.oldDir) {
+						structure.startIndex -= options.mode.visible - _step + 1;
+					} else {
+						structure.startIndex -= _step;
+					}
+
+					if (structure.startIndex - _step + 1 <= 0) {
+						structure.endIndex = 0;
+					} else {
+						structure.endIndex = structure.startIndex - _step + 1;
+					}
+
+					if (structure.startIndex !== -1) {
+						_diff = structure.startIndex - structure.endIndex;
+						self._loadElements(structure.startIndex, structure.endIndex);
+
+						var _dist = options.mode.width * _step;
+						$(structure.wrapper).scrollLeft(_dist);
+						$(structure.wrapper).animate({scrollLeft: 0}, 1000, function() {
+							self._removeOldElements("last", _diff + 1);
+						});
+
+						structure.oldDir = "left";
+
+						// next step
+						if (structure.startIndex - _step < 0) {
+							structure.startIndex = -1;
+						}
+					}
 				}
 			}
 		},
-		_removeOldElements: function(start) {
+		_removeOldElements: function(position, length) {
 			// remove 'step' elements
 			var self = this,
 				structure = self.structure,
 				options = self.options,
-				i, _step, _whichRemove, _arr, _len;
+				i, _arr, _len;
 
-			_step = !_step ? options.mode.visible : options.mode.step;
-			_whichRemove = start > 0 ? "last" : "first"
-
-			for (i = start; i < start + _step; i++) {
-				if (_whichRemove === "first") {
+			for (i = 0; i < length; i++) {
+				if (position === "first") {
 					$("li", structure.list).eq(0).remove();
 				} else {
 					_arr = $("li", structure.list);
@@ -430,11 +499,17 @@
 			var self = this,
 				_root = $(this.element),
 				options = self.options,
-				structure = self.structure;
+				structure = self.structure,
+				_lis;
 
 			// wrapper holds UL with LIs
 			structure.wrapper = $("div.wrapper", _root);
 			structure.list = $("ul", structure.wrapper);
+			// check if we had enough elements
+			_lis = $("li", structure.list);
+			if (_lis.length < options.mode.visible) {
+				throw new Error("At least " + options.mode.visible + " elements are required");
+			}
 
 			// save basic navigation
 			structure.navigation.next = $(options.navigation.next);
@@ -505,8 +580,11 @@
 		structure: {
 			navigation: {},
 			paths: [],
-			lastFirstElement: 0,
-			lastEndElement: 0
+			pathsLen: 0,
+			startIndex: 0,
+			endIndex: 0,
+			dir: "right",
+			oldDir: "right"
 		}
 	});
 } (jQuery));
