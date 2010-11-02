@@ -112,6 +112,18 @@
 							throw new Error("navigation.next should be defined as a string and points to '.class' or '#id' of an element");
 						}
 						break;
+
+					case "speed":
+						if (!_value && _value !== 0) {
+							throw new Error("speed should be defined as a number or a string");
+						}
+
+						if (typeof _value === "number" && _value < 0) {
+							throw new Error("speed " + "should be a positive number");
+						} else if (typeof _value === "string" && !(_value === "slow" || _value === "normal" || _value === "fast")) {
+							throw new Error('Only "slow", "normal" and "fast" values are valid');
+						}
+						break;
 				}
 			}
 		},
@@ -327,7 +339,7 @@
 
 							var _dist = options.mode.width * _step;
 							$(structure.wrapper)
-								.animate({scrollLeft: "+=" + _dist}, 1000, function() {
+								.animate({scrollLeft: "+=" + _dist}, options.speed, function() {
 								self._removeOldElements("first", _diff);
 								$(structure.wrapper).scrollLeft(0);
 								structure.animated = false;
@@ -382,7 +394,7 @@
 							var _dist = options.mode.width * _step;
 							$(structure.wrapper).scrollLeft(_dist);
 							$(structure.wrapper)
-								.animate({scrollLeft: 0}, 1000, function() {
+								.animate({scrollLeft: 0}, options.speed, function() {
 								self._removeOldElements("last", _diff + 1);
 								structure.animated = false;
 							});
@@ -501,6 +513,10 @@
 						self._setEventHandlers("prev");
 					}
 					break;
+
+				case "speed":
+					self._checkOptionsValidity({speed: value});
+					options.speed = value;
 			}
 			$.Widget.prototype._setOption.apply(this, arguments);
 
@@ -630,6 +646,7 @@
 				next: ".carouselNext",
 				prev: ".carouselPrev"
 			},
+			speed: 1000,
 			structure: null
 		},
 		carousels: []
