@@ -199,6 +199,7 @@
 				options = self.options,
 				structure = options.structure;
 
+			structure.startIndex = 0;
 			structure.endIndex = options.mode.visible;
 			structure.pathsLen = structure.paths.length;
 		},
