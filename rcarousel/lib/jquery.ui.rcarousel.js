@@ -471,8 +471,8 @@
 
 			switch (key) {
 				case "mode":
-					value = $.extend(options.mode, value);
-					self._checkOptionsValidity({mode: value});
+					_newOptions = $.extend(options.mode, value);
+					self._checkOptionsValidity({mode: _newOptions});
 
 					if (value.width) {
 						self._setCarouselWidth({width: value.width, visible: value.visible});
@@ -485,11 +485,13 @@
 					if (value.step) {
 						self._setStep(value.step);
 					}
+
+					value = _newOptions;
 					break;
 
 				case "navigation":
-					value = $.extend(options.mode, value);
-					self._checkOptionsValidity({navigation: value});
+					_newOptions = $.extend(options.mode, value);
+					self._checkOptionsValidity({navigation: _newOptions});
 					if (value.next) {
 						self._setEventHandlers("next");
 					}
@@ -497,6 +499,8 @@
 					if (value.prev) {
 						self._setEventHandlers("prev");
 					}
+
+					value = _newOptions;
 					break;
 
 				case "speed":
@@ -590,6 +594,7 @@
 			_visible = _object.visible || options.mode.visible;
 
 			_newWidth = _visible  && options.mode.name === "fixed" ? _visible * _width : _width;
+
 			// set carousel width and disable overflow: auto
 			$(structure.wrapper).css({
 				width: _newWidth,
