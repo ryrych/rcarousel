@@ -475,8 +475,7 @@
 					}
 
 					if (value.visible) {
-						console.log("foo");
-						options.mode.visible = parseInt(value.visible);
+						options.mode.visible = value.visible;
 					} else if (value.visible === null) {
 						options.mode.visible = value.visible;
 					}
