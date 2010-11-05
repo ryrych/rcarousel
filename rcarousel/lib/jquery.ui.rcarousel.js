@@ -466,50 +466,35 @@
 		_setOption: function(key, value) {
 			var self = this,
 				options = self.options,
-				structure = options.structure;
+				structure = options.structure,
+				_newOptions;
 
 			switch (key) {
 				case "mode":
+					value = $.extend(options.mode, value);
 					self._checkOptionsValidity({mode: value});
-					if (value.name) {
-						options.mode.name = value.name;
-					}
-
-					if (value.visible) {
-						options.mode.visible = value.visible;
-					} else if (value.visible === null) {
-						options.mode.visible = value.visible;
-					}
 
 					if (value.width) {
-						options.mode.width = value.width;
 						self._setCarouselWidth({width: value.width, visible: value.visible});
 					}
 
 					if (value.height) {
-						options.mode.height = value.height;
 						self._setCarouselHeight({height: value.height});
 					}
 
 					if (value.step) {
 						self._setStep(value.step);
 					}
-
-					if (value.remote) {
-						options.remote.path = value.remote.path;
-						options.remote.format = value.remote.format;
-					}
 					break;
 
 				case "navigation":
+					value = $.extend(options.mode, value);
 					self._checkOptionsValidity({navigation: value});
 					if (value.next) {
-						options.navigation.next = $(value.next);
 						self._setEventHandlers("next");
 					}
 
 					if (value.prev) {
-						options.navigation.prev = $(value.prev);
 						self._setEventHandlers("prev");
 					}
 					break;
