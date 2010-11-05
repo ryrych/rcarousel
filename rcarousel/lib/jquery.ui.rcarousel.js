@@ -474,6 +474,16 @@
 					_newOptions = $.extend(options.mode, value);
 					self._checkOptionsValidity({mode: _newOptions});
 
+					if (value.visible) {
+						self._setCarouselWidth({visible: value.visible});
+
+						// remove old LI elements before populating
+						$(structure.list).empty();
+
+						self._firstLoad();
+						self._loadElements(0);
+					}
+
 					if (value.width) {
 						self._setCarouselWidth({width: value.width, visible: value.visible});
 					}
