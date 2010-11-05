@@ -53,22 +53,19 @@
 							} else {
 								// step exists and is not default value
 								// for example for visible: 3.5 the following array of values for 'step' is valid
-								// 3.5 <= step >= 1 by 1 ==> [1,2,3,3.5]
+								// 3 <= step >= 1 by 1 ==> [1,2,3]
 								if (_value.step < 1 || _value.step > _value.visible) {
 									// output correct values
 									for (i = 1; i<= Math.floor(_value.visible); i++) {
 										_correctSteps += (i < Math.floor(_value.visible)) ? i + ", " : i;
 									}
-									// last correct value e.g 3.5
-									_lastCorrectStep = (Math.ceil(_value.visible) - _value.visible === 0) ? "" : _value.visible;
-									_correctSteps += _lastCorrectStep;
 
 									throw new Error("Only following mode.step values are correct: " + _correctSteps);
 								}
 							}
 
-							if (typeof _value.visible !== "number" || _value.visible <= 0) {
-								throw new Error("mode.visible should be defined as a positive number!");
+							if (typeof _value.visible !== "number" || _value.visible <= 0 || (Math.ceil(_value.visible) - _value.visible > 0)) {
+								throw new Error("mode.visible should be defined as a positive integer number!");
 							}
 						} else {
 							if (_value.step && typeof _value.step !== "number" || _value.step <= 0) {
@@ -477,7 +474,10 @@
 						options.mode.name = value.name;
 					}
 
-					if (value.visible || value.visible === null) {
+					if (value.visible) {
+						console.log("foo");
+						options.mode.visible = parseInt(value.visible);
+					} else if (value.visible === null) {
 						options.mode.visible = value.visible;
 					}
 
