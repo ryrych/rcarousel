@@ -33,52 +33,59 @@
 		},
 		_checkOptionsValidity: function(options) {
 			var	self = this,
+				options = self.options,
 				_correctSteps = "",
-				_key, _value, i, _lastCorrectStep;
+				_key, _value, i;
 
 			// for every element in options object check its validity
 			for (_key in options) {
 				_value = options[_key];
 				switch (_key) {
-					case "mode":
-						if (_value.name !== "fixed" && _value.name !== "variable") {
-							throw new Error("Only mode.name: 'fixed' and mode.name: 'variable' are valid");
-						} else if (_value.name === "fixed") {
-							// default 'step' for 'fixed' mode will probably be invalid
-							// 'step' for 'fixed' mode is optional so can be reseted to null
-							if (_value.step === _value.defaultStep) {
-								_value.step = null;
-							} else if (_value.step && typeof _value.step !== "number" || _value.step <= 0) {
-								throw new Error("mode.step should be a positive number");
-							} else {
-								// step exists and is not default value
-								// for example for visible: 3.5 the following array of values for 'step' is valid
-								// 3 <= step >= 1 by 1 ==> [1,2,3]
-								if (_value.step < 1 || _value.step > _value.visible) {
-									// output correct values
-									for (i = 1; i<= Math.floor(_value.visible); i++) {
-										_correctSteps += (i < Math.floor(_value.visible)) ? i + ", " : i;
-									}
+					case "visible":
+						// visible should be a integer positive number
+						if (typeof _value !== "number" || _value <= 0 || (Math.ceil(_value) - _value > 0)) {
+							throw new Error("visible should be defined as a positive integer number!");
+						}
+						break;
 
-									throw new Error("Only following mode.step values are correct: " + _correctSteps);
-								}
-							}
-
-							if (typeof _value.visible !== "number" || _value.visible <= 0 || (Math.ceil(_value.visible) - _value.visible > 0)) {
-								throw new Error("mode.visible should be defined as a positive integer number!");
-							}
+					case "step":
+						if (_value && typeof _value !== "number" || _value <= 0) {
+							throw new Error("step should be a positive number");
 						} else {
-							if (_value.step && typeof _value.step !== "number" || _value.step <= 0) {
-								throw new Error("mode.step should be a positive number");
+							// for example for visible: 3 the following array of values for 'step' is valid
+							// 3 <= step >= 1 by 1 ==> [1,2,3]
+							if (_value < 1 || _value > options.visible) {
+								// output correct values
+								for (i = 1; i<= Math.floor(options.visible); i++) {
+									_correctSteps += (i < Math.floor(_value)) ? i + ", " : i;
+								}
+								throw new Error("Only following mode.step values are correct: " + _correctSteps);
 							}
 						}
+						break;
+
+					case "width":
 						// width & height is defined by default so you can omit them to some extent
-						if (_value.width && (isNaN(_value.width) || typeof _value.width !== "number" || _value.width <= 0)) {
-							throw new Error("mode.width should be a positive number!");
+						if (_value && (isNaN(_value) || typeof _value !== "number" || _value <= 0 || (Math.ceil(_value) - _value > 0))) {
+							throw new Error("width should be a positive integer number!");
+						}
+						break;
+
+					case "height":
+						if (_value && (isNaN(_value) || typeof _value !== "number" || _value <= 0 || (Math.ceil(_value) - _value > 0))) {
+							throw new Error("height should be a positive number!");
+						}
+						break;
+
+					case "speed":
+						if (!_value && _value !== 0) {
+							throw new Error("speed should be defined as a number or a string");
 						}
 
-						if (_value.height && (isNaN(_value.height) || typeof _value.height !== "number" || _value.height <= 0)) {
-							throw new Error("mode.height should be a positive number!");
+						if (typeof _value === "number" && _value < 0) {
+							throw new Error("speed " + "should be a positive number");
+						} else if (typeof _value === "string" && !(_value === "slow" || _value === "normal" || _value === "fast")) {
+							throw new Error('Only "slow", "normal" and "fast" values are valid');
 						}
 						break;
 
@@ -100,25 +107,15 @@
 
 					case "navigation":
 						if (!_value || typeof _value !== "object") {
-							throw new Error("navigation should be defined as object with 'prev' and 'next' properties in it!");
+							throw new Error("navigation should be defined as object with at least one of the properties: 'prev' or 'next' in it!");
 						}
 
 						if (_value.prev && typeof _value.prev !== "string") {
 							throw new Error("navigation.prev should be defined as a string and points to '.class' or '#id' of an element");
-						} else if (_value.next && typeof _value.next !== "string") {
+						}
+
+						if (_value.next && typeof _value.next !== "string") {
 							throw new Error("navigation.next should be defined as a string and points to '.class' or '#id' of an element");
-						}
-						break;
-
-					case "speed":
-						if (!_value && _value !== 0) {
-							throw new Error("speed should be defined as a number or a string");
-						}
-
-						if (typeof _value === "number" && _value < 0) {
-							throw new Error("speed " + "should be a positive number");
-						} else if (typeof _value === "string" && !(_value === "slow" || _value === "normal" || _value === "fast")) {
-							throw new Error('Only "slow", "normal" and "fast" values are valid');
 						}
 						break;
 				}
@@ -200,7 +197,7 @@
 				structure = options.structure;
 
 			structure.startIndex = 0;
-			structure.endIndex = options.mode.visible;
+			structure.endIndex = options.visible;
 			structure.pathsLen = structure.paths.length;
 		},
 		load: function(obj) {
@@ -235,8 +232,8 @@
 					});
 
 					// check if we had enough elements
-					if (structure.paths.length < options.mode.visible) {
-						throw new Error("At least " + options.mode.visible + " elements are required");
+					if (structure.paths.length < options.visible) {
+						throw new Error("At least " + options.visible + " elements are required");
 					}
 
 					self._firstLoad();
@@ -252,8 +249,8 @@
 					});
 
 					// check if we had enough elements
-					if (structure.paths.length < options.mode.visible) {
-						throw new Error("At least " + options.mode.visible + " elements are required");
+					if (structure.paths.length < options.visible) {
+						throw new Error("At least " + options.visible + " elements are required");
 					}
 
 					self._firstLoad();
@@ -283,7 +280,7 @@
 
 			// from which element to start
 			_start = start || 0;
-			_end = end || (end === 0 ? 0 : options.mode.visible);
+			_end = end || (end === 0 ? 0 : options.visible);
 			_dir = _end - _start > 0 ? "next" : "prev";
 
 			if (_dir === "next") {
@@ -300,54 +297,47 @@
 			var	self = this,
 				options = self.options,
 				structure = options.structure,
-				_step = options.mode.step ? options.mode.step : options.mode.visible,
+				_step = options.step ? options.step : options.visible,
 				_diff;
 
 			if (!structure.animated) {
-				if (options.mode.name === "variable") {
-					if (structure.currentStep < structure.innerWidth) {
-						structure.currentStep += structure.step;
-						$(structure.wrapper).scrollLeft(structure.currentStep);
+				if (structure.startIndex < structure.pathsLen && options.visible !== structure.pathsLen) {
+					structure.dir = "right";
+					structure.animated = true;
+					// if we get to a boundary moving from right
+					if (structure.startIndex === -1) {
+						structure.startIndex += options.visible + 1;
+					} else if (structure.startIndex === 0) {
+						structure.startIndex += options.visible;
+					} else if (structure.dir !== structure.oldDir) {
+						// direction change
+						structure.startIndex += options.visible - _step + 1;
+					} else {
+						structure.startIndex += _step;
 					}
-				} else {
-					if (structure.startIndex < structure.pathsLen && options.mode.visible !== structure.pathsLen) {
-						structure.dir = "right";
-						structure.animated = true;
-						// if we get to a boundary moving from right
-						if (structure.startIndex === -1) {
-							structure.startIndex += options.mode.visible + 1;
-						} else if (structure.startIndex === 0) {
-							structure.startIndex += options.mode.visible;
-						} else if (structure.dir !== structure.oldDir) {
-							// direction change
-							structure.startIndex += options.mode.visible - _step + 1;
-						} else {
-							structure.startIndex += _step;
-						}
 
+					if (structure.startIndex + _step >= structure.pathsLen) {
+						structure.endIndex = structure.pathsLen;
+					} else {
+						structure.endIndex = structure.startIndex + _step;
+					}
+
+					if (structure.startIndex !== structure.pathsLen) {
+						_diff = structure.endIndex - structure.startIndex;
+						self._loadElements(structure.startIndex, structure.endIndex);
+
+						var _dist = options.width * _step;
+						$(structure.wrapper)
+							.animate({scrollLeft: "+=" + _dist}, options.speed, function() {
+							self._removeOldElements("first", _diff);
+							$(structure.wrapper).scrollLeft(0);
+							structure.animated = false;
+						});
+
+						structure.oldDir = "right";
+						// next step
 						if (structure.startIndex + _step >= structure.pathsLen) {
-							structure.endIndex = structure.pathsLen;
-						} else {
-							structure.endIndex = structure.startIndex + _step;
-						}
-
-						if (structure.startIndex !== structure.pathsLen) {
-							_diff = structure.endIndex - structure.startIndex;
-							self._loadElements(structure.startIndex, structure.endIndex);
-
-							var _dist = options.mode.width * _step;
-							$(structure.wrapper)
-								.animate({scrollLeft: "+=" + _dist}, options.speed, function() {
-								self._removeOldElements("first", _diff);
-								$(structure.wrapper).scrollLeft(0);
-								structure.animated = false;
-							});
-
-							structure.oldDir = "right";
-							// next step
-							if (structure.startIndex + _step >= structure.pathsLen) {
-								structure.startIndex = structure.pathsLen;
-							}
+							structure.startIndex = structure.pathsLen;
 						}
 					}
 				}
@@ -357,53 +347,46 @@
 			var	self = this,
 				options = self.options,
 				structure = options.structure,
-				_step = options.mode.step ? options.mode.step : options.mode.visible,
+				_step = options.step ? options.step : options.visible,
 				_diff;
 
 			if (!structure.animated) {
-				if (options.mode.name === "variable") {
-					if (structure.currentStep > 0) {
-						structure.currentStep -= structure.currentStep;
-						$(structure.wrapper).scrollLeft(structure.currentStep);
+				if (structure.startIndex >= 0 && options.visible !== structure.pathsLen) {
+					structure.dir = "left";
+					structure.animated = true;
+
+					if (structure.startIndex === structure.pathsLen) {
+						structure.startIndex = structure.pathsLen - options.visible - 1;
+					} else if (structure.dir !== structure.oldDir) {
+						structure.startIndex -= options.visible - _step + 1;
+					} else {
+						structure.startIndex -= _step;
 					}
-				} else {
-					if (structure.startIndex >= 0 && options.mode.visible !== structure.pathsLen) {
-						structure.dir = "left";
-						structure.animated = true;
 
-						if (structure.startIndex === structure.pathsLen) {
-							structure.startIndex = structure.pathsLen - options.mode.visible - 1;
-						} else if (structure.dir !== structure.oldDir) {
-							structure.startIndex -= options.mode.visible - _step + 1;
-						} else {
-							structure.startIndex -= _step;
-						}
+					if (structure.startIndex - _step + 1 <= 0) {
+						structure.endIndex = 0;
+					} else {
+						structure.endIndex = structure.startIndex - _step + 1;
+					}
 
-						if (structure.startIndex - _step + 1 <= 0) {
-							structure.endIndex = 0;
-						} else {
-							structure.endIndex = structure.startIndex - _step + 1;
-						}
+					if (structure.startIndex > -1) {
+						_diff = structure.startIndex - structure.endIndex;
+						self._loadElements(structure.startIndex, structure.endIndex);
 
-						if (structure.startIndex > -1) {
-							_diff = structure.startIndex - structure.endIndex;
-							self._loadElements(structure.startIndex, structure.endIndex);
+						var _dist = options.width * _step;
+						$(structure.wrapper).scrollLeft(_dist);
+						$(structure.wrapper)
+							.animate({scrollLeft: 0}, options.speed, function() {
+							self._removeOldElements("last", _diff + 1);
+							structure.animated = false;
+						});
 
-							var _dist = options.mode.width * _step;
-							$(structure.wrapper).scrollLeft(_dist);
-							$(structure.wrapper)
-								.animate({scrollLeft: 0}, options.speed, function() {
-								self._removeOldElements("last", _diff + 1);
-								structure.animated = false;
-							});
+						structure.oldDir = "left";
+					}
 
-							structure.oldDir = "left";
-						}
-
-						// next step
-						if (structure.startIndex - _step < 0) {
-							structure.startIndex = -1;
-						}
+					// next step
+					if (structure.startIndex - _step < 0) {
+						structure.startIndex = -1;
 					}
 				}
 			}
@@ -437,29 +420,16 @@
 
 			_counter = $("li", structure.list).length;
 			if (structure.hardcoded) {
-				if (options.mode.name === "fixed") {
-					// set the width
-					_innerWidth = _counter * options.mode.width;
-					$(structure.list).width(_innerWidth);
-					// save UL width for navigation purposes
-					structure.innerWidth = _innerWidth;
-				} else if (options.mode.name === "variable") {
-					// we must to compute width of all single elements cuz their width is different
-					_lis = $("li", structure.list);
-					$.each(_lis, function(i, el) {
-						_sum += $(el).width();
-					});
-					_innerWidth = _sum;
-					structure.innerWidth = _innerWidth;
-					$(structure.list).width(_innerWidth);
-				}
+				// set the width
+				_innerWidth = _counter * options.width;
+				$(structure.list).width(_innerWidth);
+				// save UL width for navigation purposes
+				structure.innerWidth = _innerWidth;
 			}
 			else {
-				if (options.mode.name === "fixed") {
-					_innerWidth = _counter * options.mode.width;
-					$(structure.list).width(_innerWidth);
-					structure.innerWidth = _innerWidth;
-				}
+				_innerWidth = _counter * options.width;
+				$(structure.list).width(_innerWidth);
+				structure.innerWidth = _innerWidth;
 			}
 
 		},
@@ -470,38 +440,39 @@
 				_newOptions;
 
 			switch (key) {
-				case "mode":
-					_newOptions = $.extend(options.mode, value);
-					self._checkOptionsValidity({mode: _newOptions});
+				case "visible":
+					self._checkOptionsValidity({visible: value});
 
-					if (value.visible) {
-						self._setCarouselWidth({visible: value.visible});
+					self._setCarouselWidth({visible: value.visible});
+					// remove old LI elements before populating
+					$(structure.list).empty();
 
-						// remove old LI elements before populating
-						$(structure.list).empty();
+					self._firstLoad();
+					self._loadElements(0);
+					break;
 
-						self._firstLoad();
-						self._loadElements(0);
-					}
+				case "width":
+					self._checkOptionsValidity({width: value});
+					self._setCarouselWidth({width: value});
+					break;
 
-					if (value.width) {
-						self._setCarouselWidth({width: value.width, visible: value.visible});
-					}
+				case "height":
+					self._checkOptionsValidity({height: value});
+					self._setCarouselHeight({height: value});
+					break;
 
-					if (value.height) {
-						self._setCarouselHeight({height: value.height});
-					}
+				case "step":
+					self._checkOptionsValidity({step: value});
+					self._setStep(value);
+					break;
 
-					if (value.step) {
-						self._setStep(value.step);
-					}
-
-					value = _newOptions;
+				case "speed":
+					self._checkOptionsValidity({speed: value});
+					options.speed = value;
 					break;
 
 				case "navigation":
-					_newOptions = $.extend(options.mode, value);
-					self._checkOptionsValidity({navigation: _newOptions});
+					self._checkOptionsValidity({navigation: value});
 					if (value.next) {
 						self._setEventHandlers("next");
 					}
@@ -509,42 +480,20 @@
 					if (value.prev) {
 						self._setEventHandlers("prev");
 					}
-
-					value = _newOptions;
 					break;
-
-				case "speed":
-					self._checkOptionsValidity({speed: value});
-					options.speed = value;
 			}
 			$.Widget.prototype._setOption.apply(this, arguments);
 
 		},
 		_setStep: function(s) {
 			// calculate a step
-			// the step for carousel with fixed mode except set 'step' is
-			// amount of visible elements times element's width
-			// for 'fixed' mode with set 'step': width * step
 			var self = this,
 				options = self.options,
 				structure = options.structure,
-				_mode, _step;
+				_step;
 
-			_mode = options.mode;
-			_step = s || _mode.step
-
-			// initial step for calculation purposes
-			structure.currentStep = 0;
-
-			if (_mode.name === "fixed") {
-				if (!_step) {
-					structure.step = _mode.visible * _mode.width;
-				} else {
-					structure.step = _mode.width * _mode.step;
-				}
-			} else {
-				structure.step = _step;
-			}
+			_step = s || options.step
+			structure.step = options.width * _step;
 		},
 		_setStructure: function() {
 			var self = this,
@@ -558,15 +507,15 @@
 			structure.list = $("ul", structure.wrapper);
 			// check if we had enough elements
 			_lis = $("li", structure.list);
-			if (_lis.length < options.mode.visible) {
-				throw new Error("At least " + options.mode.visible + " elements are required");
+			if (_lis.length < options.visible) {
+				throw new Error("At least " + options.visible + " elements are required");
 			}
 
 			// hold only n visible elements in the UL list
 			// save all paths (src attribute) in paths array
 			for (i = _lis.length - 1; i >= 0; i--) {
 				_lis = $("li", structure.list);
-				if (i >= options.mode.visible) {
+				if (i >= options.visible) {
 					_li = $(_lis).eq(_lis.length - 1);
 					// remove li
 					$(_li).remove();
@@ -590,7 +539,7 @@
 				structure = options.structure,
 				_height;
 
-			_height = h || options.mode.height;
+			_height = h || options.height;
 			$(structure.wrapper).height(_height);
 		},
 		_setCarouselWidth: function(obj) {
@@ -600,10 +549,10 @@
 				_width, _newWidth, _visible, _object;
 
 			_object = obj || {};
-			_width = _object.width || options.mode.width;
-			_visible = _object.visible || options.mode.visible;
+			_width = _object.width || options.width;
+			_visible = _object.visible || options.visible;
 
-			_newWidth = _visible  && options.mode.name === "fixed" ? _visible * _width : _width;
+			_newWidth = _visible * _width;
 
 			// set carousel width and disable overflow: auto
 			$(structure.wrapper).css({
@@ -633,21 +582,16 @@
 			}
 		},
 		options: {
-			mode: {
-				name: "variable",
-				width: 500,
-				height: 300,
-				step: 30,
-				// should not be changed!
-				defaultStep: 30,
-				visible: null
-			},
+			visible: 3,
+			step: 3,
+			width: 200,
+			height: 200,
+			speed: 1000,
+			structure: null,
 			navigation: {
 				next: ".carouselNext",
 				prev: ".carouselPrev"
-			},
-			speed: 1000,
-			structure: null
+			}
 		},
 		carousels: []
 	});
