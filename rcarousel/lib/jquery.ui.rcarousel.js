@@ -149,7 +149,9 @@
 				structure = options.structure,
 				_li = $("<li></li>");
 
-			$(_li).append(image);
+			$(_li)
+				.width(options.width)
+				.append(image);
 			if (dir === "prev") {
 				$(structure.list).prepend(_li);
 			} else {
