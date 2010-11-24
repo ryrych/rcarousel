@@ -183,24 +183,122 @@
 			self.carousels[self.carousels.length] = {
 				paths: [],
 				pathsLen: 0,
-				startIndex: 0,
-				endIndex: 0,
+				pages: [],
+				firstPage: [],
+				currentPage: [],
+				pageIndex: 0,
 				dir: "right",
 				oldDir: "right",
 				navigation: {},
-				animated: false
+				animated: false,
 			}
 
 			return self.carousels[self.carousels.length - 1];
 		},
-		_firstLoad: function() {
+		_generatePages: function() {
 			var self = this,
 				options = self.options,
 				structure = options.structure;
 
-			structure.startIndex = 0;
-			structure.endIndex = options.visible;
-			structure.pathsLen = structure.paths.length;
+			function _init() {
+				var i;
+				structure.pages[0] = [];
+				for (i = 0; i < options.visible; i++) {
+					structure.pages[0][structure.pages[0].length] = structure.paths[i];
+					structure.firstPage[i] = structure.paths[i];
+					structure.currentPage[i] = structure.paths[i];
+				}
+			}
+
+			function _isFirstPage(page) {
+				var isFirst = false,
+					i;
+
+				for (i = 0; i < structure.firstPage.length; i++) {
+					if (structure.firstPage[i] === page[i]) {
+						isFirst = true;
+					} else {
+						isFirst = false;
+						break;
+					}
+				}
+				return isFirst;
+			}
+
+			function _append(start, end, atIndex) {
+				var _index = atIndex || structure.pages.length,
+					i;
+
+				if (!atIndex) {
+					structure.pages[_index] = [];
+				}
+
+				for (i = start; i < end; i++) {
+					structure.pages[_index].push(structure.paths[i]);
+				}
+				return _index;
+			}
+
+			function _paginate() {
+				var _len = structure.paths.length,
+					_beginning = true,
+					_complement = false,
+					_start = options.step,
+					_end, _index, _add;
+
+				while (!_isFirstPage(structure.pages[structure.pages.length - 1]) || _beginning) {
+					_beginning = false;
+
+					_end = _start + options.visible;
+
+					if (_end > _len) {
+						_end = _len;
+					}
+
+					if (_end - _start < options.visible) {
+						_complement = true;
+
+					} else {
+						_complement = false;
+					}
+
+					if (_complement) {
+						// old elements
+						_index = _append(_start, _end);
+						// new elements
+						_append(0, options.visible - (_end - _start), _index);
+						_add = false;
+
+						if (_start + options.step >= _len) {
+							// calculate new _start
+							// 0 is position of A
+							// (_end - _start) is the number of elements before A
+							_start = 0 - (_end - _start) + options.step;
+							_add = true;
+						}
+
+					} else {
+						_append(_start, _end);
+						_add = false;
+
+						if (_start + options.step >= _len) {
+							_start = 0;
+							_add = true;
+						}
+					}
+
+					if (!_add) {
+						_start += options.step;
+						_add = false;
+					}
+				}
+				// remove last page (that refers to first page)
+				structure.pages.length -= 1;
+			}
+
+			// go!
+			_init();
+			_paginate();
 		},
 		load: function(obj) {
 			var self = this,
@@ -238,7 +336,7 @@
 						throw new Error("At least " + options.visible + " elements are required");
 					}
 
-					self._firstLoad();
+					self._generatePages();
 					// now load new items
 					self._loadElements(0);
 				});
@@ -255,7 +353,7 @@
 						throw new Error("At least " + options.visible + " elements are required");
 					}
 
-					self._firstLoad();
+					self._generatePages();
 					self._loadElements(0);
 				});
 			}
@@ -274,24 +372,21 @@
 			_loadWatch = setInterval(_watch, 100);
 			return _image;
 		},
-		_loadElements: function(start, end) {
+		_loadElements: function(elements, direction) {
 			var self = this,
 				options = self.options,
 				structure = options.structure,
-				i, _start, _end, _dir;
+				_start = 0;
+				_end = elements.length,
+				i = 0;
 
-			// from which element to start
-			_start = start || 0;
-			_end = end || (end === 0 ? 0 : options.visible);
-			_dir = _end - _start > 0 ? "next" : "prev";
-
-			if (_dir === "next") {
+			if (direction === "next") {
 				for (i = _start; i < _end; i++) {
-					self._createNewElement(self._loadElement(structure.paths[i]), _dir);
+					self._createNewElement(self._loadElement(elements[i]), direction);
 				}
 			} else {
-				for (i = _start; i >= _end; i--) {
-					self._createNewElement(self._loadElement(structure.paths[i]), _dir);
+				for (i = _end - 1; i >= _start; i--) {
+					self._createNewElement(self._loadElement(elements[i]), direction);
 				}
 			}
 		},
@@ -300,49 +395,40 @@
 				options = self.options,
 				structure = options.structure,
 				_step = options.step ? options.step : options.visible,
-				_diff;
+				_temporaryPage = [],
+				_page, i, j;
 
 			if (!structure.animated) {
-				if (structure.startIndex < structure.pathsLen && options.visible !== structure.pathsLen) {
-					structure.dir = "right";
-					structure.animated = true;
-					// if we get to a boundary moving from right
-					if (structure.startIndex === -1) {
-						structure.startIndex += options.visible + 1;
-					} else if (structure.startIndex === 0) {
-						structure.startIndex += options.visible;
-					} else if (structure.dir !== structure.oldDir) {
-						// direction change
-						structure.startIndex += options.visible - _step + 1;
-					} else {
-						structure.startIndex += _step;
-					}
+				structure.animated = true;
 
-					if (structure.startIndex + _step >= structure.pathsLen) {
-						structure.endIndex = structure.pathsLen;
-					} else {
-						structure.endIndex = structure.startIndex + _step;
-					}
-
-					if (structure.startIndex !== structure.pathsLen) {
-						_diff = structure.endIndex - structure.startIndex;
-						self._loadElements(structure.startIndex, structure.endIndex);
-
-						var _dist = options.width * _step;
-						$(structure.wrapper)
-							.animate({scrollLeft: "+=" + _dist}, options.speed, function() {
-							self._removeOldElements("first", _diff);
-							$(structure.wrapper).scrollLeft(0);
-							structure.animated = false;
-						});
-
-						structure.oldDir = "right";
-						// next step
-						if (structure.startIndex + _step >= structure.pathsLen) {
-							structure.startIndex = structure.pathsLen;
-						}
-					}
+				structure.pageIndex += 1;
+				if (structure.pageIndex > structure.pages.length - 1) {
+					structure.pageIndex = 0;
 				}
+
+				// pick the page
+				_page = structure.pages[structure.pageIndex];
+
+				// choose only new elements
+				for (i = options.visible - options.step; i < _page.length; i++) {
+					_temporaryPage.push(_page[i]);
+				}
+				console.log("tmp ", _temporaryPage);
+
+				// load new elements
+				self._loadElements(_temporaryPage, "next");
+
+				_dist = options.width * _step;
+				$(structure.wrapper)
+					.animate({scrollLeft: "+=" + _dist}, options.speed, function() {
+					self._removeOldElements("first", _step);
+					$(structure.wrapper).scrollLeft(0);
+					structure.animated = false;
+				});
+
+				// set new current page
+				structure.currentPage = [];
+				structure.currentPage = _page.slice(0);
 			}
 		},
 		prev: function() {
@@ -350,47 +436,43 @@
 				options = self.options,
 				structure = options.structure,
 				_step = options.step ? options.step : options.visible,
-				_diff;
+				_temporaryPage = [],
+				_unique = true,
+				_page, i, j;
 
 			if (!structure.animated) {
-				if (structure.startIndex >= 0 && options.visible !== structure.pathsLen) {
-					structure.dir = "left";
-					structure.animated = true;
+				structure.animated = true;
 
-					if (structure.startIndex === structure.pathsLen) {
-						structure.startIndex = structure.pathsLen - options.visible - 1;
-					} else if (structure.dir !== structure.oldDir) {
-						structure.startIndex -= options.visible - _step + 1;
-					} else {
-						structure.startIndex -= _step;
-					}
-
-					if (structure.startIndex - _step + 1 <= 0) {
-						structure.endIndex = 0;
-					} else {
-						structure.endIndex = structure.startIndex - _step + 1;
-					}
-
-					if (structure.startIndex > -1) {
-						_diff = structure.startIndex - structure.endIndex;
-						self._loadElements(structure.startIndex, structure.endIndex);
-
-						var _dist = options.width * _step;
-						$(structure.wrapper).scrollLeft(_dist);
-						$(structure.wrapper)
-							.animate({scrollLeft: 0}, options.speed, function() {
-							self._removeOldElements("last", _diff + 1);
-							structure.animated = false;
-						});
-
-						structure.oldDir = "left";
-					}
-
-					// next step
-					if (structure.startIndex - _step < 0) {
-						structure.startIndex = -1;
-					}
+				structure.pageIndex -= 1;
+				if (structure.pageIndex < 0) {
+					structure.pageIndex = structure.pages.length - 1;
 				}
+
+				// pick the page
+				_page = structure.pages[structure.pageIndex];
+				console.log("page ", _page);
+				console.log("currentPage ", structure.currentPage);
+
+				// choose only new elements
+				for (i = 0; i < options.step; i++) {
+					_temporaryPage.push(_page[i]);
+				}
+				console.log("tmp ", _temporaryPage);
+
+				// load new elements
+				self._loadElements(_temporaryPage, "prev");
+
+				_dist = options.width * _step;
+				$(structure.wrapper).scrollLeft(_dist);
+				$(structure.wrapper)
+					.animate({scrollLeft: 0}, options.speed, function() {
+						self._removeOldElements("last", _step);
+						structure.animated = false;
+				});
+
+				// set new current page
+				structure.currentPage = [];
+				structure.currentPage = _page.slice(0);
 			}
 		},
 		_removeOldElements: function(position, length) {
@@ -529,7 +611,7 @@
 			}
 
 			// just init
-			self._firstLoad();
+			self._generatePages();
 
 			// save basic navigation
 			structure.navigation.next = $(options.navigation.next);
