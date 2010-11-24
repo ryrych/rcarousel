@@ -187,8 +187,6 @@
 				firstPage: [],
 				currentPage: [],
 				pageIndex: 0,
-				dir: "right",
-				oldDir: "right",
 				navigation: {},
 				animated: false,
 			}
@@ -202,6 +200,13 @@
 
 			function _init() {
 				var i;
+
+				// in case of changing step at runtime
+				structure.pages = [];
+				structure.firstPage = [];
+				structure.currentPage = [];
+				structure.pageIndex = 0;
+
 				structure.pages[0] = [];
 				for (i = 0; i < options.visible; i++) {
 					structure.pages[0][structure.pages[0].length] = structure.paths[i];
@@ -376,17 +381,19 @@
 			var self = this,
 				options = self.options,
 				structure = options.structure,
-				_start = 0;
-				_end = elements.length,
+				_dir = direction || "next",
+				_elem = elements || structure.pages[0],
+				_start = 0,
+				_end = _elem.length,
 				i = 0;
 
-			if (direction === "next") {
+			if (_dir === "next") {
 				for (i = _start; i < _end; i++) {
-					self._createNewElement(self._loadElement(elements[i]), direction);
+					self._createNewElement(self._loadElement(_elem[i]), _dir);
 				}
 			} else {
 				for (i = _end - 1; i >= _start; i--) {
-					self._createNewElement(self._loadElement(elements[i]), direction);
+					self._createNewElement(self._loadElement(_elem[i]), _dir);
 				}
 			}
 		},
@@ -413,7 +420,6 @@
 				for (i = options.visible - options.step; i < _page.length; i++) {
 					_temporaryPage.push(_page[i]);
 				}
-				console.log("tmp ", _temporaryPage);
 
 				// load new elements
 				self._loadElements(_temporaryPage, "next");
@@ -450,14 +456,11 @@
 
 				// pick the page
 				_page = structure.pages[structure.pageIndex];
-				console.log("page ", _page);
-				console.log("currentPage ", structure.currentPage);
 
 				// choose only new elements
 				for (i = 0; i < options.step; i++) {
 					_temporaryPage.push(_page[i]);
 				}
-				console.log("tmp ", _temporaryPage);
 
 				// load new elements
 				self._loadElements(_temporaryPage, "prev");
@@ -526,13 +529,11 @@
 			switch (key) {
 				case "visible":
 					self._checkOptionsValidity({visible: value});
-
-					self._setCarouselWidth({visible: value.visible});
+					self._setCarouselWidth({visible: value});
 					// remove old LI elements before populating
 					$(structure.list).empty();
-
-					self._firstLoad();
-					self._loadElements(0);
+					self._generatePages();
+					self._loadElements();
 					break;
 
 				case "width":
@@ -548,6 +549,11 @@
 				case "step":
 					self._checkOptionsValidity({step: value});
 					self._setStep(value);
+					self._generatePages();
+
+					// remove old LI elements before populating
+					$(structure.list).empty();
+					self._loadElements();
 					break;
 
 				case "speed":
@@ -576,7 +582,8 @@
 				structure = options.structure,
 				_step;
 
-			_step = s || options.step
+			_step = s || options.step;
+			options.step = _step;
 			structure.step = options.width * _step;
 		},
 		_setStructure: function() {
