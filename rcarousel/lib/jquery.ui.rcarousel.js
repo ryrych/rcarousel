@@ -520,31 +520,6 @@
 				_newOptions;
 
 			switch (key) {
-				case "visible":
-					self._checkOptionsValidity({visible: value});
-					self._setCarouselWidth({visible: value});
-					options.visible = value;
-
-					// check if old step is no too large
-					self._setStep();
-
-					// remove old LI elements before populating
-					$(structure.list).empty();
-
-					self._generatePages();
-					self._loadElements();
-					break;
-
-				case "width":
-					self._checkOptionsValidity({width: value});
-					self._setCarouselWidth(value);
-					break;
-
-				case "height":
-					self._checkOptionsValidity({height: value});
-					self._setCarouselHeight(value);
-					break;
-
 				case "step":
 					self._checkOptionsValidity({step: value});
 					self._setStep(value);
