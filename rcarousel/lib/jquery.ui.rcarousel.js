@@ -502,22 +502,15 @@
 			var self = this,
 				options = self.options,
 				structure = options.structure,
-				_sum = 0,
-				_counter, _innerWidth, _lis;
+				_counter, _innerWidth;
 
 			_counter = $("li", structure.list).length;
-			if (structure.hardcoded) {
-				// set the width
-				_innerWidth = _counter * options.width;
-				$(structure.list).width(_innerWidth);
-				// save UL width for navigation purposes
-				structure.innerWidth = _innerWidth;
-			}
-			else {
-				_innerWidth = _counter * options.width;
-				$(structure.list).width(_innerWidth);
-				structure.innerWidth = _innerWidth;
-			}
+
+			// set the width
+			_innerWidth = _counter * options.width;
+			$(structure.list).width(_innerWidth);
+			// save UL width for navigation purposes
+			structure.innerWidth = _innerWidth;
 
 		},
 		_setOption: function(key, value) {
@@ -531,7 +524,7 @@
 					self._checkOptionsValidity({visible: value});
 					self._setCarouselWidth({visible: value});
 					options.visible = value;
-					
+
 					// check if old step is no too large
 					self._setStep();
 
@@ -544,12 +537,12 @@
 
 				case "width":
 					self._checkOptionsValidity({width: value});
-					self._setCarouselWidth({width: value});
+					self._setCarouselWidth(value);
 					break;
 
 				case "height":
 					self._checkOptionsValidity({height: value});
-					self._setCarouselHeight({height: value});
+					self._setCarouselHeight(value);
 					break;
 
 				case "step":
@@ -645,17 +638,14 @@
 			_height = h || options.height;
 			$(structure.wrapper).height(_height);
 		},
-		_setCarouselWidth: function(obj) {
+		_setCarouselWidth: function(w) {
 			var self = this,
 				options = self.options,
 				structure = options.structure,
-				_width, _newWidth, _visible, _object;
+				_width, _newWidth;
 
-			_object = obj || {};
-			_width = _object.width || options.width;
-			_visible = _object.visible || options.visible;
-
-			_newWidth = _visible * _width;
+			_width = w || options.width;
+			_newWidth = options.visible * _width;
 
 			// set carousel width and disable overflow: auto
 			$(structure.wrapper).css({
