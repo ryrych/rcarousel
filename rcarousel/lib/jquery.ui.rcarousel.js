@@ -530,8 +530,14 @@
 				case "visible":
 					self._checkOptionsValidity({visible: value});
 					self._setCarouselWidth({visible: value});
+					options.visible = value;
+					
+					// check if old step is no too large
+					self._setStep();
+
 					// remove old LI elements before populating
 					$(structure.list).empty();
+
 					self._generatePages();
 					self._loadElements();
 					break;
@@ -583,6 +589,12 @@
 				_step;
 
 			_step = s || options.step;
+			// first we set visible/step to e.g 6/6
+			// then during runtime we change step to e.g 3
+			// so this is not valid situation - trim step to visible
+			if (_step > options.visible) {
+				_step = options.visible;
+			}
 			options.step = _step;
 			structure.step = options.width * _step;
 		},
