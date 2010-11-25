@@ -561,12 +561,7 @@
 				_step;
 
 			_step = s || options.step;
-			// first we set visible/step to e.g 6/6
-			// then during runtime we change step to e.g 3
-			// so this is not valid situation - trim step to visible
-			if (_step > options.visible) {
-				_step = options.visible;
-			}
+
 			options.step = _step;
 			structure.step = options.width * _step;
 		},
