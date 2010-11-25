@@ -151,6 +151,7 @@
 
 			$(_li)
 				.width(options.width)
+				.height(options.height)
 				.append(image);
 			if (dir === "prev") {
 				$(structure.list).prepend(_li);
