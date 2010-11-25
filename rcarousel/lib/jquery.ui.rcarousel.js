@@ -528,11 +528,14 @@
 					// remove old LI elements before populating
 					$(structure.list).empty();
 					self._loadElements();
+					// apply...
+					$.Widget.prototype._setOption.apply(this, arguments);
 					break;
 
 				case "speed":
 					self._checkOptionsValidity({speed: value});
 					options.speed = value;
+					$.Widget.prototype._setOption.apply(this, arguments);
 					break;
 
 				case "navigation":
@@ -544,9 +547,9 @@
 					if (value.prev) {
 						self._setEventHandlers("prev");
 					}
+					$.Widget.prototype._setOption.apply(this, arguments);
 					break;
 			}
-			$.Widget.prototype._setOption.apply(this, arguments);
 
 		},
 		_setStep: function(s) {
