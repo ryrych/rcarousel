@@ -219,7 +219,6 @@
 				pathsLen: 0,
 				pages: [],
 				firstPage: [],
-				currentPage: [],
 				pageIndex: 0,
 				navigation: {},
 				animated: false,
@@ -238,14 +237,12 @@
 				// in case of changing step at runtime
 				structure.pages = [];
 				structure.firstPage = [];
-				structure.currentPage = [];
 				structure.pageIndex = 0;
-
 				structure.pages[0] = [];
+
 				for (i = 0; i < options.visible; i++) {
 					structure.pages[0][structure.pages[0].length] = structure.paths[i];
 					structure.firstPage[i] = structure.paths[i];
-					structure.currentPage[i] = structure.paths[i];
 				}
 			}
 
@@ -464,10 +461,6 @@
 						self._removeOldElements("last", options.step);
 						structure.animated = false;
 				});
-
-				// set new current page
-				structure.currentPage = [];
-				structure.currentPage = _page.slice(0);
 			}
 		},
 		_moveRight: function() {
@@ -503,10 +496,6 @@
 					$(structure.wrapper).scrollLeft(0);
 					structure.animated = false;
 				});
-
-				// set new current page
-				structure.currentPage = [];
-				structure.currentPage = _page.slice(0);
 			}
 		},
 		next: function() {
