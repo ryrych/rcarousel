@@ -31,6 +31,21 @@
 				self._configure(false);
 			}
 		},
+		_autoMode: function(direction) {
+			var self = this,
+				options = self.options,
+				structure = options.structure;
+
+			if (direction === "right") {
+				structure.autoModeInterval = setInterval(function() {
+					self._moveRight();
+				}, options.auto.interval);
+			} else {
+				structure.autoModeInterval = setInterval(function() {
+					self._moveLeft();
+				}, options.auto.interval);
+			}
+		},
 		_checkOptionsValidity: function(options) {
 			var	self = this,
 				options = self.options,
@@ -118,6 +133,20 @@
 							throw new Error("navigation.next should be defined as a string and points to '.class' or '#id' of an element");
 						}
 						break;
+
+					case "auto":
+						if (typeof _value.direction !== "string") {
+							throw new Error("direction should be defined as a string");
+						}
+
+						if (!(_value.direction === "right" || _value.direction === "left")) {
+							throw new Error("direction: only 'right' and 'left' values are valid");
+						}
+
+						if (isNaN(_value.interval) || typeof _value.interval !== "number" || _value.interval < 0 || (Math.ceil(_value.interval) - _value.interval > 0)) {
+							throw new Error("interval should be a positive number!");
+						}
+						break;
 				}
 			}
 		},
@@ -141,6 +170,10 @@
 			self._setEventHandlers("next");
 			self._setEventHandlers("prev");
 			self._setStep();
+			// if auto mode is enabled run it
+			if (options.auto.enabled) {
+				self._autoMode(options.auto.direction);
+			}
 		},
 		_createNewElement: function(image, dir) {
 			// create new LI element with IMG inside it
@@ -398,54 +431,12 @@
 				}
 			}
 		},
-		next: function() {
-			var	self = this,
+		_moveLeft: function() {
+			var self = this,
 				options = self.options,
 				structure = options.structure,
-				_step = options.step ? options.step : options.visible,
 				_temporaryPage = [],
-				_page, i, j;
-
-			if (!structure.animated) {
-				structure.animated = true;
-
-				structure.pageIndex += 1;
-				if (structure.pageIndex > structure.pages.length - 1) {
-					structure.pageIndex = 0;
-				}
-
-				// pick the page
-				_page = structure.pages[structure.pageIndex];
-
-				// choose only new elements
-				for (i = options.visible - options.step; i < _page.length; i++) {
-					_temporaryPage.push(_page[i]);
-				}
-
-				// load new elements
-				self._loadElements(_temporaryPage, "next");
-
-				_dist = options.width * _step;
-				$(structure.wrapper)
-					.animate({scrollLeft: "+=" + _dist}, options.speed, function() {
-					self._removeOldElements("first", _step);
-					$(structure.wrapper).scrollLeft(0);
-					structure.animated = false;
-				});
-
-				// set new current page
-				structure.currentPage = [];
-				structure.currentPage = _page.slice(0);
-			}
-		},
-		prev: function() {
-			var	self = this,
-				options = self.options,
-				structure = options.structure,
-				_step = options.step ? options.step : options.visible,
-				_temporaryPage = [],
-				_unique = true,
-				_page, i, j;
+				_page, _dist, i, j;
 
 			if (!structure.animated) {
 				structure.animated = true;
@@ -466,11 +457,11 @@
 				// load new elements
 				self._loadElements(_temporaryPage, "prev");
 
-				_dist = options.width * _step;
+				_dist = options.width * options.step;
 				$(structure.wrapper).scrollLeft(_dist);
 				$(structure.wrapper)
 					.animate({scrollLeft: 0}, options.speed, function() {
-						self._removeOldElements("last", _step);
+						self._removeOldElements("last", options.step);
 						structure.animated = false;
 				});
 
@@ -478,6 +469,59 @@
 				structure.currentPage = [];
 				structure.currentPage = _page.slice(0);
 			}
+		},
+		_moveRight: function() {
+			var self = this,
+				options = self.options,
+				structure = options.structure,
+				_temporaryPage = [],
+				_page, _dist, i, j;
+
+			if (!structure.animated) {
+				structure.animated = true;
+
+				structure.pageIndex += 1;
+				if (structure.pageIndex > structure.pages.length - 1) {
+					structure.pageIndex = 0;
+				}
+
+				// pick the page
+				_page = structure.pages[structure.pageIndex];
+
+				// choose only new elements
+				for (i = options.visible - options.step; i < _page.length; i++) {
+					_temporaryPage.push(_page[i]);
+				}
+
+				// load new elements
+				self._loadElements(_temporaryPage, "next");
+
+				_dist = options.width * options.step;
+				$(structure.wrapper)
+					.animate({scrollLeft: "+=" + _dist}, options.speed, function() {
+					self._removeOldElements("first", options.step);
+					$(structure.wrapper).scrollLeft(0);
+					structure.animated = false;
+				});
+
+				// set new current page
+				structure.currentPage = [];
+				structure.currentPage = _page.slice(0);
+			}
+		},
+		next: function() {
+			var	self = this,
+				options = self.options,
+				structure = options.structure;
+
+			self._moveRight();
+		},
+		prev: function() {
+			var	self = this,
+				options = self.options,
+				structure = options.structure;
+
+			self._moveLeft();
 		},
 		_removeOldElements: function(position, length) {
 			// remove 'step' elements
@@ -550,6 +594,16 @@
 					}
 					$.Widget.prototype._setOption.apply(this, arguments);
 					break;
+
+				case "auto":
+					_newOptions = $.extend(options.auto, value);
+					self._checkOptionsValidity({auto: _newOptions});
+
+					if (options.auto.enabled) {
+						self._autoMode(options.auto.direction);
+					} else {
+						clearInterval(structure.autoModeInterval);
+					}
 			}
 
 		},
@@ -655,6 +709,11 @@
 			height: 200,
 			speed: 1000,
 			structure: null,
+			auto: {
+				enabled: false,
+				direction: "right",
+				interval: 5000
+			},
 			navigation: {
 				next: ".carouselNext",
 				prev: ".carouselPrev"
