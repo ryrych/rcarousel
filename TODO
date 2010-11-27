@@ -4,3 +4,5 @@
 * autoscrolling carousel - done;
 * margins between elements
 * going to custom page - .goToPage()
+* ability to load custom page at start up
+* auto scrolling should be triggered only after animation stops
