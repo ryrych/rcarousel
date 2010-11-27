@@ -38,11 +38,11 @@
 
 			if (direction === "right") {
 				structure.autoModeInterval = setInterval(function() {
-					self._moveRight();
+					self.next();
 				}, options.auto.interval);
 			} else {
 				structure.autoModeInterval = setInterval(function() {
-					self._moveLeft();
+					self.prev();
 				}, options.auto.interval);
 			}
 		},
@@ -435,33 +435,24 @@
 				_temporaryPage = [],
 				_page, _dist, i, j;
 
-			if (!structure.animated) {
-				structure.animated = true;
+			// pick the page
+			_page = structure.pages[structure.pageIndex];
 
-				structure.pageIndex -= 1;
-				if (structure.pageIndex < 0) {
-					structure.pageIndex = structure.pages.length - 1;
-				}
-
-				// pick the page
-				_page = structure.pages[structure.pageIndex];
-
-				// choose only new elements
-				for (i = 0; i < options.step; i++) {
-					_temporaryPage.push(_page[i]);
-				}
-
-				// load new elements
-				self._loadElements(_temporaryPage, "prev");
-
-				_dist = options.width * options.step;
-				$(structure.wrapper).scrollLeft(_dist);
-				$(structure.wrapper)
-					.animate({scrollLeft: 0}, options.speed, function() {
-						self._removeOldElements("last", options.step);
-						structure.animated = false;
-				});
+			// choose only new elements
+			for (i = 0; i < options.step; i++) {
+				_temporaryPage.push(_page[i]);
 			}
+
+			// load new elements
+			self._loadElements(_temporaryPage, "prev");
+
+			_dist = options.width * options.step;
+			$(structure.wrapper).scrollLeft(_dist);
+			$(structure.wrapper)
+				.animate({scrollLeft: 0}, options.speed, function() {
+					self._removeOldElements("last", options.step);
+					structure.animated = false;
+			});
 		},
 		_moveRight: function() {
 			var self = this,
@@ -469,6 +460,30 @@
 				structure = options.structure,
 				_temporaryPage = [],
 				_page, _dist, i, j;
+
+			// pick the page
+			_page = structure.pages[structure.pageIndex];
+
+			// choose only new elements
+			for (i = options.visible - options.step; i < _page.length; i++) {
+				_temporaryPage.push(_page[i]);
+			}
+
+			// load new elements
+			self._loadElements(_temporaryPage, "next");
+
+			_dist = options.width * options.step;
+			$(structure.wrapper)
+				.animate({scrollLeft: "+=" + _dist}, options.speed, function() {
+				self._removeOldElements("first", options.step);
+				$(structure.wrapper).scrollLeft(0);
+				structure.animated = false;
+			});
+		},
+		next: function() {
+			var	self = this,
+				options = self.options,
+				structure = options.structure;
 
 			if (!structure.animated) {
 				structure.animated = true;
@@ -478,39 +493,24 @@
 					structure.pageIndex = 0;
 				}
 
-				// pick the page
-				_page = structure.pages[structure.pageIndex];
-
-				// choose only new elements
-				for (i = options.visible - options.step; i < _page.length; i++) {
-					_temporaryPage.push(_page[i]);
-				}
-
-				// load new elements
-				self._loadElements(_temporaryPage, "next");
-
-				_dist = options.width * options.step;
-				$(structure.wrapper)
-					.animate({scrollLeft: "+=" + _dist}, options.speed, function() {
-					self._removeOldElements("first", options.step);
-					$(structure.wrapper).scrollLeft(0);
-					structure.animated = false;
-				});
+				self._moveRight();
 			}
-		},
-		next: function() {
-			var	self = this,
-				options = self.options,
-				structure = options.structure;
-
-			self._moveRight();
 		},
 		prev: function() {
 			var	self = this,
 				options = self.options,
 				structure = options.structure;
 
-			self._moveLeft();
+			if (!structure.animated) {
+				structure.animated = true;
+
+				structure.pageIndex -= 1;
+				if (structure.pageIndex < 0) {
+					structure.pageIndex = structure.pages.length - 1;
+				}
+
+				self._moveLeft();
+			}
 		},
 		_removeOldElements: function(position, length) {
 			// remove 'step' elements
