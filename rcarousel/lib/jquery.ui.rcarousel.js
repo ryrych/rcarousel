@@ -219,6 +219,7 @@
 				pathsLen: 0,
 				pages: [],
 				firstPage: [],
+				oldPageIndex: 0,
 				pageIndex: 0,
 				navigation: {},
 				animated: false,
@@ -336,6 +337,39 @@
 			_init();
 			_paginate();
 		},
+		getTotalPages: function() {
+			var self = this,
+				options = self.options,
+				structure = options.structure;
+
+			return structure.pages.length;
+		},
+		goToPage: function(page) {
+			var	self = this,
+				options = self.options,
+				structure = options.structure,
+				_by
+
+			if (!structure.animated && page !== structure.pageIndex) {
+				structure.animated = true;
+
+				if (page > structure.pages.length - 1) {
+					page = structure.pages.length - 1;
+				} else if (page < 0) {
+					page = 0;
+				}
+				structure.pageIndex = page;
+
+				_by = page - structure.oldPageIndex;
+				if (_by >= 0) {
+					//move by n elements from current index
+					self._moveRight(_by);
+				} else {
+					self._moveLeft(Math.abs(_by));
+				}
+				structure.oldPageIndex = page;
+			}
+		},
 		load: function(obj) {
 			var self = this,
 				options = self.options,
@@ -428,54 +462,62 @@
 				}
 			}
 		},
-		_moveLeft: function() {
+		_moveLeft: function(by) {
 			var self = this,
 				options = self.options,
 				structure = options.structure,
 				_temporaryPage = [],
-				_page, _dist, i, j;
+				_page, _dist, i, j, _endIndex;
 
 			// pick the page
-			_page = structure.pages[structure.pageIndex];
+			_page = structure.pages[structure.oldPageIndex - by];
+
+			_endIndex = (by === 0 ? 1 : by) * options.step;
+			_endIndex = (_endIndex >= options.visible) ? options.visible : _endIndex;
 
 			// choose only new elements
-			for (i = 0; i < options.step; i++) {
+			for (i = 0; i < _endIndex; i++) {
 				_temporaryPage.push(_page[i]);
 			}
 
 			// load new elements
 			self._loadElements(_temporaryPage, "prev");
 
-			_dist = options.width * options.step;
+			_dist = options.width * _endIndex;
 			$(structure.wrapper).scrollLeft(_dist);
 			$(structure.wrapper)
 				.animate({scrollLeft: 0}, options.speed, function() {
-					self._removeOldElements("last", options.step);
+					self._removeOldElements("last", _endIndex);
 					structure.animated = false;
 			});
 		},
-		_moveRight: function() {
+		_moveRight: function(by) {
 			var self = this,
 				options = self.options,
 				structure = options.structure,
 				_temporaryPage = [],
-				_page, _dist, i, j;
+				_page, _dist, i, j, _startIndex, _toRemoval;
 
 			// pick the page
-			_page = structure.pages[structure.pageIndex];
+			_page = structure.pages[structure.oldPageIndex + by];
+
+			_startIndex = options.visible - ((by === 0 ? 1 : by) * options.step);
+			_startIndex = (_startIndex <= 0) ? 0 : _startIndex;
 
 			// choose only new elements
-			for (i = options.visible - options.step; i < _page.length; i++) {
+			for (i = _startIndex; i < _page.length; i++) {
 				_temporaryPage.push(_page[i]);
 			}
 
 			// load new elements
 			self._loadElements(_temporaryPage, "next");
 
-			_dist = options.width * options.step;
+			_toRemoval = _startIndex === 0 ? options.visible : options.visible - _startIndex;
+
+			_dist = options.width * _toRemoval;
 			$(structure.wrapper)
 				.animate({scrollLeft: "+=" + _dist}, options.speed, function() {
-				self._removeOldElements("first", options.step);
+				self._removeOldElements("first", _toRemoval);
 				$(structure.wrapper).scrollLeft(0);
 				structure.animated = false;
 			});
@@ -483,7 +525,8 @@
 		next: function() {
 			var	self = this,
 				options = self.options,
-				structure = options.structure;
+				structure = options.structure,
+				_by = 1;
 
 			if (!structure.animated) {
 				structure.animated = true;
@@ -491,15 +534,22 @@
 				structure.pageIndex += 1;
 				if (structure.pageIndex > structure.pages.length - 1) {
 					structure.pageIndex = 0;
+					structure.oldPageIndex = 0;
+					_by = 0;
+				} else {
+					_by = 1;
 				}
 
-				self._moveRight();
+				// move by one element from current index
+				self._moveRight(_by);
+				structure.oldPageIndex = structure.pageIndex;
 			}
 		},
 		prev: function() {
 			var	self = this,
 				options = self.options,
-				structure = options.structure;
+				structure = options.structure,
+				_by = 1;
 
 			if (!structure.animated) {
 				structure.animated = true;
@@ -507,9 +557,15 @@
 				structure.pageIndex -= 1;
 				if (structure.pageIndex < 0) {
 					structure.pageIndex = structure.pages.length - 1;
+					structure.oldPageIndex = structure.pageIndex;
+					_by = 0;
+				} else {
+					_by = 1;
 				}
 
-				self._moveLeft();
+				// move left by one element from current index
+				self._moveLeft(_by);
+				structure.oldPageIndex = structure.pageIndex;
 			}
 		},
 		_removeOldElements: function(position, length) {
