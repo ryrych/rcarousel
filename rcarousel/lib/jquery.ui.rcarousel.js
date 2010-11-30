@@ -491,6 +491,12 @@
 				.animate({scrollLeft: 0}, options.speed, function() {
 					self._removeOldElements("last", _endIndex);
 					structure.animated = false;
+
+				if (options.auto.enabled) {
+					// reset autoModeInterval so that auto scrolling could start anew
+					clearInterval(structure.autoModeInterval);
+					self._autoMode(options.auto.direction);
+				}
 			});
 		},
 		_moveRight: function(by) {
@@ -522,6 +528,13 @@
 				self._removeOldElements("first", _toRemoval);
 				$(structure.wrapper).scrollLeft(0);
 				structure.animated = false;
+
+				if (options.auto.enabled) {
+					// reset autoModeInterval so that auto scrolling could start anew
+					clearInterval(structure.autoModeInterval);
+					self._autoMode(options.auto.direction);
+				}
+
 			});
 		},
 		next: function() {
