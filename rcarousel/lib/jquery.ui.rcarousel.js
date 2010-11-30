@@ -30,6 +30,8 @@
 				// structure hasn't been created yet - create it
 				self._configure(false);
 			}
+			// broadcast event
+			self._trigger("start", null, null);
 		},
 		_autoMode: function(direction) {
 			var self = this,
