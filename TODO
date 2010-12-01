@@ -6,3 +6,4 @@
 * going to custom page - .goToPage() done;
 * ability to load custom page at start up - done
 * auto scrolling should be triggered only after animation stops - done;
+* enhance goToPage method - in 1.0
