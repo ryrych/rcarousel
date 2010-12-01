@@ -28,5 +28,17 @@
 .rcarousel .wrapper ul li {
 	display: block;
 	float: left;
+	margin: 0;
+	padding: 0;
+	position: relative;
 	/*padding: 10px;*/
+}
+
+.ui-rcarousel-loader {
+    background: url(../img/loader.gif) no-repeat center;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
 }

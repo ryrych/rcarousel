@@ -178,7 +178,7 @@
 				self._autoMode(options.auto.direction);
 			}
 		},
-		_createNewElement: function(image, dir) {
+		_createNewElement: function(path, dir) {
 			// create new LI element with IMG inside it
 			var self = this,
 				options = self.options,
@@ -188,7 +188,16 @@
 			$(_li)
 				.width(options.width)
 				.height(options.height)
-				.append(image);
+				.addClass("ui-rcarousel-loader");
+
+			// load element and call callback
+			self._loadElement(path, function(image) {
+				$(_li)
+					.removeClass("ui-rcarousel-loader")
+					.append(image);
+					console.log("załadowano");
+			});
+
 			if (dir === "prev") {
 				$(structure.list).prepend(_li);
 			} else {
@@ -440,7 +449,7 @@
 				});
 			}
 		},
-		_loadElement: function (path) {
+		_loadElement: function (path, callback) {
 			var _image = new Image(),
 				_loadWatch;
 
@@ -449,10 +458,13 @@
 			function _watch() {
 				if (_image.complete) {
 					clearInterval(_loadWatch);
+
+					if (callback) {
+						callback(_image);
+					}
 				}
 			}
 			_loadWatch = setInterval(_watch, 100);
-			return _image;
 		},
 		_loadElements: function(elements, direction) {
 			var self = this,
@@ -466,11 +478,11 @@
 
 			if (_dir === "next") {
 				for (i = _start; i < _end; i++) {
-					self._createNewElement(self._loadElement(_elem[i]), _dir);
+					self._createNewElement(_elem[i], _dir);
 				}
 			} else {
 				for (i = _end - 1; i >= _start; i--) {
-					self._createNewElement(self._loadElement(_elem[i]), _dir);
+					self._createNewElement(_elem[i], _dir);
 				}
 			}
 		},
