@@ -195,7 +195,6 @@
 				$(_li)
 					.removeClass("ui-rcarousel-loader")
 					.append(image);
-					console.log("załadowano");
 			});
 
 			if (dir === "prev") {
@@ -491,10 +490,11 @@
 				options = self.options,
 				structure = options.structure,
 				_temporaryPage = [],
-				_page, _dist, i, j, _endIndex;
+				_page, _dist, i, j, _endIndex, _index;
 
 			// pick the page
-			_page = structure.pages[structure.oldPageIndex - by];
+			_index = structure.oldPageIndex - by;
+			_page = structure.pages[_index];
 
 			_endIndex = (by === 0 ? 1 : by) * options.step;
 			_endIndex = (_endIndex >= options.visible) ? options.visible : _endIndex;
@@ -519,6 +519,9 @@
 					clearInterval(structure.autoModeInterval);
 					self._autoMode(options.auto.direction);
 				}
+
+				// scrolling is finished, send an event
+				self._trigger("pageLoaded", null, {page: _index});
 			});
 		},
 		_moveRight: function(by) {
@@ -526,10 +529,11 @@
 				options = self.options,
 				structure = options.structure,
 				_temporaryPage = [],
-				_page, _dist, i, j, _startIndex, _toRemoval;
+				_page, _dist, i, j, _index, _startIndex, _toRemoval;
 
 			// pick the page
-			_page = structure.pages[structure.oldPageIndex + by];
+			_index = structure.oldPageIndex + by;
+			_page = structure.pages[_index];
 
 			_startIndex = options.visible - ((by === 0 ? 1 : by) * options.step);
 			_startIndex = (_startIndex <= 0) ? 0 : _startIndex;
@@ -556,6 +560,9 @@
 					clearInterval(structure.autoModeInterval);
 					self._autoMode(options.auto.direction);
 				}
+
+				// scrolling is finished, send an event
+				self._trigger("pageLoaded", null, {page: _index});
 
 			});
 		},
