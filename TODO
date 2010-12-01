@@ -1,8 +1,8 @@
 * Condsider using fraction in visible option e.g 3.5 in future versions. What about 3.1, 3.222 - are they relevant? 
 * circular/continuous carousel - done; now it's the only mode
-* vertical carousel
+* vertical carousel - in 1.0
 * autoscrolling carousel - done;
-* margins between elements
-* going to custom page - .goToPage()
-* ability to load custom page at start up
-* auto scrolling should be triggered only after animation stops
+* margins between elements - in 1.0
+* going to custom page - .goToPage() done;
+* ability to load custom page at start up - done
+* auto scrolling should be triggered only after animation stops - done;
