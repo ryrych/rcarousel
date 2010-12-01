@@ -160,6 +160,7 @@
 
 			if (hardcoded) {
 				self._setStructure();
+				self._loadElements();
 				structure.hardcoded = true;
 			} else {
 				self._createStructure();
@@ -240,7 +241,7 @@
 				// in case of changing step at runtime
 				structure.pages = [];
 				structure.firstPage = [];
-				structure.pageIndex = 0;
+				structure.pageIndex = options.startAtPage;
 				structure.pages[0] = [];
 
 				for (i = 0; i < options.visible; i++) {
@@ -333,6 +334,15 @@
 				}
 				// remove last page (that refers to first page)
 				structure.pages.length -= 1;
+
+				// check if user startAtPage is correct
+				if (options.startAtPage <= 0) {
+					options.startAtPage = structure.oldPageIndex = structure.pageIndex = 0;
+				} else if (options.startAtPage > structure.pages.length - 1) {
+					options.startAtPage = structure.oldPageIndex = structure.pageIndex = structure.pages.length - 1;
+				} else {
+					structure.oldPageIndex = structure.pageIndex = --options.startAtPage;
+				}
 			}
 
 			// go!
@@ -410,7 +420,7 @@
 
 					self._generatePages();
 					// now load new items
-					self._loadElements(0);
+					self._loadElements();
 				});
 
 			} else if (_format === "xml") {
@@ -426,7 +436,7 @@
 					}
 
 					self._generatePages();
-					self._loadElements(0);
+					self._loadElements();
 				});
 			}
 		},
@@ -449,7 +459,7 @@
 				options = self.options,
 				structure = options.structure,
 				_dir = direction || "next",
-				_elem = elements || structure.pages[0],
+				_elem = elements || structure.pages[options.startAtPage],
 				_start = 0,
 				_end = _elem.length,
 				i = 0;
@@ -695,17 +705,14 @@
 				throw new Error("At least " + options.visible + " elements are required");
 			}
 
-			// hold only n visible elements in the UL list
 			// save all paths (src attribute) in paths array
 			for (i = _lis.length - 1; i >= 0; i--) {
 				_lis = $("li", structure.list);
-				if (i >= options.visible) {
-					_li = $(_lis).eq(_lis.length - 1);
-					// remove li
-					$(_li).remove();
-				} else {
-					_li = $(_lis).eq(i);
-				}
+
+				_li = $(_lis).eq(_lis.length - 1);
+				// remove li
+				$(_li).remove();
+
 				// save the path
 				structure.paths.unshift($("img", _li).attr("src"));
 			}
@@ -774,6 +781,7 @@
 				direction: "right",
 				interval: 5000
 			},
+			startAtPage: 0,
 			navigation: {
 				next: ".carouselNext",
 				prev: ".carouselPrev"
