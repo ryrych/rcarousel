@@ -33,24 +33,23 @@
 			// broadcast event
 			self._trigger("start", null, null);
 		},
-		_autoMode: function(direction) {
+		_autoMode: function (direction) {
 			var self = this,
 				options = self.options,
 				structure = options.structure;
 
 			if (direction === "right") {
-				structure.autoModeInterval = setInterval(function() {
+				structure.autoModeInterval = setInterval(function () {
 					self.next();
 				}, options.auto.interval);
 			} else {
-				structure.autoModeInterval = setInterval(function() {
+				structure.autoModeInterval = setInterval(function () {
 					self.prev();
 				}, options.auto.interval);
 			}
 		},
-		_checkOptionsValidity: function(options) {
+		_checkOptionsValidity: function (options) {
 			var	self = this,
-				options = self.options,
 				_correctSteps = "",
 				_key, _value, i;
 
@@ -58,101 +57,101 @@
 			for (_key in options) {
 				_value = options[_key];
 				switch (_key) {
-					case "visible":
-						// visible should be a integer positive number
-						if (typeof _value !== "number" || _value <= 0 || (Math.ceil(_value) - _value > 0)) {
-							throw new Error("visible should be defined as a positive integer number!");
-						}
-						break;
+				case "visible":
+					// visible should be a integer positive number
+					if (typeof _value !== "number" || _value <= 0 || (Math.ceil(_value) - _value > 0)) {
+						throw new Error("visible should be defined as a positive integer number!");
+					}
+					break;
 
-					case "step":
-						if (_value && typeof _value !== "number" || _value <= 0) {
-							throw new Error("step should be a positive number");
-						} else {
-							// for example for visible: 3 the following array of values for 'step' is valid
-							// 3 <= step >= 1 by 1 ==> [1,2,3]
-							if (_value < 1 || _value > options.visible) {
-								// output correct values
-								for (i = 1; i<= Math.floor(options.visible); i++) {
-									_correctSteps += (i < Math.floor(_value)) ? i + ", " : i;
-								}
-								throw new Error("Only following mode.step values are correct: " + _correctSteps);
+				case "step":
+					if (_value && typeof _value !== "number" || _value <= 0) {
+						throw new Error("step should be a positive number");
+					} else {
+						// for example for visible: 3 the following array of values for 'step' is valid
+						// 3 <= step >= 1 by 1 ==> [1,2,3]
+						if (_value < 1 || _value > options.visible) {
+							// output correct values
+							for (i = 1; i <= Math.floor(options.visible); i++) {
+								_correctSteps += (i < Math.floor(_value)) ? i + ", " : i;
 							}
+							throw new Error("Only following mode.step values are correct: " + _correctSteps);
 						}
-						break;
+					}
+					break;
 
-					case "width":
-						// width & height is defined by default so you can omit them to some extent
-						if (_value && (isNaN(_value) || typeof _value !== "number" || _value <= 0 || (Math.ceil(_value) - _value > 0))) {
-							throw new Error("width should be a positive integer number!");
-						}
-						break;
+				case "width":
+					// width & height is defined by default so you can omit them to some extent
+					if (_value && (isNaN(_value) || typeof _value !== "number" || _value <= 0 || (Math.ceil(_value) - _value > 0))) {
+						throw new Error("width should be a positive integer number!");
+					}
+					break;
 
-					case "height":
-						if (_value && (isNaN(_value) || typeof _value !== "number" || _value <= 0 || (Math.ceil(_value) - _value > 0))) {
-							throw new Error("height should be a positive number!");
-						}
-						break;
+				case "height":
+					if (_value && (isNaN(_value) || typeof _value !== "number" || _value <= 0 || (Math.ceil(_value) - _value > 0))) {
+						throw new Error("height should be a positive number!");
+					}
+					break;
 
-					case "speed":
-						if (!_value && _value !== 0) {
-							throw new Error("speed should be defined as a number or a string");
-						}
+				case "speed":
+					if (!_value && _value !== 0) {
+						throw new Error("speed should be defined as a number or a string");
+					}
 
-						if (typeof _value === "number" && _value < 0) {
-							throw new Error("speed " + "should be a positive number");
-						} else if (typeof _value === "string" && !(_value === "slow" || _value === "normal" || _value === "fast")) {
-							throw new Error('Only "slow", "normal" and "fast" values are valid');
-						}
-						break;
+					if (typeof _value === "number" && _value < 0) {
+						throw new Error("speed " + "should be a positive number");
+					} else if (typeof _value === "string" && !(_value === "slow" || _value === "normal" || _value === "fast")) {
+						throw new Error('Only "slow", "normal" and "fast" values are valid');
+					}
+					break;
 
-					case "remote":
-						if (!_value || !(typeof _value === "object")) {
-							throw new Error("remote should be defined as object with path and format properties in it!");
-						}
+				case "remote":
+					if (!_value || !(typeof _value === "object")) {
+						throw new Error("remote should be defined as object with path and format properties in it!");
+					}
 
-						if (!(typeof _value.path === "string")) {
-							throw new Error("remote.path should be defined as string!");
-						}
+					if (!(typeof _value.path === "string")) {
+						throw new Error("remote.path should be defined as string!");
+					}
 
-						if (!(typeof _value.format === "string")) {
-							throw new Error("remote.format should be defined as a string!");
-						} else if (!(_value.format === "json" || _value.format === "xml")) {
-							throw new Error("remote.format: '" + _value.format + "' is not valid. Only remote.format: 'json' and remote.format: 'xml' are valid!");
-						}
-						break;
+					if (!(typeof _value.format === "string")) {
+						throw new Error("remote.format should be defined as a string!");
+					} else if (!(_value.format === "json" || _value.format === "xml")) {
+						throw new Error("remote.format: '" + _value.format + "' is not valid. Only remote.format: 'json' and remote.format: 'xml' are valid!");
+					}
+					break;
 
-					case "navigation":
-						if (!_value || typeof _value !== "object") {
-							throw new Error("navigation should be defined as object with at least one of the properties: 'prev' or 'next' in it!");
-						}
+				case "navigation":
+					if (!_value || typeof _value !== "object") {
+						throw new Error("navigation should be defined as object with at least one of the properties: 'prev' or 'next' in it!");
+					}
 
-						if (_value.prev && typeof _value.prev !== "string") {
-							throw new Error("navigation.prev should be defined as a string and points to '.class' or '#id' of an element");
-						}
+					if (_value.prev && typeof _value.prev !== "string") {
+						throw new Error("navigation.prev should be defined as a string and points to '.class' or '#id' of an element");
+					}
 
-						if (_value.next && typeof _value.next !== "string") {
-							throw new Error("navigation.next should be defined as a string and points to '.class' or '#id' of an element");
-						}
-						break;
+					if (_value.next && typeof _value.next !== "string") {
+						throw new Error("navigation.next should be defined as a string and points to '.class' or '#id' of an element");
+					}
+					break;
 
-					case "auto":
-						if (typeof _value.direction !== "string") {
-							throw new Error("direction should be defined as a string");
-						}
+				case "auto":
+					if (typeof _value.direction !== "string") {
+						throw new Error("direction should be defined as a string");
+					}
 
-						if (!(_value.direction === "right" || _value.direction === "left")) {
-							throw new Error("direction: only 'right' and 'left' values are valid");
-						}
+					if (!(_value.direction === "right" || _value.direction === "left")) {
+						throw new Error("direction: only 'right' and 'left' values are valid");
+					}
 
-						if (isNaN(_value.interval) || typeof _value.interval !== "number" || _value.interval < 0 || (Math.ceil(_value.interval) - _value.interval > 0)) {
-							throw new Error("interval should be a positive number!");
-						}
-						break;
+					if (isNaN(_value.interval) || typeof _value.interval !== "number" || _value.interval < 0 || (Math.ceil(_value.interval) - _value.interval > 0)) {
+						throw new Error("interval should be a positive number!");
+					}
+					break;
 				}
 			}
 		},
-		_configure: function(hardcoded) {
+		_configure: function (hardcoded) {
 			// configuration depends on if carousel was hardcoded or not
 			var self = this,
 				options = self.options,
@@ -178,7 +177,7 @@
 				self._autoMode(options.auto.direction);
 			}
 		},
-		_createNewElement: function(path, dir) {
+		_createNewElement: function (path, dir) {
 			// create new LI element with IMG inside it
 			var self = this,
 				options = self.options,
@@ -191,7 +190,7 @@
 				.addClass("ui-rcarousel-loader");
 
 			// load element and call callback
-			self._loadElement(path, function(image) {
+			self._loadElement(path, function (image) {
 				$(_li)
 					.removeClass("ui-rcarousel-loader")
 					.append(image);
@@ -205,7 +204,7 @@
 			// change UL width to fit newly created elements
 			self._setInnerWidth();
 		},
-		_createStructure: function() {
+		_createStructure: function () {
 			var	self = this,
 				options = self.options,
 				structure = options.structure,
@@ -222,7 +221,7 @@
 
 			$(_carousel).appendTo("body");
 		},
-		_createStructureObject: function() {
+		_createStructureObject: function () {
 			var self = this;
 
 			self.carousels[self.carousels.length] = {
@@ -233,12 +232,12 @@
 				oldPageIndex: 0,
 				pageIndex: 0,
 				navigation: {},
-				animated: false,
-			}
+				animated: false
+			};
 
 			return self.carousels[self.carousels.length - 1];
 		},
-		_generatePages: function() {
+		_generatePages: function () {
 			var self = this,
 				options = self.options,
 				structure = options.structure;
@@ -357,18 +356,18 @@
 			_init();
 			_paginate();
 		},
-		getTotalPages: function() {
+		getTotalPages: function () {
 			var self = this,
 				options = self.options,
 				structure = options.structure;
 
 			return structure.pages.length;
 		},
-		goToPage: function(page) {
+		goToPage: function (page) {
 			var	self = this,
 				options = self.options,
 				structure = options.structure,
-				_by
+				_by;
 
 			if (!structure.animated && page !== structure.pageIndex) {
 				structure.animated = true;
@@ -390,10 +389,11 @@
 				structure.oldPageIndex = page;
 			}
 		},
-		load: function(obj) {
+		load: function (obj) {
 			var self = this,
 				options = self.options,
-				structure = options.structure;
+				structure = options.structure,
+				_object, _path, _format, _nodes;
 
 			// check object validity
 			if (obj) {
@@ -405,7 +405,7 @@
 			_format = _object.format || options.remote.format;
 
 			// remove old LI elements before populating
-			$(structure.list).empty()
+			$(structure.list).empty();
 
 			// we don't want to manipulate doubled elements
 			structure.paths.length = 0;
@@ -415,8 +415,8 @@
 
 			// load a file
 			if (_format === "json") {
-				$.getJSON(_path, function(data) {
-					$.each(data.paths, function(i, item) {
+				$.getJSON(_path, function (data) {
+					$.each(data.paths, function (i, item) {
 						// store path to a file
 						structure.paths.push(item);
 					});
@@ -432,9 +432,9 @@
 				});
 
 			} else if (_format === "xml") {
-				$.get(_path, function(data) {
+				$.get(_path, function (data) {
 					_nodes = $(data).find("path");
-					$.each(_nodes, function(i, item) {
+					$.each(_nodes, function (i, item) {
 						structure.paths.push($(item).text());
 					});
 
@@ -465,7 +465,7 @@
 			}
 			_loadWatch = setInterval(_watch, 100);
 		},
-		_loadElements: function(elements, direction) {
+		_loadElements: function (elements, direction) {
 			var self = this,
 				options = self.options,
 				structure = options.structure,
@@ -485,7 +485,7 @@
 				}
 			}
 		},
-		_moveLeft: function(by) {
+		_moveLeft: function (by) {
 			var self = this,
 				options = self.options,
 				structure = options.structure,
@@ -510,21 +510,21 @@
 			_dist = options.width * _endIndex;
 			$(structure.wrapper).scrollLeft(_dist);
 			$(structure.wrapper)
-				.animate({scrollLeft: 0}, options.speed, function() {
+				.animate({scrollLeft: 0}, options.speed, function () {
 					self._removeOldElements("last", _endIndex);
 					structure.animated = false;
 
-				if (options.auto.enabled) {
-					// reset autoModeInterval so that auto scrolling could start anew
-					clearInterval(structure.autoModeInterval);
-					self._autoMode(options.auto.direction);
-				}
+					if (options.auto.enabled) {
+						// reset autoModeInterval so that auto scrolling could start anew
+						clearInterval(structure.autoModeInterval);
+						self._autoMode(options.auto.direction);
+					}
 
-				// scrolling is finished, send an event
-				self._trigger("pageLoaded", null, {page: _index});
-			});
+					// scrolling is finished, send an event
+					self._trigger("pageLoaded", null, {page: _index});
+				});
 		},
-		_moveRight: function(by) {
+		_moveRight: function (by) {
 			var self = this,
 				options = self.options,
 				structure = options.structure,
@@ -550,7 +550,7 @@
 
 			_dist = options.width * _toRemoval;
 			$(structure.wrapper)
-				.animate({scrollLeft: "+=" + _dist}, options.speed, function() {
+				.animate({scrollLeft: "+=" + _dist}, options.speed, function () {
 				self._removeOldElements("first", _toRemoval);
 				$(structure.wrapper).scrollLeft(0);
 				structure.animated = false;
@@ -566,7 +566,7 @@
 
 			});
 		},
-		next: function() {
+		next: function () {
 			var	self = this,
 				options = self.options,
 				structure = options.structure,
@@ -589,7 +589,7 @@
 				structure.oldPageIndex = structure.pageIndex;
 			}
 		},
-		prev: function() {
+		prev: function () {
 			var	self = this,
 				options = self.options,
 				structure = options.structure,
@@ -612,7 +612,7 @@
 				structure.oldPageIndex = structure.pageIndex;
 			}
 		},
-		_removeOldElements: function(position, length) {
+		_removeOldElements: function (position, length) {
 			// remove 'step' elements
 			var self = this,
 				options = self.options,
@@ -629,7 +629,7 @@
 				}
 			}
 		},
-		_setInnerWidth: function() {
+		_setInnerWidth: function () {
 			// recalculate UL's width to fit all elements
 			// in case of fixed mode with hardcoded elements it's simple:
 			// all elements are known for the beginning so only count them and multiply by common width
@@ -647,56 +647,56 @@
 			structure.innerWidth = _innerWidth;
 
 		},
-		_setOption: function(key, value) {
+		_setOption: function (key, value) {
 			var self = this,
 				options = self.options,
 				structure = options.structure,
 				_newOptions;
 
 			switch (key) {
-				case "step":
-					self._checkOptionsValidity({step: value});
-					self._setStep(value);
-					self._generatePages();
+			case "step":
+				self._checkOptionsValidity({step: value});
+				self._setStep(value);
+				self._generatePages();
 
-					// remove old LI elements before populating
-					$(structure.list).empty();
-					self._loadElements();
-					// apply...
-					$.Widget.prototype._setOption.apply(this, arguments);
-					break;
+				// remove old LI elements before populating
+				$(structure.list).empty();
+				self._loadElements();
+				// apply...
+				$.Widget.prototype._setOption.apply(this, arguments);
+				break;
 
-				case "speed":
-					self._checkOptionsValidity({speed: value});
-					options.speed = value;
-					$.Widget.prototype._setOption.apply(this, arguments);
-					break;
+			case "speed":
+				self._checkOptionsValidity({speed: value});
+				options.speed = value;
+				$.Widget.prototype._setOption.apply(this, arguments);
+				break;
 
-				case "navigation":
-					self._checkOptionsValidity({navigation: value});
-					if (value.next) {
-						self._setEventHandlers("next");
-					}
+			case "navigation":
+				self._checkOptionsValidity({navigation: value});
+				if (value.next) {
+					self._setEventHandlers("next");
+				}
 
-					if (value.prev) {
-						self._setEventHandlers("prev");
-					}
-					$.Widget.prototype._setOption.apply(this, arguments);
-					break;
+				if (value.prev) {
+					self._setEventHandlers("prev");
+				}
+				$.Widget.prototype._setOption.apply(this, arguments);
+				break;
 
-				case "auto":
-					_newOptions = $.extend(options.auto, value);
-					self._checkOptionsValidity({auto: _newOptions});
+			case "auto":
+				_newOptions = $.extend(options.auto, value);
+				self._checkOptionsValidity({auto: _newOptions});
 
-					if (options.auto.enabled) {
-						self._autoMode(options.auto.direction);
-					} else {
-						clearInterval(structure.autoModeInterval);
-					}
+				if (options.auto.enabled) {
+					self._autoMode(options.auto.direction);
+				} else {
+					clearInterval(structure.autoModeInterval);
+				}
 			}
 
 		},
-		_setStep: function(s) {
+		_setStep: function (s) {
 			// calculate a step
 			var self = this,
 				options = self.options,
@@ -708,7 +708,7 @@
 			options.step = _step;
 			structure.step = options.width * _step;
 		},
-		_setStructure: function() {
+		_setStructure: function () {
 			var self = this,
 				_root = $(this.element),
 				options = self.options,
@@ -743,7 +743,7 @@
 			structure.navigation.next = $(options.navigation.next);
 			structure.navigation.prev = $(options.navigation.prev);
 		},
-		_setCarouselHeight: function(h) {
+		_setCarouselHeight: function (h) {
 			var self = this,
 				options = self.options,
 				structure = options.structure,
@@ -752,7 +752,7 @@
 			_height = h || options.height;
 			$(structure.wrapper).height(_height);
 		},
-		_setCarouselWidth: function(w) {
+		_setCarouselWidth: function (w) {
 			var self = this,
 				options = self.options,
 				structure = options.structure,
@@ -771,19 +771,19 @@
 
 
 		},
-		_setEventHandlers: function(action) {
+		_setEventHandlers: function (action) {
 			// basic navigation: next and previous item
 			var self = this,
 				options = self.options;
 
 			if (action === "next") {
-				$(options.navigation.next).click(function() {
+				$(options.navigation.next).click(function () {
 					self.next();
 				});
 			}
 
 			if (action === "prev") {
-				$(options.navigation.prev).click(function() {
+				$(options.navigation.prev).click(function () {
 					self.prev();
 				});
 			}
@@ -808,4 +808,4 @@
 		},
 		carousels: []
 	});
-} (jQuery));
+}(jQuery));
