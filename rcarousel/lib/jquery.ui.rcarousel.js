@@ -38,7 +38,7 @@
 				options = self.options,
 				structure = options.structure;
 
-			if (direction === "right") {
+			if (direction === "next") {
 				structure.autoModeInterval = setInterval(function () {
 					self.next();
 				}, options.auto.interval);
@@ -140,7 +140,7 @@
 						throw new Error("direction should be defined as a string");
 					}
 
-					if (!(_value.direction === "right" || _value.direction === "left")) {
+					if (!(_value.direction === "next" || _value.direction === "prev")) {
 						throw new Error("direction: only 'right' and 'left' values are valid");
 					}
 
@@ -193,8 +193,16 @@
 			$(_li)
 				.width(options.width)
 				.height(options.height)
-				.css("marginRight", options.margin)
 				.addClass("ui-rcarousel-loader");
+
+			if (options.orientation === "horizontal") {
+				$(_li).css("marginRight", options.margin);
+			} else {
+				$(_li).css({
+					marginBottom: options.margin,
+					float: "none"
+				});
+			}
 
 			// load element and call callback
 			self._loadElement(path, function (image) {
@@ -387,9 +395,9 @@
 				_by = page - structure.oldPageIndex;
 				if (_by >= 0) {
 					//move by n elements from current index
-					self._moveRight(_by);
+					self._goToNextPage(_by);
 				} else {
-					self._moveLeft(Math.abs(_by));
+					self._goToPrevPage(Math.abs(_by));
 				}
 				structure.oldPageIndex = page;
 			}
@@ -490,12 +498,12 @@
 				}
 			}
 		},
-		_moveLeft: function (by) {
+		_goToPrevPage: function (by) {
 			var self = this,
 				options = self.options,
 				structure = options.structure,
 				_temporaryPage = [],
-				_page, _dist, i, j, _endIndex, _index;
+				_page, _dist, i, j, _endIndex, _index, _animOpts;
 
 			// pick the page
 			_index = structure.oldPageIndex - by;
@@ -513,9 +521,17 @@
 			self._loadElements(_temporaryPage, "prev");
 
 			_dist = options.width * _endIndex + options.margin * _endIndex;
-			$(structure.wrapper).scrollLeft(_dist);
+
+			if (options.orientation === "horizontal") {
+				_animOpts = {scrollLeft: 0};
+				$(structure.wrapper).scrollLeft(_dist);
+			} else {
+				_animOpts = {scrollTop: 0};
+				$(structure.wrapper).scrollTop(_dist);
+			}
+
 			$(structure.wrapper)
-				.animate({scrollLeft: 0}, options.speed, function () {
+				.animate(_animOpts, options.speed, function () {
 					self._removeOldElements("last", _endIndex);
 					structure.animated = false;
 
@@ -529,12 +545,12 @@
 					self._trigger("pageLoaded", null, {page: _index});
 				});
 		},
-		_moveRight: function (by) {
+		_goToNextPage: function (by) {
 			var self = this,
 				options = self.options,
 				structure = options.structure,
 				_temporaryPage = [],
-				_page, _dist, i, j, _index, _startIndex, _toRemoval;
+				_page, _dist, i, j, _index, _startIndex, _toRemoval, _animOpts;
 
 			// pick the page
 			_index = structure.oldPageIndex + by;
@@ -554,20 +570,26 @@
 			_toRemoval = _startIndex === 0 ? options.visible : options.visible - _startIndex;
 
 			_dist = options.width * _toRemoval + options.margin * _toRemoval;
+			_animOpts = options.orientation === "horizontal" ? {scrollLeft: "+=" + _dist} : {scrollTop: "+=" + _dist};
+
 			$(structure.wrapper)
-				.animate({scrollLeft: "+=" + _dist}, options.speed, function () {
-				self._removeOldElements("first", _toRemoval);
-				$(structure.wrapper).scrollLeft(0);
-				structure.animated = false;
+				.animate(_animOpts, options.speed, function () {
+					self._removeOldElements("first", _toRemoval);
+					if (options.orientation === "horizontal") {
+						$(structure.wrapper).scrollLeft(0);
+					} else {
+						$(structure.wrapper).scrollTop(0);
+					}
+					structure.animated = false;
 
-				if (options.auto.enabled) {
-					// reset autoModeInterval so that auto scrolling could start anew
-					clearInterval(structure.autoModeInterval);
-					self._autoMode(options.auto.direction);
-				}
+					if (options.auto.enabled) {
+						// reset autoModeInterval so that auto scrolling could start anew
+						clearInterval(structure.autoModeInterval);
+						self._autoMode(options.auto.direction);
+					}
 
-				// scrolling is finished, send an event
-				self._trigger("pageLoaded", null, {page: _index});
+					// scrolling is finished, send an event
+					self._trigger("pageLoaded", null, {page: _index});
 
 			});
 		},
@@ -590,7 +612,7 @@
 				}
 
 				// move by one element from current index
-				self._moveRight(_by);
+				self._goToNextPage(_by);
 				structure.oldPageIndex = structure.pageIndex;
 			}
 		},
@@ -613,7 +635,7 @@
 				}
 
 				// move left by one element from current index
-				self._moveLeft(_by);
+				self._goToPrevPage(_by);
 				structure.oldPageIndex = structure.pageIndex;
 			}
 		},
@@ -730,23 +752,24 @@
 			structure.navigation.next = $(options.navigation.next);
 			structure.navigation.prev = $(options.navigation.prev);
 		},
-		_setCarouselHeight: function (h) {
+		_setCarouselHeight: function () {
 			var self = this,
 				options = self.options,
 				structure = options.structure,
-				_height;
+				_newHeight;
 
-			_height = h || options.height;
-			$(structure.wrapper).height(_height);
+			_newHeight = (options.orientation === "vertical") ? options.visible * options.height + options.margin * (options.visible - 1) : options.height;
+
+
+			$(structure.wrapper).height(_newHeight);
 		},
-		_setCarouselWidth: function (w) {
+		_setCarouselWidth: function () {
 			var self = this,
 				options = self.options,
 				structure = options.structure,
-				_width, _newWidth;
+				_newWidth;
 
-			_width = w || options.width;
-			_newWidth = options.visible * _width + options.margin * (options.visible - 1);
+			_newWidth = (options.orientation === "horizontal") ? options.visible * options.width + options.margin * (options.visible - 1) : options.width;
 
 			// set carousel width and disable overflow: auto
 			$(structure.wrapper).css({
@@ -778,10 +801,11 @@
 			height: 200,
 			speed: 1000,
 			margin: 0,
+			orientation: "horizontal",
 			structure: null,
 			auto: {
 				enabled: false,
-				direction: "right",
+				direction: "next",
 				interval: 5000
 			},
 			startAtPage: 0,
