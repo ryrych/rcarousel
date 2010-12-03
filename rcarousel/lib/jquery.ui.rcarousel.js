@@ -148,6 +148,12 @@
 						throw new Error("interval should be a positive number!");
 					}
 					break;
+
+				case "margin":
+					if (isNaN(_value) || typeof _value !== "number" || _value < 0 || (Math.ceil(_value) - _value > 0)) {
+						throw new Error("margin should be a positive number!");
+					}
+					break;
 				}
 			}
 		},
@@ -187,6 +193,7 @@
 			$(_li)
 				.width(options.width)
 				.height(options.height)
+				.css("marginRight", options.margin)
 				.addClass("ui-rcarousel-loader");
 
 			// load element and call callback
@@ -505,7 +512,7 @@
 			// load new elements
 			self._loadElements(_temporaryPage, "prev");
 
-			_dist = options.width * _endIndex;
+			_dist = options.width * _endIndex + options.margin * _endIndex;
 			$(structure.wrapper).scrollLeft(_dist);
 			$(structure.wrapper)
 				.animate({scrollLeft: 0}, options.speed, function () {
@@ -546,7 +553,7 @@
 
 			_toRemoval = _startIndex === 0 ? options.visible : options.visible - _startIndex;
 
-			_dist = options.width * _toRemoval;
+			_dist = options.width * _toRemoval + options.margin * _toRemoval;
 			$(structure.wrapper)
 				.animate({scrollLeft: "+=" + _dist}, options.speed, function () {
 				self._removeOldElements("first", _toRemoval);
@@ -739,7 +746,7 @@
 				_width, _newWidth;
 
 			_width = w || options.width;
-			_newWidth = options.visible * _width;
+			_newWidth = options.visible * _width + options.margin * (options.visible - 1);
 
 			// set carousel width and disable overflow: auto
 			$(structure.wrapper).css({
@@ -770,6 +777,7 @@
 			width: 200,
 			height: 200,
 			speed: 1000,
+			margin: 0,
 			structure: null,
 			auto: {
 				enabled: false,
