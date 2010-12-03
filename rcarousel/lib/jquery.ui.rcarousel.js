@@ -201,8 +201,6 @@
 			} else {
 				$(_li).appendTo(structure.list);
 			}
-			// change UL width to fit newly created elements
-			self._setInnerWidth();
 		},
 		_createStructure: function () {
 			var	self = this,
@@ -629,24 +627,6 @@
 				}
 			}
 		},
-		_setInnerWidth: function () {
-			// recalculate UL's width to fit all elements
-			// in case of fixed mode with hardcoded elements it's simple:
-			// all elements are known for the beginning so only count them and multiply by common width
-			var self = this,
-				options = self.options,
-				structure = options.structure,
-				_counter, _innerWidth;
-
-			_counter = $("li", structure.list).length;
-
-			// set the width
-			_innerWidth = _counter * options.width;
-			$(structure.list).width(_innerWidth);
-			// save UL width for navigation purposes
-			structure.innerWidth = _innerWidth;
-
-		},
 		_setOption: function (key, value) {
 			var self = this,
 				options = self.options,
@@ -766,10 +746,6 @@
 				width: _newWidth,
 				overflow: "hidden"
 			});
-			// change UL width
-			self._setInnerWidth();
-
-
 		},
 		_setEventHandlers: function (action) {
 			// basic navigation: next and previous item
