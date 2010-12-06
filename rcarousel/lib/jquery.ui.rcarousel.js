@@ -361,7 +361,7 @@
 				} else if (options.startAtPage > structure.pages.length - 1) {
 					options.startAtPage = structure.oldPageIndex = structure.pageIndex = structure.pages.length - 1;
 				} else {
-					structure.oldPageIndex = structure.pageIndex = --options.startAtPage;
+					structure.oldPageIndex = structure.pageIndex = options.startAtPage;
 				}
 			}
 
