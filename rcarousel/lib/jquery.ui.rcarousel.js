@@ -502,25 +502,39 @@
 			var self = this,
 				options = self.options,
 				structure = options.structure,
-				_temporaryPage = [],
-				_page, _dist, i, j, _endIndex, _index, _animOpts;
+				_page, _oldPage, _dist, i, _index, _animOpts, _lastEl, _unique, _pos;
 
 			// pick the page
 			_index = structure.oldPageIndex - by;
-			_page = structure.pages[_index];
+			_page = structure.pages[_index].slice(0);
+			_oldPage = structure.pages[structure.oldPageIndex];
 
-			_endIndex = (by === 0 ? 1 : by) * options.step;
-			_endIndex = (_endIndex >= options.visible) ? options.visible : _endIndex;
+			// check if 1st element from page appears in _oldPage
+			_lastEl = _page[_page.length - 1];
+			for (i = _oldPage.length - 1; i >= 0; i--) {
+				if (_lastEl === _oldPage[i]) {
+					_unique = false;
+					_pos = i;
+					break;
+				} else {
+					_unique = true;
+				}
+			}
 
-			// choose only new elements
-			for (i = 0; i < _endIndex; i++) {
-				_temporaryPage.push(_page[i]);
+			if (!_unique) {
+				while (_pos >= 0) {
+					if (_page[_page.length - 1] === _oldPage[_pos]) {
+						// this element is unique
+						_page.pop();
+					}
+					--_pos;
+				}
 			}
 
 			// load new elements
-			self._loadElements(_temporaryPage, "prev");
+			self._loadElements(_page, "prev");
 
-			_dist = options.width * _endIndex + options.margin * _endIndex;
+			_dist = options.width * _page.length;
 
 			if (options.orientation === "horizontal") {
 				_animOpts = {scrollLeft: 0};
@@ -532,7 +546,7 @@
 
 			$(structure.wrapper)
 				.animate(_animOpts, options.speed, function () {
-					self._removeOldElements("last", _endIndex);
+					self._removeOldElements("last", _page.length);
 					structure.animated = false;
 
 					if (options.auto.enabled) {
@@ -549,32 +563,44 @@
 			var self = this,
 				options = self.options,
 				structure = options.structure,
-				_temporaryPage = [],
-				_page, _dist, i, j, _index, _startIndex, _toRemoval, _animOpts;
+				_page, _oldPage, _dist, i, _index, _animOpts, _firstEl, _unique, _pos;
 
 			// pick the page
 			_index = structure.oldPageIndex + by;
-			_page = structure.pages[_index];
+			_page = structure.pages[_index].slice(0);
+			_oldPage = structure.pages[structure.oldPageIndex];
 
-			_startIndex = options.visible - ((by === 0 ? 1 : by) * options.step);
-			_startIndex = (_startIndex <= 0) ? 0 : _startIndex;
+			// check if 1st element from page appears in _oldPage
+			_firstEl = _page[0];
+			for (i = 0; i < _page.length; i++) {
+				if (_firstEl === _oldPage[i]) {
+					_unique = false;
+					_pos = i;
+					break;
+				} else {
+					_unique = true;
+				}
+			}
 
-			// choose only new elements
-			for (i = _startIndex; i < _page.length; i++) {
-				_temporaryPage.push(_page[i]);
+			if (!_unique) {
+				while (_pos < _oldPage.length) {
+					if (_page[0] === _oldPage[_pos]) {
+						// this element is unique
+						_page.shift();
+					}
+					++_pos;
+				}
 			}
 
 			// load new elements
-			self._loadElements(_temporaryPage, "next");
+			self._loadElements(_page, "next");
 
-			_toRemoval = _startIndex === 0 ? options.visible : options.visible - _startIndex;
-
-			_dist = options.width * _toRemoval + options.margin * _toRemoval;
+			_dist = options.width * _page.length;
 			_animOpts = options.orientation === "horizontal" ? {scrollLeft: "+=" + _dist} : {scrollTop: "+=" + _dist};
 
 			$(structure.wrapper)
 				.animate(_animOpts, options.speed, function () {
-					self._removeOldElements("first", _toRemoval);
+					self._removeOldElements("first", _page.length);
 					if (options.orientation === "horizontal") {
 						$(structure.wrapper).scrollLeft(0);
 					} else {
