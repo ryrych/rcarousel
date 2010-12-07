@@ -534,7 +534,7 @@
 			// load new elements
 			self._loadElements(_page, "prev");
 
-			_dist = options.width * _page.length;
+			_dist = options.width * _page.length + (options.margin * _page.length);
 
 			if (options.orientation === "horizontal") {
 				_animOpts = {scrollLeft: 0};
@@ -595,7 +595,7 @@
 			// load new elements
 			self._loadElements(_page, "next");
 
-			_dist = options.width * _page.length;
+			_dist = options.width * _page.length + (options.margin * _page.length);
 			_animOpts = options.orientation === "horizontal" ? {scrollLeft: "+=" + _dist} : {scrollTop: "+=" + _dist};
 
 			$(structure.wrapper)
