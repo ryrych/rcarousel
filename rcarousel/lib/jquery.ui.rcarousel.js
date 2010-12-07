@@ -823,8 +823,8 @@
 		options: {
 			visible: 3,
 			step: 3,
-			width: 200,
-			height: 200,
+			width: 100,
+			height: 100,
 			speed: 1000,
 			margin: 0,
 			orientation: "horizontal",

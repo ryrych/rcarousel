@@ -4,12 +4,12 @@
 }
 
 .rcarousel .wrapper {
-	height: 300px;
+	height: 121px;
 	margin: 0;
 	overflow: auto;
 	padding: 0;
 	position: relative;
-	width: 500px
+	width: 300px
 }
 
 .rcarousel .wrapper ul li a img {
@@ -28,10 +28,12 @@
 .rcarousel .wrapper ul li {
 	display: block;
 	float: left;
+	height: 100px;
 	margin: 0;
+	overflow: hidden;
 	padding: 0;
 	position: relative;
-	/*padding: 10px;*/
+	width: 100px;
 }
 
 .ui-rcarousel-loader {
