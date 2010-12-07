@@ -836,8 +836,8 @@
 			},
 			startAtPage: 0,
 			navigation: {
-				next: ".carouselNext",
-				prev: ".carouselPrev"
+				next: "#ui-rcarousel-next",
+				prev: "#ui-rcarousel-prev"
 			}
 		},
 		carousels: []
