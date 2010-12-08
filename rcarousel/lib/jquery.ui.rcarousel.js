@@ -231,8 +231,6 @@
 			_list = $("<ul></ul>")
 				.appendTo(_wrapper);
 			structure.list = _list;
-
-			$(_carousel).appendTo("body");
 		},
 		_createStructureObject: function () {
 			var self = this;
