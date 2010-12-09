@@ -503,8 +503,7 @@
 				_page, _oldPage, _dist, i, _index, _animOpts, _lastEl, _unique, _pos;
 
 			// pick the page
-			_index = structure.oldPageIndex - by;
-			_page = structure.pages[_index].slice(0);
+			_page = structure.pages[structure.oldPageIndex + by].slice(0);
 			_oldPage = structure.pages[structure.oldPageIndex];
 
 			// check if 1st element from page appears in _oldPage
@@ -564,8 +563,7 @@
 				_page, _oldPage, _dist, i, _index, _animOpts, _firstEl, _unique, _pos;
 
 			// pick the page
-			_index = structure.oldPageIndex + by;
-			_page = structure.pages[_index].slice(0);
+			_page = structure.pages[structure.oldPageIndex + by].slice(0);
 			_oldPage = structure.pages[structure.oldPageIndex];
 
 			// check if 1st element from page appears in _oldPage
@@ -620,46 +618,36 @@
 		next: function () {
 			var	self = this,
 				options = self.options,
-				structure = options.structure,
-				_by = 1;
+				structure = options.structure;
 
 			if (!structure.animated) {
 				structure.animated = true;
 
-				structure.pageIndex += 1;
+				++structure.pageIndex;
 				if (structure.pageIndex > structure.pages.length - 1) {
 					structure.pageIndex = 0;
-					structure.oldPageIndex = 0;
-					_by = 0;
-				} else {
-					_by = 1;
 				}
 
 				// move by one element from current index
-				self._goToNextPage(_by);
+				self._goToNextPage(structure.pageIndex - structure.oldPageIndex);
 				structure.oldPageIndex = structure.pageIndex;
 			}
 		},
 		prev: function () {
 			var	self = this,
 				options = self.options,
-				structure = options.structure,
-				_by = 1;
+				structure = options.structure;
 
 			if (!structure.animated) {
 				structure.animated = true;
 
-				structure.pageIndex -= 1;
+				--structure.pageIndex;
 				if (structure.pageIndex < 0) {
 					structure.pageIndex = structure.pages.length - 1;
-					structure.oldPageIndex = structure.pageIndex;
-					_by = 0;
-				} else {
-					_by = 1;
 				}
 
 				// move left by one element from current index
-				self._goToPrevPage(_by);
+				self._goToPrevPage(structure.pageIndex - structure.oldPageIndex);
 				structure.oldPageIndex = structure.pageIndex;
 			}
 		},
