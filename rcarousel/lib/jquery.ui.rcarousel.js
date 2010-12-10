@@ -200,7 +200,7 @@
 			} else {
 				$(_li).css({
 					marginBottom: options.margin,
-					float: "none"
+					cssFloat: "none"
 				});
 			}
 
