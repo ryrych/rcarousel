@@ -395,7 +395,7 @@
 					//move by n elements from current index
 					self._goToNextPage(_by);
 				} else {
-					self._goToPrevPage(Math.abs(_by));
+					self._goToPrevPage(_by);
 				}
 				structure.oldPageIndex = page;
 			}
@@ -503,7 +503,8 @@
 				_page, _oldPage, _dist, i, _index, _animOpts, _lastEl, _unique, _pos;
 
 			// pick the page
-			_page = structure.pages[structure.oldPageIndex + by].slice(0);
+			_index = structure.oldPageIndex + by;
+			_page = structure.pages[_index].slice(0);
 			_oldPage = structure.pages[structure.oldPageIndex];
 
 			// check if 1st element from page appears in _oldPage
@@ -563,7 +564,8 @@
 				_page, _oldPage, _dist, i, _index, _animOpts, _firstEl, _unique, _pos;
 
 			// pick the page
-			_page = structure.pages[structure.oldPageIndex + by].slice(0);
+			_index = structure.oldPageIndex + by;
+			_page = structure.pages[_index].slice(0);
 			_oldPage = structure.pages[structure.oldPageIndex];
 
 			// check if 1st element from page appears in _oldPage
