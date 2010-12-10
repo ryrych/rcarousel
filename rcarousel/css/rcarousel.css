@@ -12,9 +12,11 @@
 	width: 300px
 }
 
-.rcarousel .wrapper ul li a img {
+.rcarousel .wrapper ul li img {
 	border: 0;
+	clear: left;
 	display: block;
+	float: left;
 }
 
 .rcarousel .wrapper ul {
