@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl">
+
+	<head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF8" />
+        <title>rcarousel example</title>
+        <link type="text/css" rel="stylesheet" href="../../rcarousel/css/rcarousel.css" />
+		<style type="text/css">
+			#carousel {
+				width: 100px;
+				height: 344px;
+				position: relative;
+			}
+
+			#carousel > .wrapper {
+				position: absolute;
+				top: 22px;
+			}
+
+			#carousel img {
+				border: 0;
+			}
+
+			#ui-rcarousel-next, #ui-rcarousel-prev {
+				display: block;
+				position: absolute;
+				width: 22px;
+				height: 22px;
+			}
+
+			#ui-rcarousel-next {
+				top: 0;
+				left: 39px;
+			}
+
+			#ui-rcarousel-prev {
+				bottom: 0;
+				left: 39px;
+			}
+		</style>
+	</head>
+	<body>
+		<p>vertical carousel</p>
+		<div id="carousel" class="rcarousel">
+			<div class="wrapper">
+				<ul>
+					<li><img src="images/001.jpg" /></li>
+					<li><img src="images/002.jpg" /></li>
+					<li><img src="images/003.jpg" /></li>
+					<li><img src="images/004.jpg" /></li>
+					<li><img src="images/005.jpg" /></li>
+					<li><img src="images/006.jpg" /></li>
+					<li><img src="images/007.jpg" /></li>
+					<li><img src="images/008.jpg" /></li>
+					<li><img src="images/009.jpg" /></li>
+					<li><img src="images/010.jpg" /></li>
+				</ul>
+			</div>
+			<a href="#" id="ui-rcarousel-next"><img src="images/go-next-up.png" /></a>
+			<a href="#" id="ui-rcarousel-prev"><img src="images/go-previous-down.png" /></a>
+		</div>
+
+		<script type="text/javascript" src="../../rcarousel/lib/jquery-1.4.4.min.js"></script>
+		<script type="text/javascript" src="../../rcarousel/lib/jquery.ui.core.js"></script>
+		<script type="text/javascript" src="../../rcarousel/lib/jquery.ui.widget.js"></script>
+		<script type="text/javascript" src="../../rcarousel/lib/jquery.ui.rcarousel.min.js"></script>
+		<script type="text/javascript">
+			jQuery(function($) {
+				$("#carousel").rcarousel({
+					orientation: "vertical"
+				});
+			});
+		</script
+    </body>
+</html>

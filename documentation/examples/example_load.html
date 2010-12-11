@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl">
+
+	<head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF8" />
+        <title>rcarousel example</title>
+        <link type="text/css" rel="stylesheet" href="../../rcarousel/css/rcarousel.css" />
+		<style type="text/css">
+			#carousel {
+				width: 300px;
+			}
+		</style>
+	</head>
+	<body>
+		<p>loading elements on demand</p>
+		<div id="carousel" class="rcarousel">
+			<div class="wrapper">
+				<ul>
+					<li><img src="images/001.jpg" /></li>
+					<li><img src="images/002.jpg" /></li>
+					<li><img src="images/003.jpg" /></li>
+				</ul>
+			</div>
+		</div>
+		<p><input type="button" name="but" id="but" value="load new elements from the server" /></p>
+
+		<script type="text/javascript" src="../../rcarousel/lib/jquery-1.4.4.min.js"></script>
+		<script type="text/javascript" src="../../rcarousel/lib/jquery.ui.core.js"></script>
+		<script type="text/javascript" src="../../rcarousel/lib/jquery.ui.widget.js"></script>
+		<script type="text/javascript" src="../../rcarousel/lib/jquery.ui.rcarousel.min.js"></script>
+		<script type="text/javascript">
+			jQuery(function($) {
+				function loadNew() {
+					$("#carousel").rcarousel("load", {path: "remote.json", format: "json"});
+				}
+				$("#but").click(loadNew);
+
+
+				$("#carousel").rcarousel({
+					step: 1,
+					auto: {enabled: true}
+				});
+			});
+		</script>
+    </body>
+</html>

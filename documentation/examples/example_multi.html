@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl">
+
+	<head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF8" />
+        <title>rcarousel example</title>
+        <link type="text/css" rel="stylesheet" href="../../rcarousel/css/rcarousel.css" />
+		<style type="text/css">
+			#carousels {
+				width: 500px;
+				height: 500px;
+				margin: 0 auto;
+				position: relative;
+			}
+			#carousel1 {
+				width: 500px;
+				position: absolute;
+				left: 0;
+				top: 0;
+			}
+
+			#carousel2 {
+				width: 100px;
+				position: absolute;
+				left: 400px;
+				top: 100px;
+			}
+
+			#carousel3 {
+				width: 500px;
+				position: absolute;
+				left: 0;
+				top: 400px;
+			}
+
+			#carousel4 {
+				width: 100px;
+				position: absolute;
+				left: 0;
+				top: 100px;
+			}
+
+			#carousel5 {
+				width: 200px;
+				position: absolute;
+				left: 100px;
+				top: 100px;
+			}
+
+			#carousel6 {
+				width: 100px;
+				position: absolute;
+				left: 300px;
+				top: 100px;
+			}
+
+			#carousel7 {
+				width: 200px;
+				position: absolute;
+				left: 200px;
+				top: 300px;
+			}
+
+			#carousel8 {
+				width: 100px;
+				position: absolute;
+				left: 100px;
+				top: 200px;
+			}
+
+			#carousel9 {
+				width: 100px;
+				position: absolute;
+				left: 200px;
+				top: 200px;
+			}
+		</style>
+	</head>
+	<body>
+		<p>multiple carousels on one page - guess how many is used :)</p>
+		<div id="carousels">
+			<div id="carousel1" class="rcarousel"></div>
+			<div id="carousel2" class="rcarousel"></div>
+			<div id="carousel3" class="rcarousel"></div>
+			<div id="carousel4" class="rcarousel"></div>
+
+			<div id="carousel5" class="rcarousel"></div>
+			<div id="carousel6" class="rcarousel"></div>
+			<div id="carousel7" class="rcarousel"></div>
+			<div id="carousel8" class="rcarousel"></div>
+
+			<div id="carousel9" class="rcarousel"></div>
+		</div>
+
+
+		<script type="text/javascript" src="../../rcarousel/lib/jquery-1.4.4.min.js"></script>
+		<script type="text/javascript" src="../../rcarousel/lib/jquery.ui.core.js"></script>
+		<script type="text/javascript" src="../../rcarousel/lib/jquery.ui.widget.js"></script>
+		<script type="text/javascript" src="../../rcarousel/lib/jquery.ui.rcarousel.min.js"></script>
+		<script type="text/javascript">
+			jQuery(function($) {
+				$("#carousel1").rcarousel({
+					visible: 5,
+					step: 1,
+					remote: {
+						path: "remote.json",
+						format: "json"
+					},
+					auto: {
+						enabled: true,
+						direction: "prev"
+					}
+				});
+
+				$("#carousel2").rcarousel({
+					visible: 3,
+					step: 1,
+					orientation: "vertical",
+					remote: {
+						path: "remote.json",
+						format: "json"
+					},
+					auto: {enabled: true}
+				});
+
+				$("#carousel3").rcarousel({
+					visible: 5,
+					step: 1,
+					remote: {
+						path: "remote.json",
+						format: "json"
+					},
+					auto: {enabled: true}
+				});
+
+				$("#carousel4").rcarousel({
+					visible: 3,
+					step: 1,
+					orientation: "vertical",
+					remote: {
+						path: "remote.json",
+						format: "json"
+					},
+					auto: {enabled: true}
+				});
+
+				$("#carousel5").rcarousel({
+					visible: 2,
+					step: 1,
+					remote: {
+						path: "remote.json",
+						format: "json"
+					},
+					auto: {enabled: true}
+				});
+
+				$("#carousel6").rcarousel({
+					visible: 2,
+					step: 1,
+					orientation: "vertical",
+					remote: {
+						path: "remote.json",
+						format: "json"
+					},
+					auto: {enabled: true}
+				});
+
+				$("#carousel7").rcarousel({
+					visible: 2,
+					step: 1,
+					remote: {
+						path: "remote.json",
+						format: "json"
+					},
+					auto: {enabled: true}
+				});
+
+				$("#carousel8").rcarousel({
+					visible: 2,
+					step: 1,
+					orientation: "vertical",
+					remote: {
+						path: "remote.json",
+						format: "json"
+					},
+					auto: {enabled: true}
+				});
+
+				$("#carousel9").rcarousel({
+					visible: 1,
+					step: 1,
+					remote: {
+						path: "remote.json",
+						format: "json"
+					},
+					auto: {enabled: true}
+				});
+			});
+		</script
+    </body>
+</html>

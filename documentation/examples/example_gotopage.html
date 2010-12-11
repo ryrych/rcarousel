@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl">
+
+	<head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF8" />
+        <title>rcarousel example</title>
+        <link type="text/css" rel="stylesheet" href="../../rcarousel/css/rcarousel.css" />
+		<style type="text/css">
+			#carousel {
+				width: 300px;
+			}
+
+			#pages {
+				width: 130px;
+				margin: 0 auto;
+			}
+		</style>
+	</head>
+	<body>
+		<p>more advanced example: callbacks, custom navigation and autoscrolling</p>
+		<div id="carousel" class="rcarousel">
+			<div class="wrapper">
+				<ul>
+					<li><img src="images/001.jpg" /></li>
+					<li><img src="images/002.jpg" /></li>
+					<li><img src="images/003.jpg" /></li>
+					<li><img src="images/004.jpg" /></li>
+					<li><img src="images/005.jpg" /></li>
+					<li><img src="images/006.jpg" /></li>
+					<li><img src="images/007.jpg" /></li>
+					<li><img src="images/008.jpg" /></li>
+					<li><img src="images/009.jpg" /></li>
+					<li><img src="images/010.jpg" /></li>
+				</ul>
+			</div>
+			<div id="pages"></div>
+		</div>
+
+		<script type="text/javascript" src="../../rcarousel/lib/jquery-1.4.4.min.js"></script>
+		<script type="text/javascript" src="../../rcarousel/lib/jquery.ui.core.js"></script>
+		<script type="text/javascript" src="../../rcarousel/lib/jquery.ui.widget.js"></script>
+		<script type="text/javascript" src="../../rcarousel/lib/jquery.ui.rcarousel.min.js"></script>
+		<script type="text/javascript">
+			jQuery(function($) {
+				function generatePages() {
+					var _total, i, _link;
+					_total = $("#carousel").rcarousel("getTotalPages");
+					for (i = 0; i < _total; i++) {
+						function _foo(el, i) {
+							$(el).click(function() {
+								$("#carousel").rcarousel("goToPage", i);
+							})
+						}
+						_link = $("<a href='#'></a>");
+						$(_link)
+							.css("margin-right", "3px")
+							.addClass("off")
+							.append("<img src='images/page-off.png' style='border: 0' />")
+							.appendTo("#pages");
+
+						_foo(_link, i);
+					}
+					// mark first page as active
+					$("a:eq(0)", "#pages")
+						.removeClass("off")
+						.addClass("on")
+							.find("img")
+							.attr("src", "images/page-on.png");
+				}
+
+				function pageLoaded(event, data) {
+					$("a.on", "#pages")
+						.removeClass("on")
+							.find("img")
+							.attr("src", "images/page-off.png");
+
+					$("a", "#pages")
+						.eq(data.page)
+						.addClass("on")
+							.find("img")
+							.attr("src", "images/page-on.png");
+				}
+
+				$("#carousel").rcarousel({
+					auto: {enabled: true},
+					start: generatePages,
+					pageLoaded: pageLoaded
+				});
+			});
+		</script
+    </body>
+</html>

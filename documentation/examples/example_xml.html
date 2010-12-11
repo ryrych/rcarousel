@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl">
+
+	<head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF8" />
+        <title>rcarousel example</title>
+        <link type="text/css" rel="stylesheet" href="../../rcarousel/css/rcarousel.css" />
+		<style type="text/css">
+			#carousel {
+				width: 344px;
+				position: relative;
+			}
+
+			#carousel img {
+				border: 0;
+			}
+
+			#ui-rcarousel-next, #ui-rcarousel-prev {
+				display: block;
+				position: absolute;
+			}
+
+			#ui-rcarousel-next {
+				top: 39px;
+				right: 0;
+			}
+
+			#ui-rcarousel-prev {
+				top: 39px;
+				left: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<p>carousel is dynamic - elements are loaded dynamically from XML file</p>
+		<div id="carousel" class="rcarousel">
+			<a href="#" id="ui-rcarousel-next"><img src="images/go-next.png" /></a>
+			<a href="#" id="ui-rcarousel-prev"><img src="images/go-previous.png" /></a>
+		</div>
+
+		<script type="text/javascript" src="../../rcarousel/lib/jquery-1.4.4.min.js"></script>
+		<script type="text/javascript" src="../../rcarousel/lib/jquery.ui.core.js"></script>
+		<script type="text/javascript" src="../../rcarousel/lib/jquery.ui.widget.js"></script>
+		<script type="text/javascript" src="../../rcarousel/lib/jquery.ui.rcarousel.min.js"></script>
+		<script type="text/javascript">
+			jQuery(function($) {
+				$("#carousel").rcarousel({
+					remote: {
+						path: "remote.xml",
+						format: "xml"
+					}
+				});
+			});
+		</script
+    </body>
+</html>

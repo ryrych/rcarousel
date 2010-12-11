@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl">
+
+	<head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF8" />
+        <title>rcarousel example</title>
+        <link type="text/css" rel="stylesheet" href="../../rcarousel/css/rcarousel.css" />
+		<style type="text/css">
+			#carousel {
+				width: 300px;
+			}
+		</style>
+	</head>
+	<body>
+		<p>simple carousel without navigation but with autoscrolling</p>
+		<div id="carousel" class="rcarousel">
+			<div class="wrapper">
+				<ul>
+					<li><img src="images/001.jpg" /></li>
+					<li><img src="images/002.jpg" /></li>
+					<li><img src="images/003.jpg" /></li>
+					<li><img src="images/004.jpg" /></li>
+					<li><img src="images/005.jpg" /></li>
+					<li><img src="images/006.jpg" /></li>
+					<li><img src="images/007.jpg" /></li>
+					<li><img src="images/008.jpg" /></li>
+					<li><img src="images/009.jpg" /></li>
+					<li><img src="images/010.jpg" /></li>
+				</ul>
+			</div>
+		</div>
+
+		<script type="text/javascript" src="../../rcarousel/lib/jquery-1.4.4.min.js"></script>
+		<script type="text/javascript" src="../../rcarousel/lib/jquery.ui.core.js"></script>
+		<script type="text/javascript" src="../../rcarousel/lib/jquery.ui.widget.js"></script>
+		<script type="text/javascript" src="../../rcarousel/lib/jquery.ui.rcarousel.min.js"></script>
+		<script type="text/javascript">
+			jQuery(function($) {
+				$("#carousel").rcarousel({
+					auto: {enabled: true}
+				});
+			});
+		</script>
+    </body>
+</html>
