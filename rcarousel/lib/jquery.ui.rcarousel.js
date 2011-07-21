@@ -209,6 +209,13 @@
 				$(_li)
 					.removeClass("ui-rcarousel-loader")
 					.append(image);
+					
+				// make image clicable
+				$(image).click(
+					function(event) {
+						// broadcast the ‘elementClick’ event
+						self._trigger("elementClicked", event, {image: image});
+					});
 			});
 
 			if (dir === "prev") {
