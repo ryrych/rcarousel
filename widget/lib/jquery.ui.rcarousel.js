@@ -259,9 +259,16 @@
 			var self = this,
 				options = self.options,
 				structure = options.structure;
+				
+			// having 10 elements: A, B, C, D, E, F, G, H, I, J the algorithm
+			// creates 5 pages for ‘visible: 5’ and ‘step: 2’:
+			// [ABCDE], [CDEFG], [EFGHI], [GHIJA], [IJABC] and then [ABCDE] again
+			// the last page [ABCDE] is removed at the end of the algorithm
 
 			function _init() {
 				var i;
+				
+				// init creates the first page [ABCDE] and remembers it
 
 				// in case of changing step at runtime
 				structure.pages = [];
@@ -311,15 +318,22 @@
 					_start = options.step,
 					_end, _index, _add;
 
+				// continue until you reach the first page again
+				// we start from the 2nd page (1st page has been already initiated)
 				while (!_isFirstPage(structure.pages[structure.pages.length - 1]) || _beginning) {
 					_beginning = false;
 
 					_end = _start + options.visible;
 
+					// we cannot exceed _len
 					if (_end > _len) {
 						_end = _len;
 					}
-
+					
+					// when we run ouf of elements we must complement them from the beginning
+					// in our example the 4th page is [GHIJA] and A element is added in second step
+					// in statement below (if (_complement))
+					// we must assure that we have always ‘visible’ (5 in our example) elements
 					if (_end - _start < options.visible) {
 						_complement = true;
 
@@ -328,14 +342,20 @@
 					}
 
 					if (_complement) {
-						// old elements
+						
+						// first add old elemets; for 4th page it adds [GHIJ…]
+						// remember the page we add to
 						_index = _append(_start, _end);
-						// new elements
+						
+						// then add new, complemented elements; for 4th page it is A element:
+						// [ghijA]
 						_append(0, options.visible - (_end - _start), _index);
 						_add = false;
 
+						// in our example the page is [IJABC] (5th page)
+						// the next page must start with A
 						if (_start + options.step >= _len) {
-							// calculate new _start
+							
 							// 0 is position of A
 							// (_end - _start) is the number of elements before A
 							_start = 0 - (_end - _start) + options.step;
@@ -343,9 +363,12 @@
 						}
 
 					} else {
+						
+						// normal pages like [CDEFG], [EFGHI]
 						_append(_start, _end);
 						_add = false;
 
+						// if next page is the first page again for example in 1-1, 2-2, 3-3, 4-4, 5-5, 6-6, 7-7, 8-8 or 9-9
 						if (_start + options.step >= _len) {
 							_start = 0;
 							_add = true;
@@ -357,7 +380,8 @@
 						_add = false;
 					}
 				}
-				// remove last page (that refers to first page)
+				
+				// remove last page (that refers to the first page)
 				structure.pages.length -= 1;
 
 				// check if user startAtPage is correct
