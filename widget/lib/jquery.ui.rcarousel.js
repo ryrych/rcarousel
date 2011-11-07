@@ -3,12 +3,10 @@
 		_create: function () {
 			var self = this,
 				options = self.options,
-				_root = $(this.element),
-				structure;
+				_root = $(this.element);
 
-			// for every carousel create a structure object and keep its reference in options
-			options.structure = self._createStructureObject();
-			structure = options.structure;
+			// for every carousel create a data object and keeps it in the element
+			self._createDataObject();
 
 			// if options were default there should be no problem
 			// check if user set options before init: $('element').rcarousel({with: "foo", visible: 3});
@@ -36,14 +34,14 @@
 		_autoMode: function (direction) {
 			var self = this,
 				options = self.options,
-				structure = options.structure;
+				data = $( this.element ).data( "data" );
 
 			if (direction === "next") {
-				structure.autoModeInterval = setInterval(function () {
+				data.autoModeInterval = setInterval(function () {
 					self.next();
 				}, options.auto.interval);
 			} else {
-				structure.autoModeInterval = setInterval(function () {
+				data.autoModeInterval = setInterval(function () {
 					self.prev();
 				}, options.auto.interval);
 			}
@@ -161,16 +159,16 @@
 			// configuration depends on if carousel was hardcoded or not
 			var self = this,
 				options = self.options,
-				structure = options.structure;
+				data = $( this.element ).data( "data" );
 
 			if (hardcoded) {
 				self._setStructure();
 				self._loadElements();
-				structure.hardcoded = true;
+				data.hardcoded = true;
 			} else {
 				self._createStructure();
 				self.load();
-				structure.hardcoded = false;
+				data.hardcoded = false;
 			}
 			self._setCarouselWidth();
 			self._setCarouselHeight();
@@ -187,7 +185,7 @@
 			// create new LI element with IMG inside it
 			var self = this,
 				options = self.options,
-				structure = options.structure,
+				data = $( this.element ).data( "data" ),
 				_li = $("<li></li>");
 
 			$(_li)
@@ -219,46 +217,45 @@
 			});
 
 			if (dir === "prev") {
-				$(structure.list).prepend(_li);
+				$(data.list).prepend(_li);
 			} else {
-				$(_li).appendTo(structure.list);
+				$(_li).appendTo(data.list);
 			}
 		},
 		_createStructure: function () {
 			var	self = this,
 				options = self.options,
-				structure = options.structure,
+				data = $( this.element ).data( "data" ),
 				_carousel = $(this.element),
 				_wrapper, _list;
 
 			_wrapper = $("<div class='wrapper'></div>")
 				.appendTo(_carousel);
-			structure.wrapper = _wrapper;
+			data.wrapper = _wrapper;
 
 			_list = $("<ul></ul>")
 				.appendTo(_wrapper);
-			structure.list = _list;
+			data.list = _list;
 		},
-		_createStructureObject: function () {
-			var self = this;
+		_createDataObject: function () {
 
-			self.carousels[self.carousels.length] = {
-				paths: [],
-				pathsLen: 0,
-				pages: [],
-				firstPage: [],
-				oldPageIndex: 0,
-				pageIndex: 0,
-				navigation: {},
-				animated: false
-			};
-
-			return self.carousels[self.carousels.length - 1];
+			$( this.element ).data("data",
+				{
+					paths: [],
+					pathsLen: 0,
+					pages: [],
+					firstPage: [],
+					oldPageIndex: 0,
+					pageIndex: 0,
+					navigation: {},
+					animated: false
+				}
+			);
 		},
 		_generatePages: function () {
 			var self = this,
 				options = self.options,
-				structure = options.structure;
+				data = $( this.element ).data( "data" );
 				
 			// having 10 elements: A, B, C, D, E, F, G, H, I, J the algorithm
 			// creates 5 pages for ‘visible: 5’ and ‘step: 2’:
@@ -271,14 +268,14 @@
 				// init creates the first page [ABCDE] and remembers it
 
 				// in case of changing step at runtime
-				structure.pages = [];
-				structure.firstPage = [];
-				structure.pageIndex = options.startAtPage;
-				structure.pages[0] = [];
+				data.pages = [];
+				data.firstPage = [];
+				data.pageIndex = options.startAtPage;
+				data.pages[0] = [];
 
 				for (i = 0; i < options.visible; i++) {
-					structure.pages[0][structure.pages[0].length] = structure.paths[i];
-					structure.firstPage[i] = structure.paths[i];
+					data.pages[0][data.pages[0].length] = data.paths[i];
+					data.firstPage[i] = data.paths[i];
 				}
 			}
 
@@ -286,8 +283,8 @@
 				var isFirst = false,
 					i;
 
-				for (i = 0; i < structure.firstPage.length; i++) {
-					if (structure.firstPage[i] === page[i]) {
+				for (i = 0; i < data.firstPage.length; i++) {
+					if (data.firstPage[i] === page[i]) {
 						isFirst = true;
 					} else {
 						isFirst = false;
@@ -298,21 +295,21 @@
 			}
 
 			function _append(start, end, atIndex) {
-				var _index = atIndex || structure.pages.length,
+				var _index = atIndex || data.pages.length,
 					i;
 
 				if (!atIndex) {
-					structure.pages[_index] = [];
+					data.pages[_index] = [];
 				}
 
 				for (i = start; i < end; i++) {
-					structure.pages[_index].push(structure.paths[i]);
+					data.pages[_index].push(data.paths[i]);
 				}
 				return _index;
 			}
 
 			function _paginate() {
-				var _len = structure.paths.length,
+				var _len = data.paths.length,
 					_beginning = true,
 					_complement = false,
 					_start = options.step,
@@ -320,7 +317,7 @@
 
 				// continue until you reach the first page again
 				// we start from the 2nd page (1st page has been already initiated)
-				while (!_isFirstPage(structure.pages[structure.pages.length - 1]) || _beginning) {
+				while (!_isFirstPage(data.pages[data.pages.length - 1]) || _beginning) {
 					_beginning = false;
 
 					_end = _start + options.visible;
@@ -382,15 +379,15 @@
 				}
 				
 				// remove last page (that refers to the first page)
-				structure.pages.length -= 1;
+				data.pages.length -= 1;
 
 				// check if user startAtPage is correct
 				if (options.startAtPage <= 0) {
-					options.startAtPage = structure.oldPageIndex = structure.pageIndex = 0;
-				} else if (options.startAtPage > structure.pages.length - 1) {
-					options.startAtPage = structure.oldPageIndex = structure.pageIndex = structure.pages.length - 1;
+					options.startAtPage = data.oldPageIndex = data.pageIndex = 0;
+				} else if (options.startAtPage > data.pages.length - 1) {
+					options.startAtPage = data.oldPageIndex = data.pageIndex = data.pages.length - 1;
 				} else {
-					structure.oldPageIndex = structure.pageIndex = options.startAtPage;
+					data.oldPageIndex = data.pageIndex = options.startAtPage;
 				}
 			}
 
@@ -401,40 +398,40 @@
 		getTotalPages: function () {
 			var self = this,
 				options = self.options,
-				structure = options.structure;
+				data = $( this.element ).data( "data" );
 
-			return structure.pages.length;
+			return data.pages.length;
 		},
 		goToPage: function (page) {
 			var	self = this,
 				options = self.options,
-				structure = options.structure,
+				data = $( this.element ).data( "data" ),
 				_by;
 
-			if (!structure.animated && page !== structure.pageIndex) {
-				structure.animated = true;
+			if (!data.animated && page !== data.pageIndex) {
+				data.animated = true;
 
-				if (page > structure.pages.length - 1) {
-					page = structure.pages.length - 1;
+				if (page > data.pages.length - 1) {
+					page = data.pages.length - 1;
 				} else if (page < 0) {
 					page = 0;
 				}
-				structure.pageIndex = page;
+				data.pageIndex = page;
 
-				_by = page - structure.oldPageIndex;
+				_by = page - data.oldPageIndex;
 				if (_by >= 0) {
 					//move by n elements from current index
 					self._goToNextPage(_by);
 				} else {
 					self._goToPrevPage(_by);
 				}
-				structure.oldPageIndex = page;
+				data.oldPageIndex = page;
 			}
 		},
 		load: function (obj) {
 			var self = this,
 				options = self.options,
-				structure = options.structure,
+				data = $( this.element ).data( "data" ),
 				_object, _path, _format, _nodes;
 
 			// check object validity
@@ -447,24 +444,24 @@
 			_format = _object.format || options.remote.format;
 
 			// remove old LI elements before populating
-			$(structure.list).empty();
+			$(data.list).empty();
 
 			// we don't want to manipulate doubled elements
-			structure.paths.length = 0;
+			data.paths.length = 0;
 
 			// now elements are not hardcoded
-			structure.hardcoded = false;
+			data.hardcoded = false;
 
 			// load a file
 			if (_format === "json") {
-				$.getJSON(_path, function (data) {
-					$.each(data.paths, function (i, item) {
+				$.getJSON(_path, function (response) {
+					$.each(response.paths, function (i, item) {
 						// store path to a file
-						structure.paths.push(item);
+						data.paths.push(item);
 					});
 
 					// check if we had enough elements
-					if (structure.paths.length < options.visible) {
+					if (data.paths.length < options.visible) {
 						throw new Error("At least " + options.visible + " elements are required");
 					}
 
@@ -474,14 +471,14 @@
 				});
 
 			} else if (_format === "xml") {
-				$.get(_path, function (data) {
-					_nodes = $(data).find("path");
+				$.get(_path, function (response) {
+					_nodes = $(response).find("path");
 					$.each(_nodes, function (i, item) {
-						structure.paths.push($(item).text());
+						data.paths.push($(item).text());
 					});
 
 					// check if we had enough elements
-					if (structure.paths.length < options.visible) {
+					if (data.paths.length < options.visible) {
 						throw new Error("At least " + options.visible + " elements are required");
 					}
 
@@ -510,9 +507,9 @@
 		_loadElements: function (elements, direction) {
 			var self = this,
 				options = self.options,
-				structure = options.structure,
+				data = $( this.element ).data( "data" ),
 				_dir = direction || "next",
-				_elem = elements || structure.pages[options.startAtPage],
+				_elem = elements || data.pages[options.startAtPage],
 				_start = 0,
 				_end = _elem.length,
 				i = 0;
@@ -530,13 +527,13 @@
 		_goToPrevPage: function (by) {
 			var self = this,
 				options = self.options,
-				structure = options.structure,
+				data = $( this.element ).data( "data" ),
 				_page, _oldPage, _dist, i, _index, _animOpts, _lastEl, _unique, _pos;
 
 			// pick the page
-			_index = structure.oldPageIndex + by;
-			_page = structure.pages[_index].slice(0);
-			_oldPage = structure.pages[structure.oldPageIndex];
+			_index = data.oldPageIndex + by;
+			_page = data.pages[_index].slice(0);
+			_oldPage = data.pages[data.oldPageIndex];
 
 			// check if 1st element from page appears in _oldPage
 			_lastEl = _page[_page.length - 1];
@@ -567,20 +564,20 @@
 
 			if (options.orientation === "horizontal") {
 				_animOpts = {scrollLeft: 0};
-				$(structure.wrapper).scrollLeft(_dist);
+				$(data.wrapper).scrollLeft(_dist);
 			} else {
 				_animOpts = {scrollTop: 0};
-				$(structure.wrapper).scrollTop(_dist);
+				$(data.wrapper).scrollTop(_dist);
 			}
 
-			$(structure.wrapper)
+			$(data.wrapper)
 				.animate(_animOpts, options.speed, function () {
 					self._removeOldElements("last", _page.length);
-					structure.animated = false;
+					data.animated = false;
 
 					if (options.auto.enabled) {
 						// reset autoModeInterval so that auto scrolling could start anew
-						clearInterval(structure.autoModeInterval);
+						clearInterval(data.autoModeInterval);
 						self._autoMode(options.auto.direction);
 					}
 
@@ -591,13 +588,13 @@
 		_goToNextPage: function (by) {
 			var self = this,
 				options = self.options,
-				structure = options.structure,
+				data = $( this.element ).data( "data" ),
 				_page, _oldPage, _dist, i, _index, _animOpts, _firstEl, _unique, _pos;
 
 			// pick the page
-			_index = structure.oldPageIndex + by;
-			_page = structure.pages[_index].slice(0);
-			_oldPage = structure.pages[structure.oldPageIndex];
+			_index = data.oldPageIndex + by;
+			_page = data.pages[_index].slice(0);
+			_oldPage = data.pages[data.oldPageIndex];
 
 			// check if 1st element from page appears in _oldPage
 			_firstEl = _page[0];
@@ -627,19 +624,19 @@
 			_dist = options.width * _page.length + (options.margin * _page.length);
 			_animOpts = options.orientation === "horizontal" ? {scrollLeft: "+=" + _dist} : {scrollTop: "+=" + _dist};
 
-			$(structure.wrapper)
+			$(data.wrapper)
 				.animate(_animOpts, options.speed, function () {
 					self._removeOldElements("first", _page.length);
 					if (options.orientation === "horizontal") {
-						$(structure.wrapper).scrollLeft(0);
+						$(data.wrapper).scrollLeft(0);
 					} else {
-						$(structure.wrapper).scrollTop(0);
+						$(data.wrapper).scrollTop(0);
 					}
-					structure.animated = false;
+					data.animated = false;
 
 					if (options.auto.enabled) {
 						// reset autoModeInterval so that auto scrolling could start anew
-						clearInterval(structure.autoModeInterval);
+						clearInterval(data.autoModeInterval);
 						self._autoMode(options.auto.direction);
 					}
 
@@ -651,51 +648,51 @@
 		next: function () {
 			var	self = this,
 				options = self.options,
-				structure = options.structure;
+				data = $( this.element ).data( "data" );
 
-			if (!structure.animated) {
-				structure.animated = true;
+			if (!data.animated) {
+				data.animated = true;
 
-				++structure.pageIndex;
-				if (structure.pageIndex > structure.pages.length - 1) {
-					structure.pageIndex = 0;
+				++data.pageIndex;
+				if (data.pageIndex > data.pages.length - 1) {
+					data.pageIndex = 0;
 				}
 
 				// move by one element from current index
-				self._goToNextPage(structure.pageIndex - structure.oldPageIndex);
-				structure.oldPageIndex = structure.pageIndex;
+				self._goToNextPage(data.pageIndex - data.oldPageIndex);
+				data.oldPageIndex = data.pageIndex;
 			}
 		},
 		prev: function () {
 			var	self = this,
 				options = self.options,
-				structure = options.structure;
+				data = $( this.element ).data( "data" );
 
-			if (!structure.animated) {
-				structure.animated = true;
+			if (!data.animated) {
+				data.animated = true;
 
-				--structure.pageIndex;
-				if (structure.pageIndex < 0) {
-					structure.pageIndex = structure.pages.length - 1;
+				--data.pageIndex;
+				if (data.pageIndex < 0) {
+					data.pageIndex = data.pages.length - 1;
 				}
 
 				// move left by one element from current index
-				self._goToPrevPage(structure.pageIndex - structure.oldPageIndex);
-				structure.oldPageIndex = structure.pageIndex;
+				self._goToPrevPage(data.pageIndex - data.oldPageIndex);
+				data.oldPageIndex = data.pageIndex;
 			}
 		},
 		_removeOldElements: function (position, length) {
 			// remove 'step' elements
 			var self = this,
 				options = self.options,
-				structure = options.structure,
+				data = $( this.element ).data( "data" ),
 				i, _arr, _len;
 
 			for (i = 0; i < length; i++) {
 				if (position === "first") {
-					$("li", structure.list).eq(0).remove();
+					$("li", data.list).eq(0).remove();
 				} else {
-					_arr = $("li", structure.list);
+					_arr = $("li", data.list);
 					_len = $(_arr).length;
 					$(_arr).eq(_len - 1).remove();
 				}
@@ -704,7 +701,7 @@
 		_setOption: function (key, value) {
 			var self = this,
 				options = self.options,
-				structure = options.structure,
+				data = $( this.element ).data( "data" ),
 				_newOptions;
 
 			switch (key) {
@@ -714,7 +711,7 @@
 				self._generatePages();
 
 				// remove old LI elements before populating
-				$(structure.list).empty();
+				$(data.list).empty();
 				self._loadElements();
 				// apply...
 				$.Widget.prototype._setOption.apply(this, arguments);
@@ -745,7 +742,7 @@
 				if (options.auto.enabled) {
 					self._autoMode(options.auto.direction);
 				} else {
-					clearInterval(structure.autoModeInterval);
+					clearInterval(data.autoModeInterval);
 				}
 			}
 
@@ -754,70 +751,70 @@
 			// calculate a step
 			var self = this,
 				options = self.options,
-				structure = options.structure,
+				data = $( this.element ).data( "data" ),
 				_step;
 
 			_step = s || options.step;
 
 			options.step = _step;
-			structure.step = options.width * _step;
+			data.step = options.width * _step;
 		},
 		_setStructure: function () {
 			var self = this,
 				_root = $(this.element),
 				options = self.options,
-				structure = options.structure,
+				data = $( this.element ).data( "data" ),
 				_lis, _li, i;
 
 			// wrapper holds UL with LIs
-			structure.wrapper = $("div.wrapper", _root);
-			structure.list = $("ul", structure.wrapper);
+			data.wrapper = $("div.wrapper", _root);
+			data.list = $("ul", data.wrapper);
 			// check if we had enough elements
-			_lis = $("li", structure.list);
+			_lis = $("li", data.list);
 			if (_lis.length < options.visible) {
 				throw new Error("At least " + options.visible + " elements are required");
 			}
 
 			// save all paths (src attribute) in paths array
 			for (i = _lis.length - 1; i >= 0; i--) {
-				_lis = $("li", structure.list);
+				_lis = $("li", data.list);
 
 				_li = $(_lis).eq(_lis.length - 1);
 				// remove li
 				$(_li).remove();
 
 				// save the path
-				structure.paths.unshift($("img", _li).attr("src"));
+				data.paths.unshift($("img", _li).attr("src"));
 			}
 
 			// just init
 			self._generatePages();
 
 			// save basic navigation
-			structure.navigation.next = $(options.navigation.next);
-			structure.navigation.prev = $(options.navigation.prev);
+			data.navigation.next = $(options.navigation.next);
+			data.navigation.prev = $(options.navigation.prev);
 		},
 		_setCarouselHeight: function () {
 			var self = this,
 				options = self.options,
-				structure = options.structure,
+				data = $( this.element ).data( "data" ),
 				_newHeight;
 
 			_newHeight = (options.orientation === "vertical") ? options.visible * options.height + options.margin * (options.visible - 1) : options.height;
 
 
-			$(structure.wrapper).height(_newHeight);
+			$(data.wrapper).height(_newHeight);
 		},
 		_setCarouselWidth: function () {
 			var self = this,
 				options = self.options,
-				structure = options.structure,
+				data = $( this.element ).data( "data" ),
 				_newWidth;
 
 			_newWidth = (options.orientation === "horizontal") ? options.visible * options.width + options.margin * (options.visible - 1) : options.width;
 
 			// set carousel width and disable overflow: auto
-			$(structure.wrapper).css({
+			$(data.wrapper).css({
 				width: _newWidth,
 				overflow: "hidden"
 			});
@@ -847,7 +844,6 @@
 			speed: 1000,
 			margin: 0,
 			orientation: "horizontal",
-			structure: null,
 			auto: {
 				enabled: false,
 				direction: "next",
@@ -858,7 +854,6 @@
 				next: "#ui-rcarousel-next",
 				prev: "#ui-rcarousel-prev"
 			}
-		},
-		carousels: []
+		}
 	});
 }(jQuery));
