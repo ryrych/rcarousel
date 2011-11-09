@@ -1,36 +1,88 @@
 (function ($) {
 	$.widget("ui.rcarousel", {
 		_create: function () {
-			var self = this,
-				options = self.options,
-				_root = $(this.element);
-
-			// for every carousel create a data object and keeps it in the element
-			self._createDataObject();
+			var data,
+				$root = $( this.element ),
+				_self = this,
+				options = this.options;
 
 			// if options were default there should be no problem
-			// check if user set options before init: $('element').rcarousel({with: "foo", visible: 3});
-			// in above example exception will be thrown bacause 'with' should be a number!
-			self._checkOptionsValidity(self.options);
+            // check if user set options before init: $('element').rcarousel({with: "foo", visible: 3});
+            // in above example exception will be thrown bacause 'with' should be a number!
+            this._checkOptionsValidity( this.options );
 
-			// check if structure is hardcoded and valid
-			if ($(_root).children("div.wrapper").length === 1) {
-				if ($(_root).children("div.wrapper").find("ul > li").length < 1) {
-					// there is DIV element inside element rcarousel is invoked on; check if it contains
-					// UL and at least one LI element
-					throw new Error("Inside DIV.wrapper you should have placed UL element with at least one LI element");
-				} else {
-					self._configure(true);
+			// for every carousel create a data object and keeps it in the element
+			this._createDataObject();
+			data = $root.data( "data" );
+
+			// create wrapper inside root element; this is needed for animating
+			$root
+				.children()
+				.wrapAll( "<div class='wrapper'></div>" );
+			
+			// save all children of root element in ‘paths’ array
+			this._saveElements();
+
+			// make pages using paginate algorithm
+			this._generatePages();		
+			
+			this._loadElements();
+				
+			this._setCarouselWidth();
+			this._setCarouselHeight();
+			
+			// handle default event handlers
+			$( options.navigation.next ).click(
+				function() {
+					_self.next();
 				}
-			} else if ($(_root).children("div.wrapper").length > 1) {
-				throw new Error("You are not allowed to use more than one div.wrapper in carousel's container!");
-			} else if ($(_root).children("div.wrapper").length < 1) {
-				// structure hasn't been created yet - create it
-				self._configure(false);
+			);
+			
+			$( options.navigation.prev ).click(
+				function() {
+					_self.prev();
+				}
+			);			
+			
+			data.navigation.next = $( options.navigation.next );
+			data.navigation.prev = $( options.navigation.prev );
+			
+			this._setStep();
+			
+			// if auto mode is enabled run it
+			if ( options.auto.enabled ) {
+				this._autoMode( options.auto.direction );
 			}
+			
 			// broadcast event
-			self._trigger("start", null, null);
+			this._trigger( "start" );
 		},
+		
+		_addElement: function( jQueryElement, direction ) {
+			var $root = $( this.element ),
+				$content = $root.find( "div.wrapper" ),
+				options = this.options;
+
+			jQueryElement
+				.width( options.width )
+				.height( options.height );
+				
+			if ( options.orientation === "horizontal" ) {
+				$( jQueryElement ).css( "marginRight", options.margin );
+			} else {
+				$( jQueryElement ).css({
+					marginBottom: options.margin,
+					"float": "none"
+				});
+			}
+			
+			if ( direction === "prev" ) {
+				$content.prepend( jQueryElement );
+			} else {
+				$content.append( jQueryElement );
+			}			
+		},
+		
 		_autoMode: function (direction) {
 			var self = this,
 				options = self.options,
@@ -46,6 +98,7 @@
 				}, options.auto.interval);
 			}
 		},
+		
 		_checkOptionsValidity: function (options) {
 			var	self = this,
 				_correctSteps = "",
@@ -155,91 +208,11 @@
 				}
 			}
 		},
-		_configure: function (hardcoded) {
-			// configuration depends on if carousel was hardcoded or not
-			var self = this,
-				options = self.options,
-				data = $( this.element ).data( "data" );
-
-			if (hardcoded) {
-				self._setStructure();
-				self._loadElements();
-				data.hardcoded = true;
-			} else {
-				self._createStructure();
-				self.load();
-				data.hardcoded = false;
-			}
-			self._setCarouselWidth();
-			self._setCarouselHeight();
-			// TODO ujednolicić
-			self._setEventHandlers("next");
-			self._setEventHandlers("prev");
-			self._setStep();
-			// if auto mode is enabled run it
-			if (options.auto.enabled) {
-				self._autoMode(options.auto.direction);
-			}
-		},
-		_createNewElement: function (path, dir) {
-			// create new LI element with IMG inside it
-			var self = this,
-				options = self.options,
-				data = $( this.element ).data( "data" ),
-				_li = $("<li></li>");
-
-			$(_li)
-				.width(options.width)
-				.height(options.height)
-				.addClass("ui-rcarousel-loader");
-
-			if (options.orientation === "horizontal") {
-				$(_li).css("marginRight", options.margin);
-			} else {
-				$(_li).css({
-					marginBottom: options.margin,
-					"float": "none"
-				});
-			}
-
-			// load element and call callback
-			self._loadElement(path, function (image) {
-				$(_li)
-					.removeClass("ui-rcarousel-loader")
-					.append(image);
-					
-				// make image clicable
-				$(image).click(
-					function(event) {
-						// broadcast the ‘elementClick’ event
-						self._trigger("elementClicked", event, {image: image});
-					});
-			});
-
-			if (dir === "prev") {
-				$(data.list).prepend(_li);
-			} else {
-				$(_li).appendTo(data.list);
-			}
-		},
-		_createStructure: function () {
-			var	self = this,
-				options = self.options,
-				data = $( this.element ).data( "data" ),
-				_carousel = $(this.element),
-				_wrapper, _list;
-
-			_wrapper = $("<div class='wrapper'></div>")
-				.appendTo(_carousel);
-			data.wrapper = _wrapper;
-
-			_list = $("<ul></ul>")
-				.appendTo(_wrapper);
-			data.list = _list;
-		},
+		
 		_createDataObject: function () {
+			var $root = $( this.element );
 
-			$( this.element ).data("data",
+			$root.data("data",
 				{
 					paths: [],
 					pathsLen: 0,
@@ -252,6 +225,7 @@
 				}
 			);
 		},
+		
 		_generatePages: function () {
 			var self = this,
 				options = self.options,
@@ -284,7 +258,7 @@
 					i;
 
 				for (i = 0; i < data.firstPage.length; i++) {
-					if (data.firstPage[i] === page[i]) {
+					if ( $(data.firstPage[i]).get(0) === $(page[i]).get(0) ) {
 						isFirst = true;
 					} else {
 						isFirst = false;
@@ -395,6 +369,7 @@
 			_init();
 			_paginate();
 		},
+		
 		getTotalPages: function () {
 			var self = this,
 				options = self.options,
@@ -402,6 +377,7 @@
 
 			return data.pages.length;
 		},
+		
 		goToPage: function (page) {
 			var	self = this,
 				options = self.options,
@@ -428,6 +404,7 @@
 				data.oldPageIndex = page;
 			}
 		},
+		
 		load: function (obj) {
 			var self = this,
 				options = self.options,
@@ -487,23 +464,7 @@
 				});
 			}
 		},
-		_loadElement: function (path, callback) {
-			var _image = new Image(),
-				_loadWatch;
-
-			_image.src = path;
-
-			function _watch() {
-				if (_image.complete) {
-					clearInterval(_loadWatch);
-
-					if (callback) {
-						callback(_image);
-					}
-				}
-			}
-			_loadWatch = setInterval(_watch, 100);
-		},
+		
 		_loadElements: function (elements, direction) {
 			var self = this,
 				options = self.options,
@@ -516,16 +477,18 @@
 
 			if (_dir === "next") {
 				for (i = _start; i < _end; i++) {
-					self._createNewElement(_elem[i], _dir);
+					self._addElement( _elem[i], _dir );
 				}
 			} else {
 				for (i = _end - 1; i >= _start; i--) {
-					self._createNewElement(_elem[i], _dir);
+					self._addElement( _elem[i], _dir );
 				}
 			}
 		},
+		
 		_goToPrevPage: function (by) {
-			var self = this,
+			var $root = $( this.element ),
+				self = this,
 				options = self.options,
 				data = $( this.element ).data( "data" ),
 				_page, _oldPage, _dist, i, _index, _animOpts, _lastEl, _unique, _pos;
@@ -536,9 +499,9 @@
 			_oldPage = data.pages[data.oldPageIndex];
 
 			// check if 1st element from page appears in _oldPage
-			_lastEl = _page[_page.length - 1];
+			$lastEl = $( _page[_page.length - 1] ).get( 0 );
 			for (i = _oldPage.length - 1; i >= 0; i--) {
-				if (_lastEl === _oldPage[i]) {
+				if ($lastEl === $(_oldPage[i]).get(0)) {
 					_unique = false;
 					_pos = i;
 					break;
@@ -549,7 +512,7 @@
 
 			if (!_unique) {
 				while (_pos >= 0) {
-					if (_page[_page.length - 1] === _oldPage[_pos]) {
+					if ($(_page[_page.length - 1]).get(0) === $(_oldPage[_pos]).get(0)) {
 						// this element is unique
 						_page.pop();
 					}
@@ -564,13 +527,13 @@
 
 			if (options.orientation === "horizontal") {
 				_animOpts = {scrollLeft: 0};
-				$(data.wrapper).scrollLeft(_dist);
+				$root.scrollLeft(_dist);
 			} else {
 				_animOpts = {scrollTop: 0};
-				$(data.wrapper).scrollTop(_dist);
+				$root.scrollTop(_dist);
 			}
 
-			$(data.wrapper)
+			$root
 				.animate(_animOpts, options.speed, function () {
 					self._removeOldElements("last", _page.length);
 					data.animated = false;
@@ -585,10 +548,12 @@
 					self._trigger("pageLoaded", null, {page: _index});
 				});
 		},
+		
 		_goToNextPage: function (by) {
-			var self = this,
+			var $root = $( this.element ),
+				self = this,
 				options = self.options,
-				data = $( this.element ).data( "data" ),
+				data = $root.data( "data" ),
 				_page, _oldPage, _dist, i, _index, _animOpts, _firstEl, _unique, _pos;
 
 			// pick the page
@@ -597,9 +562,9 @@
 			_oldPage = data.pages[data.oldPageIndex];
 
 			// check if 1st element from page appears in _oldPage
-			_firstEl = _page[0];
+			$firstEl = $( _page[0] ).get( 0 );
 			for (i = 0; i < _page.length; i++) {
-				if (_firstEl === _oldPage[i]) {
+				if ( $firstEl === $(_oldPage[i]).get(0) ) {
 					_unique = false;
 					_pos = i;
 					break;
@@ -610,7 +575,7 @@
 
 			if (!_unique) {
 				while (_pos < _oldPage.length) {
-					if (_page[0] === _oldPage[_pos]) {
+					if ($(_page[0]).get(0) === $(_oldPage[_pos]).get(0)) {
 						// this element is unique
 						_page.shift();
 					}
@@ -624,13 +589,13 @@
 			_dist = options.width * _page.length + (options.margin * _page.length);
 			_animOpts = options.orientation === "horizontal" ? {scrollLeft: "+=" + _dist} : {scrollTop: "+=" + _dist};
 
-			$(data.wrapper)
+			$root
 				.animate(_animOpts, options.speed, function () {
 					self._removeOldElements("first", _page.length);
 					if (options.orientation === "horizontal") {
-						$(data.wrapper).scrollLeft(0);
+						$root.scrollLeft(0);
 					} else {
-						$(data.wrapper).scrollTop(0);
+						$root.scrollTop(0);
 					}
 					data.animated = false;
 
@@ -645,6 +610,7 @@
 
 			});
 		},
+		
 		next: function () {
 			var	self = this,
 				options = self.options,
@@ -663,6 +629,7 @@
 				data.oldPageIndex = data.pageIndex;
 			}
 		},
+		
 		prev: function () {
 			var	self = this,
 				options = self.options,
@@ -681,23 +648,41 @@
 				data.oldPageIndex = data.pageIndex;
 			}
 		},
+		
 		_removeOldElements: function (position, length) {
 			// remove 'step' elements
-			var self = this,
+			var $root = $( this.element ),
+				$content = $root.find( "div.wrapper" ).children(),
+				self = this,
 				options = self.options,
 				data = $( this.element ).data( "data" ),
 				i, _arr, _len;
 
 			for (i = 0; i < length; i++) {
 				if (position === "first") {
-					$("li", data.list).eq(0).remove();
+					$content.eq(0).remove();
 				} else {
-					_arr = $("li", data.list);
 					_len = $(_arr).length;
-					$(_arr).eq(_len - 1).remove();
+					$content.eq( $content.length - 1).remove();
 				}
 			}
 		},
+		
+		_saveElements: function() {
+			var $el,
+				$root = $( this.element ),
+				$elements = $root.find( "div.wrapper" ).children(),
+				data = $root.data( "data" );
+				
+			$elements.each(
+				function( i, el ) {
+					$el = $( el );
+					data.paths.push( $el );
+					$el.remove();
+				}
+			);		
+		},
+		
 		_setOption: function (key, value) {
 			var self = this,
 				options = self.options,
@@ -759,83 +744,41 @@
 			options.step = _step;
 			data.step = options.width * _step;
 		},
-		_setStructure: function () {
-			var self = this,
-				_root = $(this.element),
-				options = self.options,
-				data = $( this.element ).data( "data" ),
-				_lis, _li, i;
-
-			// wrapper holds UL with LIs
-			data.wrapper = $("div.wrapper", _root);
-			data.list = $("ul", data.wrapper);
-			// check if we had enough elements
-			_lis = $("li", data.list);
-			if (_lis.length < options.visible) {
-				throw new Error("At least " + options.visible + " elements are required");
-			}
-
-			// save all paths (src attribute) in paths array
-			for (i = _lis.length - 1; i >= 0; i--) {
-				_lis = $("li", data.list);
-
-				_li = $(_lis).eq(_lis.length - 1);
-				// remove li
-				$(_li).remove();
-
-				// save the path
-				data.paths.unshift($("img", _li).attr("src"));
-			}
-
-			// just init
-			self._generatePages();
-
-			// save basic navigation
-			data.navigation.next = $(options.navigation.next);
-			data.navigation.prev = $(options.navigation.prev);
-		},
+		
 		_setCarouselHeight: function () {
-			var self = this,
-				options = self.options,
-				data = $( this.element ).data( "data" ),
-				_newHeight;
+			var _newHeight,
+				$root = $( this.element ),
+				data = $( this.element ).data( "data" ),			
+				options = this.options;
 
-			_newHeight = (options.orientation === "vertical") ? options.visible * options.height + options.margin * (options.visible - 1) : options.height;
+			if ( options.orientation === "vertical" ) {
+				_newHeight = options.visible * options.height + options.margin * (options.visible - 1);
+			} else {
+				_newHeight = options.height;
+			}
 
-
-			$(data.wrapper).height(_newHeight);
+			$root.height(_newHeight);
 		},
+		
 		_setCarouselWidth: function () {
-			var self = this,
-				options = self.options,
-				data = $( this.element ).data( "data" ),
-				_newWidth;
+			var _newWidth,
+				$root = $( this.element ),
+				options = this.options,
+				data = $( this.element ).data( "data" );
 
-			_newWidth = (options.orientation === "horizontal") ? options.visible * options.width + options.margin * (options.visible - 1) : options.width;
+			if ( options.orientation === "horizontal" ) {
+				_newWidth = options.visible * options.width + options.margin * (options.visible - 1);
+			} else {
+				_newWidth = options.width;
+			}
 
 			// set carousel width and disable overflow: auto
-			$(data.wrapper).css({
+			$root.css({
 				width: _newWidth,
 				overflow: "hidden"
 			});
 		},
-		_setEventHandlers: function (action) {
-			// basic navigation: next and previous item
-			var self = this,
-				options = self.options;
-
-			if (action === "next") {
-				$(options.navigation.next).click(function () {
-					self.next();
-				});
-			}
-
-			if (action === "prev") {
-				$(options.navigation.prev).click(function () {
-					self.prev();
-				});
-			}
-		},
+		
 		options: {
 			visible: 3,
 			step: 3,
