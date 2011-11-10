@@ -405,66 +405,6 @@
 			}
 		},
 		
-		load: function (obj) {
-			var self = this,
-				options = self.options,
-				data = $( this.element ).data( "data" ),
-				_object, _path, _format, _nodes;
-
-			// check object validity
-			if (obj) {
-				self._checkOptionsValidity({remote: obj});
-			}
-
-			_object = obj || {};
-			_path = _object.path || options.remote.path;
-			_format = _object.format || options.remote.format;
-
-			// remove old LI elements before populating
-			$(data.list).empty();
-
-			// we don't want to manipulate doubled elements
-			data.paths.length = 0;
-
-			// now elements are not hardcoded
-			data.hardcoded = false;
-
-			// load a file
-			if (_format === "json") {
-				$.getJSON(_path, function (response) {
-					$.each(response.paths, function (i, item) {
-						// store path to a file
-						data.paths.push(item);
-					});
-
-					// check if we had enough elements
-					if (data.paths.length < options.visible) {
-						throw new Error("At least " + options.visible + " elements are required");
-					}
-
-					self._generatePages();
-					// now load new items
-					self._loadElements();
-				});
-
-			} else if (_format === "xml") {
-				$.get(_path, function (response) {
-					_nodes = $(response).find("path");
-					$.each(_nodes, function (i, item) {
-						data.paths.push($(item).text());
-					});
-
-					// check if we had enough elements
-					if (data.paths.length < options.visible) {
-						throw new Error("At least " + options.visible + " elements are required");
-					}
-
-					self._generatePages();
-					self._loadElements();
-				});
-			}
-		},
-		
 		_loadElements: function (elements, direction) {
 			var self = this,
 				options = self.options,
