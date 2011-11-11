@@ -83,6 +83,21 @@
 			}			
 		},
 		
+		append: function( jqElements ) {
+			var $root = $( this.element ),
+				data = $root.data( "data" );
+				
+			// add new elements
+			jqElements.each(
+				function( i, el ) {
+					data.paths.push( $(el) );
+				}
+			);
+			
+			// rebuild pages
+			this._generatePages();
+		},
+		
 		_autoMode: function (direction) {
 			var self = this,
 				options = self.options,
