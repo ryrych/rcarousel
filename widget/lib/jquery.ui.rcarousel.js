@@ -77,9 +77,9 @@
 			}
 			
 			if ( direction === "prev" ) {
-				$content.prepend( jQueryElement );
+				$content.prepend( jQueryElement.clone() );
 			} else {
-				$content.append( jQueryElement );
+				$content.append( jQueryElement.clone() );
 			}			
 		},
 		
@@ -232,7 +232,7 @@
 					paths: [],
 					pathsLen: 0,
 					pages: [],
-					firstPage: [],
+					lastPage: [],
 					oldPageIndex: 0,
 					pageIndex: 0,
 					navigation: {},
@@ -241,142 +241,111 @@
 			);
 		},
 		
-		_generatePages: function () {
+		_generatePages: function() {
 			var self = this,
-				options = self.options,
-				data = $( this.element ).data( "data" );
+				options = this.options,
+				data = $( this.element ).data( "data" ),
+				_visible = options.visible,
+				_pathsLen = data.paths.length;
 				
 			// having 10 elements: A, B, C, D, E, F, G, H, I, J the algorithm
-			// creates 5 pages for ‘visible: 5’ and ‘step: 2’:
-			// [ABCDE], [CDEFG], [EFGHI], [GHIJA], [IJABC] and then [ABCDE] again
-			// the last page [ABCDE] is removed at the end of the algorithm
+			// creates 3 pages for ‘visible: 5’ and ‘step: 4’:
+			// [ABCDE], [EFGHI], [FGHIJ]
 
 			function _init() {
-				var i;
-				
-				// init creates the first page [ABCDE] and remembers it
+				// init creates the last page [FGHIJ] and remembers it
 
-				// in case of changing step at runtime
 				data.pages = [];
-				data.firstPage = [];
-				data.pageIndex = options.startAtPage;
+				data.lastPage = [];
 				data.pages[0] = [];
 
-				for (i = 0; i < options.visible; i++) {
-					data.pages[0][data.pages[0].length] = data.paths[i];
-					data.firstPage[i] = data.paths[i];
+				// init last page
+				for ( var i = _pathsLen - 1; i >= _pathsLen - _visible; i-- ) {
+					data.lastPage.unshift( data.paths[i] );
 				}
+				
+				// and first page
+				for ( var i = 0; i < _visible; i++ ) {
+					data.pages[0][data.pages[0].length] = data.paths[i];
+				}				
 			}
 
-			function _isFirstPage(page) {
-				var isFirst = false,
-					i;
+			function _islastPage( page ) {
+				var _isLast = false;
 
-				for (i = 0; i < data.firstPage.length; i++) {
-					if ( $(data.firstPage[i]).get(0) === $(page[i]).get(0) ) {
-						isFirst = true;
+				for ( var i = 0; i < data.lastPage.length; i++ ) {
+					if ( data.lastPage[i].get(0) === page[i].get(0) ) {
+						_isLast = true;
 					} else {
-						isFirst = false;
+						_isLast = false;
 						break;
 					}
 				}
-				return isFirst;
+				
+				return _isLast;
 			}
 
-			function _append(start, end, atIndex) {
-				var _index = atIndex || data.pages.length,
-					i;
+			function _append( start, end, atIndex ) {
+				var _index = atIndex || data.pages.length;
 
-				if (!atIndex) {
+				if ( !atIndex ) {
 					data.pages[_index] = [];
 				}
 
-				for (i = start; i < end; i++) {
-					data.pages[_index].push(data.paths[i]);
+				for ( var i = start; i < end; i++ ) {
+					data.pages[_index].push( data.paths[i] );
 				}
 				return _index;
 			}
 
 			function _paginate() {
-				var _len = data.paths.length,
-					_beginning = true,
+				var _isBeginning = true,
 					_complement = false,
 					_start = options.step,
-					_end, _index, _add;
+					_end, _index, _oldFirstEl, _oldLastEl;
 
-				// continue until you reach the first page again
+				// continue until you reach the last page
 				// we start from the 2nd page (1st page has been already initiated)
-				while (!_isFirstPage(data.pages[data.pages.length - 1]) || _beginning) {
-					_beginning = false;
+				while ( !_islastPage(data.pages[data.pages.length - 1]) || _isBeginning ) {
+					_isBeginning = false;
 
-					_end = _start + options.visible;
+					_end = _start + _visible;
 
-					// we cannot exceed _len
-					if (_end > _len) {
-						_end = _len;
+					// we cannot exceed _pathsLen
+					if ( _end > _pathsLen ) {
+						_end = _pathsLen;
 					}
 					
-					// when we run ouf of elements we must complement them from the beginning
-					// in our example the 4th page is [GHIJA] and A element is added in second step
-					// in statement below (if (_complement))
+					// when we run ouf of elements (_end - _start < _visible) we must add the difference at the begining
+					// in our example the 3rd page is [FGHIJ] and J element is added in the second step
+					// first we add [FGHI] as old elements
 					// we must assure that we have always ‘visible’ (5 in our example) elements
-					if (_end - _start < options.visible) {
+					if ( _end - _start < _visible ) {
 						_complement = true;
-
 					} else {
 						_complement = false;
 					}
 
-					if (_complement) {
+					if ( _complement ) {
 						
-						// first add old elemets; for 4th page it adds [GHIJ…]
-						// remember the page we add to
-						_index = _append(_start, _end);
+						// first add old elemets; for 3rd page it adds [FGHI…]
+						// remember the page we add to (_index)
+						_oldFirstEl = _start - ( _visible - (_end - _start) );
+						_oldLastEl = _oldFirstEl + ( _visible - (_end - _start) );
+						_index = _append( _oldFirstEl, _oldLastEl );
 						
-						// then add new, complemented elements; for 4th page it is A element:
-						// [ghijA]
-						_append(0, options.visible - (_end - _start), _index);
-						_add = false;
-
-						// in our example the page is [IJABC] (5th page)
-						// the next page must start with A
-						if (_start + options.step >= _len) {
-							
-							// 0 is position of A
-							// (_end - _start) is the number of elements before A
-							_start = 0 - (_end - _start) + options.step;
-							_add = true;
-						}
+						// then add new elements; for 3th page it is J element:
+						// [fghiJ]
+						_append( _start, _end, _index );
 
 					} else {
 						
-						// normal pages like [CDEFG], [EFGHI]
-						_append(_start, _end);
-						_add = false;
-
-						// if next page is the first page again for example in 1-1, 2-2, 3-3, 4-4, 5-5, 6-6, 7-7, 8-8 or 9-9
-						if (_start + options.step >= _len) {
-							_start = 0;
-							_add = true;
-						}
-					}
-
-					if (!_add) {
+						// normal pages like [ABCDE], [EFGHI]
+						_append( _start, _end );
+						
+						// next step
 						_start += options.step;
-						_add = false;
 					}
-				}
-				
-				// remove last page (that refers to the first page)
-				data.pages.length -= 1;
-
-				// check if user startAtPage is correct
-				if (options.startAtPage <= 0) {
-					options.startAtPage = data.oldPageIndex = data.pageIndex = 0;
-				} else if (options.startAtPage > data.pages.length - 1) {
-					options.startAtPage = data.oldPageIndex = data.pageIndex = data.pages.length - 1;
-				} else {
-					data.oldPageIndex = data.pageIndex = options.startAtPage;
 				}
 			}
 
@@ -421,42 +390,47 @@
 		},
 		
 		_loadElements: function (elements, direction) {
-			var self = this,
-				options = self.options,
+			var options = this.options,
 				data = $( this.element ).data( "data" ),
 				_dir = direction || "next",
 				_elem = elements || data.pages[options.startAtPage],
 				_start = 0,
-				_end = _elem.length,
-				i = 0;
+				_end = _elem.length;
 
-			if (_dir === "next") {
-				for (i = _start; i < _end; i++) {
-					self._addElement( _elem[i], _dir );
+			if ( _dir === "next" ) {
+				for ( var i = _start; i < _end; i++ ) {
+					this._addElement( _elem[i], _dir );
 				}
 			} else {
-				for (i = _end - 1; i >= _start; i--) {
-					self._addElement( _elem[i], _dir );
+				for ( var i = _end - 1; i >= _start; i-- ) {
+					this._addElement( _elem[i], _dir );
 				}
 			}
 		},
 		
-		_goToPrevPage: function (by) {
-			var $root = $( this.element ),
+		_goToPrevPage: function( by ) {
+			var _page, _oldPage, _dist, _index, _animOpts, $lastEl, _unique, _pos,
+				$root = $( this.element ),
 				self = this,
-				options = self.options,
-				data = $( this.element ).data( "data" ),
-				_page, _oldPage, _dist, i, _index, _animOpts, _lastEl, _unique, _pos;
+				options = this.options,
+				data = $( this.element ).data( "data" );
 
 			// pick the page
 			_index = data.oldPageIndex + by;
-			_page = data.pages[_index].slice(0);
+			
+			// copy the page because we will modify it
+			_page = data.pages[_index].slice( 0 );
+			
 			_oldPage = data.pages[data.oldPageIndex];
 
-			// check if 1st element from page appears in _oldPage
-			$lastEl = $( _page[_page.length - 1] ).get( 0 );
-			for (i = _oldPage.length - 1; i >= 0; i--) {
-				if ($lastEl === $(_oldPage[i]).get(0)) {
+			// check if last element from _page appears in _oldPage
+			// for [ABCDFGHIJ] elements there are 3 pages for ‘visible’ = 6 and
+			// ‘step’ = 2: [ABCDEF], [CDEFGH] and [EFGHIJ]; going from the 3rd
+			// to the 2nd page we only loads 2 elements: [CD] because all
+			// remaining were loaded already
+			$lastEl = _page[_page.length - 1].get( 0 );
+			for ( var i = _oldPage.length - 1; i >= 0; i-- ) {
+				if ( $lastEl === $(_oldPage[i]).get(0) ) {
 					_unique = false;
 					_pos = i;
 					break;
@@ -465,9 +439,9 @@
 				}
 			}
 
-			if (!_unique) {
-				while (_pos >= 0) {
-					if ($(_page[_page.length - 1]).get(0) === $(_oldPage[_pos]).get(0)) {
+			if ( !_unique ) {
+				while ( _pos >= 0 ) {
+					if ( _page[_page.length - 1].get(0) === _oldPage[_pos].get(0) ) {
 						// this element is unique
 						_page.pop();
 					}
@@ -476,27 +450,28 @@
 			}
 
 			// load new elements
-			self._loadElements(_page, "prev");
+			self._loadElements( _page, "prev" );
 
-			_dist = options.width * _page.length + (options.margin * _page.length);
+			// calculate the distance
+			_dist = options.width * _page.length + ( options.margin * _page.length );
 
 			if (options.orientation === "horizontal") {
 				_animOpts = {scrollLeft: 0};
-				$root.scrollLeft(_dist);
+				$root.scrollLeft( _dist );
 			} else {
 				_animOpts = {scrollTop: 0};
-				$root.scrollTop(_dist);
+				$root.scrollTop( _dist );
 			}
 
 			$root
 				.animate(_animOpts, options.speed, function () {
-					self._removeOldElements("last", _page.length);
+					self._removeOldElements( "last", _page.length );
 					data.animated = false;
 
-					if (options.auto.enabled) {
+					if ( options.auto.enabled ) {
 						// reset autoModeInterval so that auto scrolling could start anew
-						clearInterval(data.autoModeInterval);
-						self._autoMode(options.auto.direction);
+						clearInterval( data.autoModeInterval );
+						self._autoMode( options.auto.direction );
 					}
 
 					// scrolling is finished, send an event
@@ -504,21 +479,25 @@
 				});
 		},
 		
-		_goToNextPage: function (by) {
-			var $root = $( this.element ),
-				self = this,
-				options = self.options,
-				data = $root.data( "data" ),
-				_page, _oldPage, _dist, i, _index, _animOpts, _firstEl, _unique, _pos;
+		_goToNextPage: function( by ) {
+			var _page, _oldPage, _dist, _index, _animOpts, $firstEl, _unique, _pos,
+				$root = $( this.element ),
+				options = this.options,
+				data = $root.data( "data" );				
+				self = this;
 
-			// pick the page
-			_index = data.oldPageIndex + by;
-			_page = data.pages[_index].slice(0);
-			_oldPage = data.pages[data.oldPageIndex];
+			// pick pages
+			_index = data.oldPageIndex + by;	
+			_page = data.pages[_index].slice( 0 );
+			_oldPage = data.pages[data.oldPageIndex];			
 
-			// check if 1st element from page appears in _oldPage
-			$firstEl = $( _page[0] ).get( 0 );
-			for (i = 0; i < _page.length; i++) {
+			// check if 1st element from _page appears in _oldPage
+			// for [ABCDFGHIJ] elements there are 3 pages for ‘visible’ = 6 and
+			// ‘step’ = 2: [ABCDEF], [CDEFGH] and [EFGHIJ]; going from the 2nd
+			// to the 3rd page we only loads 2 elements: [IJ] because all
+			// remaining were loaded already
+			$firstEl = _page[0].get( 0 );
+			for ( var i = 0; i < _page.length; i++) {
 				if ( $firstEl === $(_oldPage[i]).get(0) ) {
 					_unique = false;
 					_pos = i;
@@ -528,97 +507,105 @@
 				}
 			}
 
-			if (!_unique) {
-				while (_pos < _oldPage.length) {
-					if ($(_page[0]).get(0) === $(_oldPage[_pos]).get(0)) {
-						// this element is unique
+			if ( !_unique ) {
+				while ( _pos < _oldPage.length ) {
+					if ( _page[0].get(0) === _oldPage[_pos].get(0) ) {
 						_page.shift();
 					}
 					++_pos;
 				}
 			}
 
-			// load new elements
-			self._loadElements(_page, "next");
+			// load new elements			
+			this._loadElements( _page, "next" );
 
-			_dist = options.width * _page.length + (options.margin * _page.length);
-			_animOpts = options.orientation === "horizontal" ? {scrollLeft: "+=" + _dist} : {scrollTop: "+=" + _dist};
+			// calculate the distance
+			_dist = options.width * _page.length + ( options.margin * _page.length );
+			
+			if ( options.orientation === "horizontal" ) {
+				_animOpts = {scrollLeft: "+=" + _dist};
+			} else {
+				_animOpts = {scrollTop: "+=" + _dist};
+			}
 
 			$root
-				.animate(_animOpts, options.speed, function () {
-					self._removeOldElements("first", _page.length);
-					if (options.orientation === "horizontal") {
-						$root.scrollLeft(0);
+				.animate(_animOpts, options.speed, function() {
+					self._removeOldElements( "first", _page.length );
+					
+					if ( options.orientation === "horizontal" ) {
+						$root.scrollLeft( 0 );
 					} else {
-						$root.scrollTop(0);
+						$root.scrollTop( 0 );
 					}
+					
 					data.animated = false;
 
-					if (options.auto.enabled) {
+					if ( options.auto.enabled ) {
 						// reset autoModeInterval so that auto scrolling could start anew
-						clearInterval(data.autoModeInterval);
-						self._autoMode(options.auto.direction);
+						clearInterval( data.autoModeInterval );
+						self._autoMode( options.auto.direction );
 					}
 
 					// scrolling is finished, send an event
-					self._trigger("pageLoaded", null, {page: _index});
+					self._trigger( "pageLoaded", null, {page: _index});
 
 			});
 		},
 		
 		next: function () {
-			var	self = this,
-				options = self.options,
+			var	options = this.options,
 				data = $( this.element ).data( "data" );
 
-			if (!data.animated) {
+			if ( !data.animated ) {
 				data.animated = true;
 
 				++data.pageIndex;
-				if (data.pageIndex > data.pages.length - 1) {
+				
+				if ( data.pageIndex > data.pages.length - 1 ) {
 					data.pageIndex = 0;
 				}
 
 				// move by one element from current index
-				self._goToNextPage(data.pageIndex - data.oldPageIndex);
+				this._goToNextPage( data.pageIndex - data.oldPageIndex );
 				data.oldPageIndex = data.pageIndex;
 			}
 		},
 		
 		prev: function () {
-			var	self = this,
-				options = self.options,
+			var	options = this.options,
 				data = $( this.element ).data( "data" );
 
-			if (!data.animated) {
+			if ( !data.animated ) {
 				data.animated = true;
 
 				--data.pageIndex;
-				if (data.pageIndex < 0) {
+				if ( data.pageIndex < 0 ) {
 					data.pageIndex = data.pages.length - 1;
 				}
 
 				// move left by one element from current index
-				self._goToPrevPage(data.pageIndex - data.oldPageIndex);
+				this._goToPrevPage( data.pageIndex - data.oldPageIndex );
 				data.oldPageIndex = data.pageIndex;
 			}
 		},
 		
 		_removeOldElements: function (position, length) {
 			// remove 'step' elements
-			var $root = $( this.element ),
-				$content = $root.find( "div.wrapper" ).children(),
-				self = this,
-				options = self.options,
-				data = $( this.element ).data( "data" ),
-				i, _arr, _len;
+			var	$root = $( this.element );
 
-			for (i = 0; i < length; i++) {
-				if (position === "first") {
-					$content.eq(0).remove();
+			for ( var i = 0; i < length; i++ ) {
+				if ( position === "first" ) {
+					$root
+						.find( "div.wrapper" )
+							.children()
+							.first()
+							.remove();
 				} else {
-					_len = $(_arr).length;
-					$content.eq( $content.length - 1).remove();
+					$root
+						.find( "div.wrapper" )
+							.children()
+							.last()
+							.remove();
 				}
 			}
 		},
