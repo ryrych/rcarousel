@@ -94,6 +94,9 @@
 				}
 			);
 			
+			data.oldPage = data.pages[data.oldPageIndex].slice(0);
+			data.appended = true;
+			
 			// rebuild pages
 			this._generatePages();
 		},
@@ -236,7 +239,8 @@
 					oldPageIndex: 0,
 					pageIndex: 0,
 					navigation: {},
-					animated: false
+					animated: false,
+					appended: false
 				}
 			);
 		},
@@ -409,19 +413,51 @@
 		},
 		
 		_goToPrevPage: function( by ) {
-			var _page, _oldPage, _dist, _index, _animOpts, $lastEl, _unique, _pos,
+			var _page, _oldPage, _dist, _index, _animOpts, $lastEl, _unique, _pos, _theSame,
 				$root = $( this.element ),
 				self = this,
 				options = this.options,
 				data = $( this.element ).data( "data" );
 
-			// pick the page
-			_index = data.oldPageIndex + by;
+			// pick pages
+			if ( data.appended ) {
+				_oldPage = data.oldPage;
+			} else {				
+				_oldPage = data.pages[data.oldPageIndex];
+			}
 			
-			// copy the page because we will modify it
+			_index = data.oldPageIndex + by;			
 			_page = data.pages[_index].slice( 0 );
+
+			// For example, the first time widget was initiated there were 5
+			// elements: A, B, C, D, E and 3 pages for visible 2 and step 2:
+			// AB, CD, DE. Then a user loaded next 5 elements so there were
+			// 10 already: A, B, C, D, E, F, G, H, I, J and 5 pages:
+			// AB, CD, EF, GH and IJ. If the other elemets were loaded when
+			// CD page was shown (from 5 elements) ‘_theSame’ is true because
+			// we compare the same
+			// pages, that is, the 2nd page from 5 elements and the 2nd from
+			// 10 elements. Thus what we do next is to decrement the index and
+			// loads the first page from 10 elements.			
+			$( _page ).each(
+				function( i, el ) {
+					if ( el.get(0) === $(_oldPage[i]).get(0) ) {
+						_theSame = true;
+					} else {
+						_theSame = false;
+					}
+				}
+			);
 			
-			_oldPage = data.pages[data.oldPageIndex];
+			if ( data.appended && _theSame ) {
+				if ( data.pageIndex === 0 ) {
+					_index = data.pageIndex = data.pages.length - 1;
+				} else {
+					_index = --data.pageIndex;
+				}
+				
+				_page = data.pages[_index].slice( 0 );
+			}			
 
 			// check if last element from _page appears in _oldPage
 			// for [ABCDFGHIJ] elements there are 3 pages for ‘visible’ = 6 and
@@ -447,7 +483,7 @@
 					}
 					--_pos;
 				}
-			}
+			}			
 
 			// load new elements
 			self._loadElements( _page, "prev" );
@@ -477,19 +513,51 @@
 					// scrolling is finished, send an event
 					self._trigger("pageLoaded", null, {page: _index});
 				});
+				
+			// reset to deafult
+			data.appended = false;				
 		},
 		
 		_goToNextPage: function( by ) {
-			var _page, _oldPage, _dist, _index, _animOpts, $firstEl, _unique, _pos,
+			var _page, _oldPage, _dist, _index, _animOpts, $firstEl, _unique, _pos, _theSame,
 				$root = $( this.element ),
 				options = this.options,
 				data = $root.data( "data" );				
 				self = this;
 
 			// pick pages
-			_index = data.oldPageIndex + by;	
+			if ( data.appended ) {
+				_oldPage = data.oldPage;
+			} else {				
+				_oldPage = data.pages[data.oldPageIndex];
+			}
+			
+			_index = data.oldPageIndex + by;			
 			_page = data.pages[_index].slice( 0 );
-			_oldPage = data.pages[data.oldPageIndex];			
+			
+			// For example, the first time widget was initiated there were 5
+			// elements: A, B, C, D, E and 2 pages for visible 4 and step 3:
+			// ABCD and BCDE. Then a user loaded next 5 elements so there were
+			// 10 already: A, B, C, D, E, F, G, H, I, J and 3 pages:
+			// ABCD, DEFG and GHIJ. If the other elemets were loaded when
+			// ABCD page was shown (from 5 elements) ‘_theSame’ is true because
+			// we compare the same
+			// pages, that is, the first pages from 5 elements and the first from
+			// 10 elements. Thus what we do next is to increment the index and
+			// loads the second page from 10 elements.
+			$( _page ).each(
+				function( i, el ) {
+					if ( el.get(0) === $(_oldPage[i]).get(0) ) {
+						_theSame = true;
+					} else {
+						_theSame = false;
+					}
+				}
+			);
+	
+			if ( data.appended && _theSame ) {
+				_page = data.pages[++data.pageIndex].slice( 0 );
+			}
 
 			// check if 1st element from _page appears in _oldPage
 			// for [ABCDFGHIJ] elements there are 3 pages for ‘visible’ = 6 and
@@ -515,7 +583,7 @@
 					++_pos;
 				}
 			}
-
+			
 			// load new elements			
 			this._loadElements( _page, "next" );
 
@@ -550,6 +618,9 @@
 					self._trigger( "pageLoaded", null, {page: _index});
 
 			});
+				
+			// reset to deafult
+			data.appended = false;
 		},
 		
 		next: function () {
@@ -558,8 +629,10 @@
 
 			if ( !data.animated ) {
 				data.animated = true;
-
-				++data.pageIndex;
+				
+				if ( !data.appended  ) {
+					++data.pageIndex;
+				}				
 				
 				if ( data.pageIndex > data.pages.length - 1 ) {
 					data.pageIndex = 0;
@@ -578,7 +651,10 @@
 			if ( !data.animated ) {
 				data.animated = true;
 
-				--data.pageIndex;
+				if ( !data.appended ) {
+					--data.pageIndex;
+				}
+				
 				if ( data.pageIndex < 0 ) {
 					data.pageIndex = data.pages.length - 1;
 				}
