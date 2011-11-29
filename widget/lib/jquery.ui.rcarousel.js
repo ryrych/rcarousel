@@ -344,10 +344,7 @@
 		},
 		
 		getTotalPages: function () {
-			var self = this,
-				options = self.options,
-				data = $( this.element ).data( "data" );
-
+			var data = $( this.element ).data( "data" );
 			return data.pages.length;
 		},
 		
