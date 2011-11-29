@@ -709,10 +709,9 @@
 		},
 		_setStep: function (s) {
 			// calculate a step
-			var self = this,
-				options = self.options,
-				data = $( this.element ).data( "data" ),
-				_step;
+			var _step,
+				options = this.options,
+				data = $( this.element ).data( "data" );
 
 			_step = s || options.step;
 
