@@ -101,12 +101,12 @@
 			this._generatePages();
 		},
 		
-		_autoMode: function (direction) {
+		_autoMode: function(direction) {
 			var self = this,
-				options = self.options,
+				options = this.options,
 				data = $( this.element ).data( "data" );
 
-			if (direction === "next") {
+			if ( direction === "next" ) {
 				data.autoModeInterval = setInterval(function () {
 					self.next();
 				}, options.auto.interval);
