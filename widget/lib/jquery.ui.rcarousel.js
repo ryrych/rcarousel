@@ -686,53 +686,28 @@
 			);		
 		},
 		
-		_setOption: function (key, value) {
-			var self = this,
-				options = self.options,
-				data = $( this.element ).data( "data" ),
-				_newOptions;
+		_setOption: function( key, value ) {
+			var _newOptions,
+				options = this.options,
+				data = $( this.element ).data( "data" );
 
 			switch (key) {
-			case "step":
-				self._checkOptionsValidity({step: value});
-				self._setStep(value);
-				self._generatePages();
-
-				// remove old LI elements before populating
-				$(data.list).empty();
-				self._loadElements();
-				// apply...
-				$.Widget.prototype._setOption.apply(this, arguments);
-				break;
-
-			case "speed":
-				self._checkOptionsValidity({speed: value});
-				options.speed = value;
-				$.Widget.prototype._setOption.apply(this, arguments);
-				break;
-
-			case "navigation":
-				self._checkOptionsValidity({navigation: value});
-				if (value.next) {
-					self._setEventHandlers("next");
+				case "speed":
+					this._checkOptionsValidity({speed: value});
+					options.speed = value;
+					$.Widget.prototype._setOption.apply( this, arguments );
+					break;
+	
+				case "auto":
+					_newOptions = $.extend( options.auto, value );
+					this._checkOptionsValidity({auto: _newOptions});
+	
+					if ( options.auto.enabled ) {
+						this._autoMode( options.auto.direction );
+					} else {
+						clearInterval( data.autoModeInterval );
+					}
 				}
-
-				if (value.prev) {
-					self._setEventHandlers("prev");
-				}
-				$.Widget.prototype._setOption.apply(this, arguments);
-				break;
-
-			case "auto":
-				_newOptions = $.extend(options.auto, value);
-				self._checkOptionsValidity({auto: _newOptions});
-
-				if (options.auto.enabled) {
-					self._autoMode(options.auto.direction);
-				} else {
-					clearInterval(data.autoModeInterval);
-				}
-			}
 
 		},
 		_setStep: function (s) {
