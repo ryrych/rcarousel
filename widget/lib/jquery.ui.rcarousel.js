@@ -1,6 +1,6 @@
 (function ($) {
 	$.widget("ui.rcarousel", {
-		_create: function () {
+		_create: function() {
 			var data,
 				$root = $( this.element ),
 				_self = this,
@@ -212,7 +212,7 @@
 			);
 		},
 		
-		_createDataObject: function () {
+		_createDataObject: function() {
 			var $root = $( this.element );
 
 			$root.data("data",
@@ -343,7 +343,7 @@
 			_paginate();
 		},
 		
-		getTotalPages: function () {
+		getTotalPages: function() {
 			var data = $( this.element ).data( "data" );
 			return data.pages.length;
 		},
@@ -375,7 +375,7 @@
 			}
 		},
 		
-		_loadElements: function (elements, direction) {
+		_loadElements: function(elements, direction) {
 			var options = this.options,
 				data = $( this.element ).data( "data" ),
 				_dir = direction || "next",
@@ -605,7 +605,7 @@
 			data.appended = false;
 		},
 		
-		next: function () {
+		next: function() {
 			var	options = this.options,
 				data = $( this.element ).data( "data" );
 
@@ -626,7 +626,7 @@
 			}
 		},
 		
-		prev: function () {
+		prev: function() {
 			var	options = this.options,
 				data = $( this.element ).data( "data" );
 
@@ -647,7 +647,7 @@
 			}
 		},
 		
-		_removeOldElements: function (position, length) {
+		_removeOldElements: function(position, length) {
 			// remove 'step' elements
 			var	$root = $( this.element );
 
@@ -707,7 +707,7 @@
 				}
 
 		},
-		_setStep: function (s) {
+		_setStep: function(s) {
 			// calculate a step
 			var _step,
 				options = this.options,
@@ -719,7 +719,7 @@
 			data.step = options.width * _step;
 		},
 		
-		_setCarouselHeight: function () {
+		_setCarouselHeight: function() {
 			var _newHeight,
 				$root = $( this.element ),
 				data = $( this.element ).data( "data" ),			
@@ -734,7 +734,7 @@
 			$root.height(_newHeight);
 		},
 		
-		_setCarouselWidth: function () {
+		_setCarouselWidth: function() {
 			var _newWidth,
 				$root = $( this.element ),
 				options = this.options,
