@@ -8,7 +8,7 @@
 
 			// if options were default there should be no problem
             // check if user set options before init: $('element').rcarousel({with: "foo", visible: 3});
-            // in above example exception will be thrown bacause 'with' should be a number!
+            // in above example exception will be thrown because 'with' should be a number!
             this._checkOptionsValidity( this.options );
 
 			// for every carousel create a data object and keeps it in the element
