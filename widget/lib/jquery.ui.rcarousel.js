@@ -117,114 +117,99 @@
 			}
 		},
 		
-		_checkOptionsValidity: function (options) {
-			var	self = this,
-				_correctSteps = "",
-				_key, _value, i;
-
+		_checkOptionsValidity: function( options ) {
+			var i,
+				self = this,
+				_correctSteps = "";
+			
 			// for every element in options object check its validity
-			for (_key in options) {
-				_value = options[_key];
-				switch (_key) {
-				case "visible":
-					// visible should be a integer positive number
-					if (typeof _value !== "number" || _value <= 0 || (Math.ceil(_value) - _value > 0)) {
-						throw new Error("visible should be defined as a positive integer number!");
-					}
-					break;
+			$.each(options,
+				function( key, value ) {
 
-				case "step":
-					if (_value && typeof _value !== "number" || _value <= 0) {
-						throw new Error("step should be a positive number");
-					} else {
-						// for example for visible: 3 the following array of values for 'step' is valid
-						// 3 <= step >= 1 by 1 ==> [1,2,3]
-						if (_value < 1 || _value > options.visible) {
-							// output correct values
-							for (i = 1; i <= Math.floor(options.visible); i++) {
-								_correctSteps += (i < Math.floor(_value)) ? i + ", " : i;
+					switch ( key ) {
+						case "visible":
+							// visible should be a positive integer
+							if ( !value || typeof value !== "number" || value <= 0 || (Math.ceil(value) - value > 0) ) {
+								throw new Error( "visible should be defined as a positive integer" );
 							}
-							throw new Error("Only following mode.step values are correct: " + _correctSteps);
+							break;
+	
+						case "step":
+							if ( !value || typeof value !== "number" || value <= 0 || (Math.ceil(value) - value > 0) ) {
+								throw new Error( "step should be defined as a positive integer" );
+							} else if ( value > self.options.visible )  {
+								// for example for visible: 3 the following array of values for 'step' is valid
+								// 3 <= step >= 1 by 1 ==> [1,2,3]
+								// output correct values
+								for ( i = 1; i <= Math.floor(options.visible); i++ ) {
+									_correctSteps += ( i < Math.floor(value) ) ? i + ", " : i;
+								}
+								
+								throw new Error( "Only following step values are correct: " + _correctSteps );
+							}
+							break;
+	
+						case "width":
+							// width & height is defined by default so you can omit them to some extent
+							if ( !value || typeof value !== "number" || value <= 0 || Math.ceil(value) - value > 0 ) {
+								throw new Error( "width should be defined as a positive integer" );
+							}
+							break;
+		
+						case "height":
+							if ( !value || typeof value !== "number" || value <= 0 || Math.ceil(value) - value > 0 ) {
+								throw new Error("height should be defined as a positive integer");
+							}
+							break;
+		
+						case "speed":
+							if ( !value && value !== 0 ) {
+								throw new Error("speed should be defined as a number or a string");
+							}
+		
+							if ( typeof value === "number" && value < 0 ) {
+								throw new Error( "speed should be a positive number" );
+							} else if ( typeof value === "string" && !(value === "slow" || value === "normal" || value === "fast") ) {
+								throw new Error( 'Only "slow", "normal" and "fast" values are valid' );
+							}
+							break;
+		
+						case "navigation":
+							if ( !value || $.isPlainObject(value) === false ) {
+								throw new Error( "navigation should be defined as an object with at least one of the properties: 'prev' or 'next' in it");
+							}
+		
+							if ( value.prev && typeof value.prev !== "string" ) {
+								throw new Error( "navigation.prev should be defined as a string and point to '.class' or '#id' of an element" );
+							}
+		
+							if ( value.next && typeof value.next !== "string" ) {
+								throw new Error(" navigation.next should be defined as a string and point to '.class' or '#id' of an element" );
+							}
+							break;
+		
+						case "auto":
+							if ( typeof value.direction !== "string" ) {
+								throw new Error( "direction should be defined as a string" );
+							}
+		
+							if ( !(value.direction === "next" || value.direction === "prev") ) {
+								throw new Error( "direction: only 'right' and 'left' values are valid" );
+							}
+		
+							if ( isNaN(value.interval) || typeof value.interval !== "number" || value.interval < 0 || Math.ceil(value.interval) - value.interval > 0 ) {
+								throw new Error( "interval should be a positive number" );
+							}
+							break;
+		
+						case "margin":
+							if ( isNaN(value) || typeof value !== "number" || value < 0 || Math.ceil(value) - value > 0 ) {
+								throw new Error( "margin should be a positive number" );
+							}
+							break;
 						}
-					}
-					break;
-
-				case "width":
-					// width & height is defined by default so you can omit them to some extent
-					if (_value && (isNaN(_value) || typeof _value !== "number" || _value <= 0 || (Math.ceil(_value) - _value > 0))) {
-						throw new Error("width should be a positive integer number!");
-					}
-					break;
-
-				case "height":
-					if (_value && (isNaN(_value) || typeof _value !== "number" || _value <= 0 || (Math.ceil(_value) - _value > 0))) {
-						throw new Error("height should be a positive number!");
-					}
-					break;
-
-				case "speed":
-					if (!_value && _value !== 0) {
-						throw new Error("speed should be defined as a number or a string");
-					}
-
-					if (typeof _value === "number" && _value < 0) {
-						throw new Error("speed " + "should be a positive number");
-					} else if (typeof _value === "string" && !(_value === "slow" || _value === "normal" || _value === "fast")) {
-						throw new Error('Only "slow", "normal" and "fast" values are valid');
-					}
-					break;
-
-				case "remote":
-					if (!_value || !(typeof _value === "object")) {
-						throw new Error("remote should be defined as object with path and format properties in it!");
-					}
-
-					if (!(typeof _value.path === "string")) {
-						throw new Error("remote.path should be defined as string!");
-					}
-
-					if (!(typeof _value.format === "string")) {
-						throw new Error("remote.format should be defined as a string!");
-					} else if (!(_value.format === "json" || _value.format === "xml")) {
-						throw new Error("remote.format: '" + _value.format + "' is not valid. Only remote.format: 'json' and remote.format: 'xml' are valid!");
-					}
-					break;
-
-				case "navigation":
-					if (!_value || typeof _value !== "object") {
-						throw new Error("navigation should be defined as object with at least one of the properties: 'prev' or 'next' in it!");
-					}
-
-					if (_value.prev && typeof _value.prev !== "string") {
-						throw new Error("navigation.prev should be defined as a string and points to '.class' or '#id' of an element");
-					}
-
-					if (_value.next && typeof _value.next !== "string") {
-						throw new Error("navigation.next should be defined as a string and points to '.class' or '#id' of an element");
-					}
-					break;
-
-				case "auto":
-					if (typeof _value.direction !== "string") {
-						throw new Error("direction should be defined as a string");
-					}
-
-					if (!(_value.direction === "next" || _value.direction === "prev")) {
-						throw new Error("direction: only 'right' and 'left' values are valid");
-					}
-
-					if (isNaN(_value.interval) || typeof _value.interval !== "number" || _value.interval < 0 || (Math.ceil(_value.interval) - _value.interval > 0)) {
-						throw new Error("interval should be a positive number!");
-					}
-					break;
-
-				case "margin":
-					if (isNaN(_value) || typeof _value !== "number" || _value < 0 || (Math.ceil(_value) - _value > 0)) {
-						throw new Error("margin should be a positive number!");
-					}
-					break;
 				}
-			}
+			);
 		},
 		
 		_createDataObject: function () {
