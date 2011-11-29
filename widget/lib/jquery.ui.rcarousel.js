@@ -101,7 +101,7 @@
 			this._generatePages();
 		},
 		
-		_autoMode: function(direction) {
+		_autoMode: function( direction ) {
 			var self = this,
 				options = this.options,
 				data = $( this.element ).data( "data" );
@@ -348,29 +348,29 @@
 			return data.pages.length;
 		},
 		
-		goToPage: function (page) {
-			var	self = this,
-				options = self.options,
-				data = $( this.element ).data( "data" ),
-				_by;
+		goToPage: function( page ) {
+			var	_by,
+				data = $( this.element ).data( "data" );
 
-			if (!data.animated && page !== data.pageIndex) {
+			if ( !data.animated && page !== data.pageIndex ) {
 				data.animated = true;
 
-				if (page > data.pages.length - 1) {
+				if ( page > data.pages.length - 1 ) {
 					page = data.pages.length - 1;
-				} else if (page < 0) {
+				} else if ( page < 0 ) {
 					page = 0;
 				}
+				
 				data.pageIndex = page;
-
 				_by = page - data.oldPageIndex;
-				if (_by >= 0) {
+				
+				if ( _by >= 0 ) {
 					//move by n elements from current index
-					self._goToNextPage(_by);
+					this._goToNextPage( _by );
 				} else {
-					self._goToPrevPage(_by);
+					this._goToPrevPage( _by );
 				}
+				
 				data.oldPageIndex = page;
 			}
 		},
