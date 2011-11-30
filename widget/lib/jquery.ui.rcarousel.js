@@ -360,6 +360,11 @@
 			_paginate();
 		},
 		
+		getCurrentPage: function() {
+			var data = $( this.element ).data( "data" );
+			return data.pageIndex + 1;
+		},
+		
 		getTotalPages: function() {
 			var data = $( this.element ).data( "data" );
 			return data.pages.length;
