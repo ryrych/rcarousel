@@ -47,6 +47,22 @@
 			data.navigation.next = $( options.navigation.next );
 			data.navigation.prev = $( options.navigation.prev );
 			
+			// stop on hover feature
+			$root.hover(
+				function() {
+					if ( options.auto.enabled ) {
+						clearInterval( data.autoModeInterval );
+						data.hoveredOver = true;
+					}
+				},
+				function() {
+					if ( options.auto.enabled ) {
+						data.hoveredOver = false;
+						self._autoMode( options.auto.direction );
+					}
+				}
+			);
+			
 			this._setStep();
 			
 			// if auto mode is enabled run it
@@ -225,7 +241,8 @@
 					pageIndex: 0,
 					navigation: {},
 					animated: false,
-					appended: false
+					appended: false,
+					hoveredOver: false
 				}
 			);
 		},
@@ -486,7 +503,7 @@
 					self._removeOldElements( "last", _page.length );
 					data.animated = false;
 
-					if ( options.auto.enabled ) {
+					if ( !data.hoveredOver && options.auto.enabled ) {
 						// reset autoModeInterval so that auto scrolling could start anew
 						clearInterval( data.autoModeInterval );
 						self._autoMode( options.auto.direction );
@@ -590,7 +607,7 @@
 					
 					data.animated = false;
 
-					if ( options.auto.enabled ) {
+					if ( !data.hoveredOver && options.auto.enabled ) {
 						// reset autoModeInterval so that auto scrolling could start anew
 						clearInterval( data.autoModeInterval );
 						self._autoMode( options.auto.direction );
