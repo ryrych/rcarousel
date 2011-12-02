@@ -58,7 +58,7 @@
 				function() {
 					if ( options.auto.enabled ) {
 						data.hoveredOver = false;
-						self._autoMode( options.auto.direction );
+						_self._autoMode( options.auto.direction );
 					}
 				}
 			);
