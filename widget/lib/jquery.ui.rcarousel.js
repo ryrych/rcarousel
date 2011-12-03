@@ -13,7 +13,7 @@
 
 			// for every carousel create a data object and keeps it in the element
 			this._createDataObject();
-			data = $root.data( "data" );
+			data = $root.data( "data" );
 
 			// create wrapper inside root element; this is needed for animating
 			$root
@@ -51,7 +51,6 @@
 			$root.hover(
 				function() {
 					if ( options.auto.enabled ) {
-						clearInterval( data.autoModeInterval );
 						data.hoveredOver = true;
 					}
 				},
@@ -118,18 +117,12 @@
 		},
 		
 		_autoMode: function( direction ) {
-			var self = this,
-				options = this.options,
-				data = $( this.element ).data( "data" );
+			var options = this.options;
 
 			if ( direction === "next" ) {
-				data.autoModeInterval = setInterval(function () {
-					self.next();
-				}, options.auto.interval);
+				setTimeout( $.proxy(this.next, this), options.auto.interval );
 			} else {
-				data.autoModeInterval = setInterval(function () {
-					self.prev();
-				}, options.auto.interval);
+				setTimeout( $.proxy(this.prev, this), options.auto.interval );
 			}
 		},
 		
@@ -509,8 +502,6 @@
 					data.animated = false;
 
 					if ( !data.hoveredOver && options.auto.enabled ) {
-						// reset autoModeInterval so that auto scrolling could start anew
-						clearInterval( data.autoModeInterval );
 						self._autoMode( options.auto.direction );
 					}
 
@@ -526,7 +517,7 @@
 			var _page, _oldPage, _dist, _index, _animOpts, $firstEl, _unique, _pos, _theSame,
 				$root = $( this.element ),
 				options = this.options,
-				data = $root.data( "data" );				
+				data = $root.data( "data" ),				
 				self = this;
 
 			// pick pages
@@ -599,7 +590,7 @@
 			} else {
 				_animOpts = {scrollTop: "+=" + _dist};
 			}
-
+			
 			$root
 				.animate(_animOpts, options.speed, function() {
 					self._removeOldElements( "first", _page.length );
@@ -613,8 +604,6 @@
 					data.animated = false;
 
 					if ( !data.hoveredOver && options.auto.enabled ) {
-						// reset autoModeInterval so that auto scrolling could start anew
-						clearInterval( data.autoModeInterval );
 						self._autoMode( options.auto.direction );
 					}
 
@@ -694,7 +683,7 @@
 			var $el,
 				$root = $( this.element ),
 				$elements = $root.find( "div.wrapper" ).children(),
-				data = $root.data( "data" );
+				data = $root.data( "data" );
 				
 			$elements.each(
 				function( i, el ) {
@@ -723,8 +712,6 @@
 	
 					if ( options.auto.enabled ) {
 						this._autoMode( options.auto.direction );
-					} else {
-						clearInterval( data.autoModeInterval );
 					}
 				}
 
