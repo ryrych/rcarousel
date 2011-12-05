@@ -17,6 +17,7 @@
 
 			// create wrapper inside root element; this is needed for animating
 			$root
+				.addClass( "ui-carousel" )
 				.children()
 				.wrapAll( "<div class='wrapper'></div>" );
 			
