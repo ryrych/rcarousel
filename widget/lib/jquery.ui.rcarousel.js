@@ -52,6 +52,7 @@
 			$root.hover(
 				function() {
 					if ( options.auto.enabled ) {
+						clearInterval( data.interval );
 						data.hoveredOver = true;
 					}
 				},
@@ -118,12 +119,13 @@
 		},
 		
 		_autoMode: function( direction ) {
-			var options = this.options;
+			var options = this.options,
+				data = $( this.element ).data( "data" );
 
 			if ( direction === "next" ) {
-				setTimeout( $.proxy(this.next, this), options.auto.interval );
+				data.interval = setTimeout( $.proxy(this.next, this), options.auto.interval );
 			} else {
-				setTimeout( $.proxy(this.prev, this), options.auto.interval );
+				data.interval = setTimeout( $.proxy(this.prev, this), options.auto.interval );
 			}
 		},
 		
