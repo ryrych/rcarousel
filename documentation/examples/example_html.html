@@ -3,7 +3,8 @@
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
         <title>rcarousel - html content example</title>
-		<link href='http://fonts.googleapis.com/css?family=Anton|Ubuntu' rel='stylesheet' type='text/css'>		
+		<link href='http://fonts.googleapis.com/css?family=Anton|Ubuntu' rel='stylesheet' type='text/css'>
+		<link type="text/css" rel="stylesheet" href="../css/reset.css" />
         <link type="text/css" rel="stylesheet" href="../../widget/css/rcarousel.css" />
 		<style type="text/css">
 			#container {
@@ -18,17 +19,16 @@
 				background: url(images/slides/arrow-left.png) #fff center center no-repeat;
 				display: block;
 				position: absolute;
+				top: 0;
 				z-index: 100;
 			}
 
 			#ui-carousel-next {
-				top: 0;
 				right: 0;
 				background-image: url(images/slides/arrow-right.png);
 			}
 
 			#ui-carousel-prev {
-				top: 0;
 				left: 0;
 			}
 			
@@ -44,21 +44,17 @@
 			.slide  h1 {
 				font: 72px/1 Anton, sans-serif;
 				color: #ff5c43;
-				margin: 0;
-				padding: 0;
 			}
 			
 			.slide  p {
 				font: 32px/1 Ubuntu, sans-serif;	
 				color: #4d4d4d;
-				margin: 0;
-				padding: 0;
 			}
 			
 			#slide01 > img {
 				position: absolute;
 				bottom: 35px;
-				left: 0;
+				left: 30px;
 			}
 			
 			#slide01 > .text {
@@ -184,7 +180,7 @@
 					<img src="images/slides/customization.png" alt="customization" />
 					<div class="text">
 						<h1>highly<br />customizable</h1>
-						<p>style it whatever you want</p>
+						<p>style it whatever you like</p>
 					</div>
 				</div>
 				
@@ -262,6 +258,7 @@
 				
 				$( "#ui-carousel-next" )
 					.add( "#ui-carousel-prev" )
+					.add( ".bullet" )
 					.hover(
 						function() {
 							$( this ).css( "opacity", 0.7 );
