@@ -505,6 +505,9 @@
 					data.animated = false;
 
 					if ( !data.hoveredOver && options.auto.enabled ) {
+						// if autoMode is on and you change page manually
+						clearInterval( data.interval );
+						
 						self._autoMode( options.auto.direction );
 					}
 
@@ -607,6 +610,9 @@
 					data.animated = false;
 
 					if ( !data.hoveredOver && options.auto.enabled ) {
+						// if autoMode is on and you change page manually
+						clearInterval( data.interval );
+						
 						self._autoMode( options.auto.direction );
 					}
 
