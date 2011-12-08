@@ -780,8 +780,8 @@
 			},
 			startAtPage: 0,
 			navigation: {
-				next: "#ui-rcarousel-next",
-				prev: "#ui-rcarousel-prev"
+				next: "#ui-carousel-next",
+				prev: "#ui-carousel-prev"
 			}
 		}
 	});
