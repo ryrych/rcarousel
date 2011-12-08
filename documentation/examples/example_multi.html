@@ -1,10 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl">
-
 	<head>
-        <meta http-equiv="content-type" content="text/html; charset=UTF8" />
-        <title>rcarousel - multi carousel example</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <title>ui-carousel - custom step and visible example</title>
         <link type="text/css" rel="stylesheet" href="../../widget/css/rcarousel.css" />
 		<style type="text/css">
 			#carousels {
@@ -80,17 +78,122 @@
 	<body>
 		<p>multiple carousels on one page - guess how many is used :)</p>
 		<div id="carousels">
-			<div id="carousel1" class="rcarousel"></div>
-			<div id="carousel2" class="rcarousel"></div>
-			<div id="carousel3" class="rcarousel"></div>
-			<div id="carousel4" class="rcarousel"></div>
+			<div id="carousel1">
+				<img src="images/001.jpg" />
+				<img src="images/002.jpg" />
+				<img src="images/003.jpg" />
+				<img src="images/004.jpg" />
+				<img src="images/005.jpg" />
+				<img src="images/006.jpg" />
+				<img src="images/007.jpg" />
+				<img src="images/008.jpg" />
+				<img src="images/009.jpg" />
+				<img src="images/010.jpg" />				
+			</div>
+			
+			<div id="carousel2">
+				<img src="images/001.jpg" />
+				<img src="images/002.jpg" />
+				<img src="images/003.jpg" />
+				<img src="images/004.jpg" />
+				<img src="images/005.jpg" />
+				<img src="images/006.jpg" />
+				<img src="images/007.jpg" />
+				<img src="images/008.jpg" />
+				<img src="images/009.jpg" />
+				<img src="images/010.jpg" />				
+			</div>
+			
+			<div id="carousel3">
+				<img src="images/001.jpg" />
+				<img src="images/002.jpg" />
+				<img src="images/003.jpg" />
+				<img src="images/004.jpg" />
+				<img src="images/005.jpg" />
+				<img src="images/006.jpg" />
+				<img src="images/007.jpg" />
+				<img src="images/008.jpg" />
+				<img src="images/009.jpg" />
+				<img src="images/010.jpg" />				
+			</div>
+			
+			<div id="carousel4">
+				<img src="images/001.jpg" />
+				<img src="images/002.jpg" />
+				<img src="images/003.jpg" />
+				<img src="images/004.jpg" />
+				<img src="images/005.jpg" />
+				<img src="images/006.jpg" />
+				<img src="images/007.jpg" />
+				<img src="images/008.jpg" />
+				<img src="images/009.jpg" />
+				<img src="images/010.jpg" />				
+			</div>
 
-			<div id="carousel5" class="rcarousel"></div>
-			<div id="carousel6" class="rcarousel"></div>
-			<div id="carousel7" class="rcarousel"></div>
-			<div id="carousel8" class="rcarousel"></div>
+			<div id="carousel5">
+				<img src="images/001.jpg" />
+				<img src="images/002.jpg" />
+				<img src="images/003.jpg" />
+				<img src="images/004.jpg" />
+				<img src="images/005.jpg" />
+				<img src="images/006.jpg" />
+				<img src="images/007.jpg" />
+				<img src="images/008.jpg" />
+				<img src="images/009.jpg" />
+				<img src="images/010.jpg" />				
+			</div>
+			
+			<div id="carousel6">
+				<img src="images/001.jpg" />
+				<img src="images/002.jpg" />
+				<img src="images/003.jpg" />
+				<img src="images/004.jpg" />
+				<img src="images/005.jpg" />
+				<img src="images/006.jpg" />
+				<img src="images/007.jpg" />
+				<img src="images/008.jpg" />
+				<img src="images/009.jpg" />
+				<img src="images/010.jpg" />				
+			</div>
+			
+			<div id="carousel7">
+				<img src="images/001.jpg" />
+				<img src="images/002.jpg" />
+				<img src="images/003.jpg" />
+				<img src="images/004.jpg" />
+				<img src="images/005.jpg" />
+				<img src="images/006.jpg" />
+				<img src="images/007.jpg" />
+				<img src="images/008.jpg" />
+				<img src="images/009.jpg" />
+				<img src="images/010.jpg" />
+			</div>
+			
+			<div id="carousel8">
+				<img src="images/001.jpg" />
+				<img src="images/002.jpg" />
+				<img src="images/003.jpg" />
+				<img src="images/004.jpg" />
+				<img src="images/005.jpg" />
+				<img src="images/006.jpg" />
+				<img src="images/007.jpg" />
+				<img src="images/008.jpg" />
+				<img src="images/009.jpg" />
+				<img src="images/010.jpg" />				
+			</div>
 
-			<div id="carousel9" class="rcarousel"></div>
+			<div id="carousel9">
+				<img src="images/001.jpg" />
+				<img src="images/002.jpg" />
+				<img src="images/003.jpg" />
+				<img src="images/004.jpg" />
+				<img src="images/005.jpg" />
+				<img src="images/006.jpg" />
+				<img src="images/007.jpg" />
+				<img src="images/008.jpg" />
+				<img src="images/009.jpg" />
+				<img src="images/010.jpg" />
+			</div>
 		</div>
 
 
@@ -103,10 +206,6 @@
 				$("#carousel1").rcarousel({
 					visible: 5,
 					step: 1,
-					remote: {
-						path: "remote.json",
-						format: "json"
-					},
 					auto: {
 						enabled: true,
 						direction: "prev"
@@ -117,20 +216,12 @@
 					visible: 3,
 					step: 1,
 					orientation: "vertical",
-					remote: {
-						path: "remote.json",
-						format: "json"
-					},
 					auto: {enabled: true}
 				});
 
 				$("#carousel3").rcarousel({
 					visible: 5,
 					step: 1,
-					remote: {
-						path: "remote.json",
-						format: "json"
-					},
 					auto: {enabled: true}
 				});
 
@@ -138,20 +229,12 @@
 					visible: 3,
 					step: 1,
 					orientation: "vertical",
-					remote: {
-						path: "remote.json",
-						format: "json"
-					},
 					auto: {enabled: true}
 				});
 
 				$("#carousel5").rcarousel({
 					visible: 2,
 					step: 1,
-					remote: {
-						path: "remote.json",
-						format: "json"
-					},
 					auto: {enabled: true}
 				});
 
@@ -159,20 +242,12 @@
 					visible: 2,
 					step: 1,
 					orientation: "vertical",
-					remote: {
-						path: "remote.json",
-						format: "json"
-					},
 					auto: {enabled: true}
 				});
 
 				$("#carousel7").rcarousel({
 					visible: 2,
 					step: 1,
-					remote: {
-						path: "remote.json",
-						format: "json"
-					},
 					auto: {enabled: true}
 				});
 
@@ -180,20 +255,12 @@
 					visible: 2,
 					step: 1,
 					orientation: "vertical",
-					remote: {
-						path: "remote.json",
-						format: "json"
-					},
 					auto: {enabled: true}
 				});
 
 				$("#carousel9").rcarousel({
 					visible: 1,
 					step: 1,
-					remote: {
-						path: "remote.json",
-						format: "json"
-					},
 					auto: {enabled: true}
 				});
 			});
