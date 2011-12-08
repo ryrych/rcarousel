@@ -1,9 +1,7 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl">
-
 	<head>
-        <meta http-equiv="content-type" content="text/html; charset=UTF8" />
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
         <title>rcarousel - go to page example</title>
         <link type="text/css" rel="stylesheet" href="../../widget/css/rcarousel.css" />
 		<style type="text/css">
@@ -12,13 +10,24 @@
 			}
 			
 			#pages {
-				width: 52px;
-				margin: 0 auto;
+				width: 92px;
+				height: 18px;
+				margin: 5px auto 0 auto;
 			}
+			
+			.bullet {
+				background: url(images/page-off.png) center center no-repeat;
+				display: block;
+				width: 18px;
+				height: 18px;
+				margin: 0;
+				margin-right: 5px;
+				float: left;				
+			}			
 		</style>
 	</head>
 	<body>
-		<p>more advanced example: callbacks, custom navigation and autoscrolling</p>
+		<p>more advanced example: callbacks, custom navigation and auto mode</p>
 		<div id="container">
 			<div id="carousel">
 				<img src="images/001.jpg" />
@@ -56,9 +65,7 @@
 									event.preventDefault();
 								}
 							)
-							.css( "margin-right", "3px" )
-							.addClass( "off" )
-							.append( "<img src='images/page-off.png' style='border: 0' />" )
+							.addClass( "bullet off" )
 							.appendTo( "#pages" );
 					}
 					
@@ -66,28 +73,36 @@
 					$( "a:eq(0)", "#pages" )
 						.removeClass( "off" )
 						.addClass( "on" )
-							.find( "img" )
-							.attr( "src", "images/page-on.png" );
+						.css( "background-image", "url(images/page-on.png)" );
+
 				}
 
 				function pageLoaded( event, data ) {
 					$( "a.on", "#pages" )
 						.removeClass( "on" )
-							.find( "img" )
-							.attr( "src", "images/page-off.png" );
+						.css( "background-image", "url(images/page-off.png)" );
 
 					$( "a", "#pages" )
 						.eq( data.page )
 						.addClass( "on" )
-							.find( "img" )
-							.attr( "src", "images/page-on.png" );
-				}
+						.css( "background-image", "url(images/page-on.png)" );
+				}				
 
 				$( "#carousel" ).rcarousel({
 					auto: {enabled: true},
 					start: generatePages,
 					pageLoaded: pageLoaded
 				});
+				
+				$( ".bullet" )
+					.hover(
+						function() {
+							$( this ).css( "opacity", 0.7 );
+						},
+						function() {
+							$( this ).css( "opacity", 1.0 );
+						}
+					);					
 			});
 		</script
     </body>

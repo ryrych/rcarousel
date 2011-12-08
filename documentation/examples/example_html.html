@@ -21,7 +21,7 @@
 			#ui-carousel-next, #ui-carousel-prev {
 				width: 60px;
 				height: 240px;
-				background: url(images/slides/arrow-left.png) #fff center center no-repeat;
+				background: url(images/arrow-left.png) #fff center center no-repeat;
 				display: block;
 				position: absolute;
 				top: 0;
@@ -30,7 +30,7 @@
 
 			#ui-carousel-next {
 				right: 0;
-				background-image: url(images/slides/arrow-right.png);
+				background-image: url(images/arrow-right.png);
 			}
 
 			#ui-carousel-prev {
@@ -134,7 +134,7 @@
 			}
 			
 			.bullet {
-				background: url(images/slides/page-off.png) center center no-repeat;
+				background: url(images/page-off.png) center center no-repeat;
 				display: block;
 				width: 18px;
 				height: 18px;
@@ -150,7 +150,7 @@
 		<div id="container">
 			<div id="carousel">
 				<div id="slide01" class="slide">
-					<img src="images/slides/jqueryui.png" alt="jQuery UI logo" />
+					<img src="images/html_slides/jqueryui.png" alt="jQuery UI logo" />
 					<div class="text">
 						<h1>continuous<br />carousel</h1>
 						<p>driven by jQuery UI</p>
@@ -158,7 +158,7 @@
 				</div>
 				
 				<div id="slide02" class="slide">
-					<img src="images/slides/anycontent.png" alt="any content" />
+					<img src="images/html_slides/anycontent.png" alt="any content" />
 					<div class="text">
 						<h1>any content</h1>
 						<p>from images to any HTML element</p>
@@ -166,7 +166,7 @@
 				</div>
 				
 				<div id="slide03" class="slide">
-					<img src="images/slides/horizontalvertical.png" alt="horizontal and vertical carousel" />
+					<img src="images/html_slides/horizontalvertical.png" alt="horizontal and vertical carousel" />
 					<div class="text">
 						<h1>horizontal<br />and vertical</h1>
 						<p>carousels just one click away</p>
@@ -174,7 +174,7 @@
 				</div>
 				
 				<div id="slide04" class="slide">
-					<img src="images/slides/multi.png" alt="multi carousels" />
+					<img src="images/html_slides/multi.png" alt="multi carousels" />
 					<div class="text">
 						<h1>multi<br />carousels</h1>
 						<p>on a page</p>
@@ -182,7 +182,7 @@
 				</div>
 				
 				<div id="slide05" class="slide">
-					<img src="images/slides/customization.png" alt="customization" />
+					<img src="images/html_slides/customization.png" alt="customization" />
 					<div class="text">
 						<h1>highly<br />customizable</h1>
 						<p>style it whatever you like</p>
@@ -190,7 +190,7 @@
 				</div>
 				
 				<div id="slide06" class="slide">
-					<img src="images/slides/browsers.png" alt="multi browser support" />
+					<img src="images/html_slides/browsers.png" alt="multi browser support" />
 					<div class="text">
 						<h1>multi browser<br />support</h1>
 						<p>supports even old browsers</p>
@@ -231,19 +231,19 @@
 					$( "a:eq(0)", "#pages" )
 						.removeClass( "off" )
 						.addClass( "on" )
-						.css( "background-image", "url(images/slides/page-on.png)" );
+						.css( "background-image", "url(images/page-on.png)" );
 
 				}
 
 				function pageLoaded( event, data ) {
 					$( "a.on", "#pages" )
 						.removeClass( "on" )
-						.css( "background-image", "url(images/slides/page-off.png)" );
+						.css( "background-image", "url(images/page-off.png)" );
 
 					$( "a", "#pages" )
 						.eq( data.page )
 						.addClass( "on" )
-						.css( "background-image", "url(images/slides/page-on.png)" );
+						.css( "background-image", "url(images/page-on.png)" );
 				}
 				
 				$("#carousel").rcarousel(
