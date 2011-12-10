@@ -3,6 +3,7 @@
 	margin: 0;
 	overflow: auto;
 	padding: 0;
+	position; relative; /*for ie7 to work e.g in html carousels*/
 	width: 300px
 }
 
