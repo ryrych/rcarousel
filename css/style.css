@@ -1,63 +1,91 @@
 body {
-	/*background: url(line.png) repeat;*/
+	/*background: url(grid.png) repeat-y center top;*/
 	font: 16px/1.5 'Droid Sans', sans-serif;
-	width: 900px;
+	width: 940px;
 	margin: 0 auto;
 }
 
+/*---headings---*/
+
+h1, h2, h3, h4, h5, h6 {
+    margin-bottom: 24px;
+    font-weight: bold;
+}
+
 h1 {
-	font-size: 64px;
-	margin-bottom: 48px;
+	font-size: 4.5em; /*72px → 72px ÷ 16px = 4.5em*/
+	line-height: 1em;
 }
 
 h2 {
-	font-size: 40px;
-	margin-bottom: 36px;
+	font-size: 3em; /*48px → 48px ÷ 16px = 3em*/
+	line-height: 1em;
 
 }
 
 h3 {
-	font-size: 24px;
-	margin-bottom: 36px;
+	font-size: 1.5em; /*24px → 24px ÷ 16px = 1.5em*/
+	line-height: 1em;
 }
 
-p {
-	margin-bottom: 24px;
+p, ul, ol, pre, table, .section {
+    margin-bottom: 24px;
 }
 
-ul {
-	margin-bottom: 24px;
+.section p + p {
+    text-indent: 1em;
+    margin-top: -24px;
+}
+
+h2 + .section {
+	margin-left: 60px
+}
+
+h3 + .section {
+	margin-left: 60px
+}
+
+h4 + .section {
+	margin-left: 60px;
 }
 
 ol {
-	margin-bottom: 24px;
-	list-style: decimal;
+	list-style: decimal outside;
 }
 
-a[href]:link {
+a:link {
 	color: #FF5C43;
 }
 
-a[href]:visited {
+a:visited {
 	color: #FF2019;
 }
 
 a[href]:hover {
-	color: #FF2019
+	color: #FF2019;
 }
 
-a[href]:active {
-	color: #FF2019
+a:active {
+	color: #FF2019;
 }
 
 pre {
 	font-family: 'Droid Sans Mono', monospace;
+	font-size: 14px;
+	line-height: 24px;
 	background-color: #E5E5E5;
-	margin-bottom: 24px;
+	white-space: pre-wrap; /* css-3 */
+	white-space: -moz-pre-wrap !important; /* Mozilla */
+	white-space: -pre-wrap; /* Opera 4-6 */
+	white-space: -o-pre-wrap; /* Opera 7 */
+	word-wrap: break-word;    /* IE 5.5+*/
 }
 
 code {
 	font-family: 'Droid Sans Mono', monospace;
+	font-size: 14px;
+	line-height: 24px;
+	background-color: #E5E5E5;
 }
 
 strong {
@@ -65,9 +93,8 @@ strong {
 }
 
 table {
-	border: 1px solid;
+	border: 0;
 	border-collapse: collapse;
-	margin-bottom: 22px;
 }
 
 thead {
@@ -83,7 +110,197 @@ th, td {
 	vertical-align: middle;
 }
 
+th {
+	height: 48px;
+}
+
 td {
 	border-right: 1px solid;
 	padding: 24px 5px;
+}
+
+td:last-child {
+	border: 0;
+}
+
+#browsers li {
+    position: relative;
+    background-image: expression(this.runtimeStyle.backgroundImage="none", this.innerHTML = '<img alt="" src="css/browsers.png">'+this.innerHTML);
+}
+
+#browsers li:before, #browsers li img {
+    content: url(browsers.png);
+    position: absolute;
+    top: 4px;
+    clip: rect(0 16px 16px 0);
+    left: -20px;
+	line-height: 0;
+}
+
+#browsers .chrome:before, #browsers .chrome img {
+    clip: rect(0 32px 16px 16px);
+    left: -36px;
+}
+
+#browsers .ie:before, #browsers .ie img {
+    clip: rect(0 48px 16px 32px);
+    left: -52px;
+}
+
+#browsers .opera:before, #browsers .opera img {
+    clip: rect(0 64px 16px 48px);
+    left: -68px;
+}
+
+#browsers .safari:before, #browsers .safari img {
+    clip: rect(0 80px 16px 64px);
+    left: -84px;
+}
+
+.clear {
+	clear: both;
+}
+
+
+/* carousel on thead main page */
+
+#carousel-container {
+	width: 940px;
+	height: 258px;
+	position: relative;
+	margin: 0 auto 30px auto;
+}
+			
+#carousel {
+	width: 780px;
+	margin: 0 auto;
+}
+
+#ui-carousel-next, #ui-carousel-prev {
+	width: 60px;
+	height: 240px;
+	background: url(../examples/images/arrow-left.png) #fff center center no-repeat;
+	display: block;
+	position: absolute;
+	top: 0;
+	z-index: 100;
+}
+
+#ui-carousel-next {
+	right: 0;
+	background-image: url(../examples/images/arrow-right.png);
+}
+
+#ui-carousel-prev {
+	left: 0;
+}
+
+#ui-carousel-next > span, #ui-carousel-prev > span {
+	display: none;
+}
+
+.slide {
+	margin: 0;
+	position: relative;
+}
+
+.slide  h1 {
+	font: 72px/1 Anton, sans-serif;
+	color: #ff5c43;
+	margin: 0;
+	padding: 0;
+}
+
+.slide  p {
+	font: 32px/1 Ubuntu, sans-serif;	
+	color: #4d4d4d;
+	margin: 0;
+	padding: 0;
+}
+
+#slide01 > img {
+	position: absolute;
+	bottom: 35px;
+	left: 30px;
+}
+
+#slide01 > .text {
+	position: absolute;
+	left: 290px;
+	bottom: 35px;
+}
+
+#slide02 > img {
+	position: absolute;
+	bottom: 35px;
+	left: 30px;
+}
+
+#slide02 > .text {
+	position: absolute;
+	left: 290px;
+	bottom: 65px;
+}
+
+#slide03 > img {
+	position: absolute;
+	bottom: 25px;
+	left: 30px;
+}
+
+#slide03 > .text {
+	position: absolute;
+	left: 270px;
+	bottom: 25px;
+}
+
+#slide04 > img {
+	position: absolute;
+	bottom: 50px;
+	left: 60px;
+}
+
+#slide04 > .text {
+	position: absolute;
+	left: 290px;
+	bottom: 25px;
+}
+
+#slide05 > img {
+	position: absolute;
+	bottom: 35px;
+	left: 60px;
+}
+
+#slide05 > .text {
+	position: absolute;
+	left: 240px;
+	bottom: 35px;
+}
+
+#slide06 > img {
+	position: absolute;
+	bottom: 10px;
+	left: 20px;
+}
+
+#slide06 > .text {
+	position: absolute;
+	left: 290px;
+	bottom: 35px;
+}
+
+#pages {
+	width: 150px;
+	margin: 0 auto;
+}
+
+.bullet {
+	background: url(../examples/images/page-off.png) center center no-repeat;
+	display: block;
+	width: 18px;
+	height: 18px;
+	margin: 0;
+	margin-right: 5px;
+	float: left;				
 }
