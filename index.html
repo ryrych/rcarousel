@@ -186,13 +186,13 @@
 				Then run it:
 			</p>
 		
-		<pre>
-		&lt;script type="text/javascript"&gt;
-			jQuery(function($) {
-			<strong>$( ".#carousel" ).rcarousel();</strong>
-			});
-		&lt;/script&gt;
-		</pre>
+<pre>
+&lt;script type="text/javascript"&gt;
+	jQuery(function($) {
+		<strong>$( "#carousel" ).rcarousel();</strong>
+	});
+&lt;/script&gt;
+</pre>
 		
 			<p>
 				Now <em>rcarousel</em> will be run with the default options. You should at least change default size of an element, for instance:
@@ -201,12 +201,7 @@
 <pre>
 &lt;script type="text/javascript"&gt;
 	jQuery(function($) {
-		$( ".#carousel" ).rcarousel(
-			<strong>{
-				width: 200,
-				height: 200
-			}</strong>
-		);
+		$( ".#carousel" ).rcarousel( <strong>{width: 200, height: 200}</strong> );
 	});
 &lt;/script&gt;
 </pre>
@@ -367,7 +362,12 @@
 
 		<h2>Navigation</h2>
 		<div id="navigation" class="section">			
-			<p>Hey! My carousel is useless and I can't control it! Take it easy! It's nothing to worry about. Developing rCarousel I decided that a user should take care of his or her carousel's skin. I’m aware that rCarousel is quite versatile and that there is no point in designing custom skins because it’s trivial to write own. Firstly, you don't have to use navigation at all! I showed it in the simple carousel example but present it again here:</p>
+			<p>
+				Hey! My carousel is useless and I can't control it! Take it easy! It's nothing to worry about.
+				Developing <em>rcarousel</em> I decided that a user should take care of his or her carousel’s skin.
+				I’m aware that <em>rcarousel</em> is quite versatile and that there is no point in designing custom skins
+				because it’s trivial to write own. Firstly, you don't have to use navigation at all!
+				I showed it in the <a href="examples/simple.html">simple carousel example</a> but I’ll present it again here:</p>
 
 <pre>
 jQuery(function($) {
@@ -393,8 +393,9 @@ jQuery(function($) {
 			&lt;img src="images/009.jpg" /&gt;
 			&lt;img src="images/010.jpg" /&gt;
 		&lt;/div&gt;
-		&lt;a href="#" id="ui-carousel-next"&gt;&lt;span&gt;next&lt;/span&gt;&lt;/a&gt;
-		&lt;a href="#" id="ui-carousel-prev"&gt;&lt;span&gt;prev&lt;/span&gt;&lt;/a&gt;
+		<strong>&lt;a href="#" id="ui-carousel-next"&gt;next&lt;/a&gt;
+		&lt;a href="#" id="ui-carousel-prev"&gt;prev;&lt;/a&gt;
+		</strong>
 	&lt;/div&gt;
 </pre>
 
@@ -405,7 +406,12 @@ jQuery(function($) {
 				<li><code>ui-carousel-prev</code></li>
 			</ul>
 
-			<p>By default <em>rcarousel</em> looks for these ids and attach to them click handlers. This means that clicking on the <code>a#ui-rcarousel-next</code> will trigger <em>show next elements</em> action. But it doesn't have to be an <code>A</code> element! It can be whatever valid <code>HTML</code> element. It also can be called what you like, simply use navigation option:</p>
+			<p>
+				By default <em>rcarousel</em> looks for these ids and attach to them click handlers.
+				This means that clicking on the <code>a#ui-carousel-next</code> will trigger <em>show next elements</em> action.
+				But it doesn’t have to be an <code>A</code> element! It can be whatever valid <code>HTML</code> element.
+				It also can be called what you like, simply use navigation option:
+			</p>
 
 <pre>
 navigation: {
@@ -414,7 +420,10 @@ navigation: {
 }
 </pre>
 
-			<p>It's important that both <code>prev</code> and <code>next</code> assume that you use valid jQuery representaion of class and id. To recap:</p>
+			<p>
+				It’s important that both <code>prev</code> and <code>next</code> assume that you use valid jQuery representaion of class and id.
+				To recap:
+			</p>
 
 			<ul>
 				<li><code>".thisIsAClass"</code></li>
