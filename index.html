@@ -263,7 +263,7 @@
 </pre>
 			
 			<p>
-				To make it work, add images, or any html content inside some DIV element. For example:
+				To make it work, add images, or any html content inside some <code>DIV</code> element. For example:
 			</p>
 		
 <pre>
@@ -380,21 +380,21 @@
 					<tr>
 						<td>navigation</td>
 						<td>object {next: string, prev: string}</td>
-						<td>{next: "#ui-rcarousel-next", prev: "#ui-rcarousel-prev"}</td>
-						<td>Attach click handler to given class ".class" or id "#id"</td>
+						<td>{next: "#ui-carousel-next", prev: "#ui-carousel-prev"}</td>
+						<td>Attach click handler to a given class ".class" or an id "#id"</td>
 					</tr>
 	
 					<tr>
 						<td>start</td>
 						<td>event</td>
-						<td>no default</td>
+						<td>—</td>
 						<td>Triggered when carousel is ready to use</td>
 					</tr>
 	
 					<tr>
 						<td>pageLoaded</td>
 						<td>event</td>
-						<td>no default</td>
+						<td>—</td>
 						<td>Triggered when page is loaded (scrolled into view)</td>
 					</tr>
 				</tbody>
@@ -447,7 +447,7 @@
 					<tr>
 						<td>append</td>
 						<td>$( "#carousel" ).rcarousel( "append", $jQueryElements );</td>
-						<td>adds $jQueryElements to carousel; it’s handy in Ajax calls; see <a href="examples/ajax.html">example</a> </td>
+						<td>adds $jQueryElements to carousel; it’s handy in Ajax calls; see the <a href="examples/ajax.html">example</a> </td>
 					</tr>					
 				</tbody>
 			</table>			
@@ -471,35 +471,24 @@ jQuery(function($) {
 });
 </pre>
 
-			<p>As you see, carousel makes use of <code>auto</code> option. <code>enable: true</code> just enables automatic scrolling, so navigation is redundant. But if you’d like to add some arrows, buttons, etc. for next and previous action you can do it too! Let me show you:</p>
+			<p>As you can see, carousel makes use of <code>auto</code> option. <code>enable: true</code> just enables automatic scrolling, so navigation is redundant. But if you’d like to add some arrows, buttons, etc. for next and previous action you can do it too! Let me show you:</p>
 
 <pre>
-	&lt;div id="container"&gt;
-		&lt;div id="carousel"&gt;
-			&lt;img src="images/001.jpg" /&gt;
-			&lt;img src="images/002.jpg" /&gt;
-			&lt;img src="images/003.jpg" /&gt;
-			&lt;img src="images/004.jpg" /&gt;
-			&lt;img src="images/005.jpg" /&gt;
-			&lt;img src="images/006.jpg" /&gt;
-			&lt;img src="images/007.jpg" /&gt;
-			&lt;img src="images/008.jpg" /&gt;
-			&lt;img src="images/009.jpg" /&gt;
-			&lt;img src="images/010.jpg" /&gt;
-		&lt;/div&gt;
-		<strong>&lt;a href="#" id="ui-carousel-next"&gt;next&lt;/a&gt;
-		&lt;a href="#" id="ui-carousel-prev"&gt;prev;&lt;/a&gt;
-		</strong>
+&lt;div id="container"&gt;
+	&lt;div id="carousel"&gt;
+		&lt;img src="images/001.jpg" /&gt;
+		&lt;img src="images/002.jpg" /&gt;
+		&lt;img src="images/003.jpg" /&gt;
 	&lt;/div&gt;
+	<strong>
+	&lt;a href="#" id="ui-carousel-next"&gt;next&lt;/a&gt;
+	&lt;a href="#" id="ui-carousel-prev"&gt;prev;&lt;/a&gt;
+	</strong>
+&lt;/div&gt;
 </pre>
 
-			<p>Pay special attention on anchor elements (A). They use special identifiers:</p>
-
-			<ul>
-				<li><code>ui-carousel-next</code></li>
-				<li><code>ui-carousel-prev</code></li>
-			</ul>
-
+			<p>Pay special attention on anchor elements (<code>A</code>). They use special identifiers:</p>
+			<p><code>ui-carousel-next</code> and <code>ui-carousel-prev</code>.
 			<p>
 				By default <em>rcarousel</em> looks for these ids and attach to them click handlers.
 				This means that clicking on the <code>a#ui-carousel-next</code> will trigger <em>show next elements</em> action.
@@ -509,20 +498,19 @@ jQuery(function($) {
 
 <pre>
 navigation: {
-  prev: ".someFancyClass",
-  next: "#andFunnyID"
+	prev: ".someFancyClass",
+	next: "#andFunnyID"
 }
 </pre>
 
 			<p>
-				It’s important that both <code>prev</code> and <code>next</code> assume that you use valid jQuery representaion of class and id.
+				It’s important that both <code>prev</code> and <code>next</code> assume that you use valid jQuery representaion of a class and an id.
 				To recap:
 			</p>
-
-			<ul>
-				<li><code>".thisIsAClass"</code></li>
-				<li><code>"#thisIsAnID"</code></li>
-			</ul>
+			
+			<p>
+				<code>".thisIsAClass"</code> and <code>"#thisIsAnID"</code>.
+			</p>
 		</div>
 		
 		
@@ -542,7 +530,7 @@ navigation: {
 				
 				<h4>Ajax handling</h4>
 				<p class="section">
-					Ajax calls have been delegated to third parties. See an <a href="example/ajax.html">example</a>.
+					Ajax calls have been delegated to third parties. See the <a href="examples/ajax.html">example</a>.
 				</p>
 				
 				<h4>Simplified pagination algorithm</h4>
