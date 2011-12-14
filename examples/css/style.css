@@ -1,7 +1,6 @@
 body {
 	font: 16px/1.5 sans-serif;
-	margin: 0;
-	padding: 0;
+
 }
 
 #header {
@@ -9,8 +8,16 @@ body {
 	color: #fff;
 	text-align: center;
 	padding: 20px;
-	margin: 0;
 	margin-bottom: 20px;
+}
+
+#content {
+	margin: 20px;
+}
+
+h1 {
+	font-size: 2em;
+	margin-bottom: 30px;
 }
 
 a:link, a:visited, a:hover, a:active {

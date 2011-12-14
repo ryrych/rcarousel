@@ -2,7 +2,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl">
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <title>ui-carousel - custom step and visible example</title>
+        <title>rcarousel – multi carousels on a page</title>
+        <link type="text/css" rel="stylesheet" href="css/reset.css" />			
         <link type="text/css" rel="stylesheet" href="css/style.css" />		
         <link type="text/css" rel="stylesheet" href="../widget/css/rcarousel.css" />
 		<style type="text/css">
@@ -77,123 +78,133 @@
 		</style>
 	</head>
 	<body>
-		<p>multiple carousels on the page - guess how many are used? :)</p>
-		<div id="carousels">
-			<div id="carousel1">
-				<img src="images/001.jpg" />
-				<img src="images/002.jpg" />
-				<img src="images/003.jpg" />
-				<img src="images/004.jpg" />
-				<img src="images/005.jpg" />
-				<img src="images/006.jpg" />
-				<img src="images/007.jpg" />
-				<img src="images/008.jpg" />
-				<img src="images/009.jpg" />
-				<img src="images/010.jpg" />				
-			</div>
+		<div id="header">
+			<p>
+				This is an example of <em>rcarousel</em> – a jQuery UI continuous carousel.
+				Go back to the <a href="http://ryrych.github.com/rcarousel/">documentation</a>
+			</p>
+		</div>
+		
+		<div id="content">
+			<h1>multiple carousels on a page</h1>
 			
-			<div id="carousel2">
-				<img src="images/001.jpg" />
-				<img src="images/002.jpg" />
-				<img src="images/003.jpg" />
-				<img src="images/004.jpg" />
-				<img src="images/005.jpg" />
-				<img src="images/006.jpg" />
-				<img src="images/007.jpg" />
-				<img src="images/008.jpg" />
-				<img src="images/009.jpg" />
-				<img src="images/010.jpg" />				
-			</div>
-			
-			<div id="carousel3">
-				<img src="images/001.jpg" />
-				<img src="images/002.jpg" />
-				<img src="images/003.jpg" />
-				<img src="images/004.jpg" />
-				<img src="images/005.jpg" />
-				<img src="images/006.jpg" />
-				<img src="images/007.jpg" />
-				<img src="images/008.jpg" />
-				<img src="images/009.jpg" />
-				<img src="images/010.jpg" />				
-			</div>
-			
-			<div id="carousel4">
-				<img src="images/001.jpg" />
-				<img src="images/002.jpg" />
-				<img src="images/003.jpg" />
-				<img src="images/004.jpg" />
-				<img src="images/005.jpg" />
-				<img src="images/006.jpg" />
-				<img src="images/007.jpg" />
-				<img src="images/008.jpg" />
-				<img src="images/009.jpg" />
-				<img src="images/010.jpg" />				
-			</div>
-
-			<div id="carousel5">
-				<img src="images/001.jpg" />
-				<img src="images/002.jpg" />
-				<img src="images/003.jpg" />
-				<img src="images/004.jpg" />
-				<img src="images/005.jpg" />
-				<img src="images/006.jpg" />
-				<img src="images/007.jpg" />
-				<img src="images/008.jpg" />
-				<img src="images/009.jpg" />
-				<img src="images/010.jpg" />				
-			</div>
-			
-			<div id="carousel6">
-				<img src="images/001.jpg" />
-				<img src="images/002.jpg" />
-				<img src="images/003.jpg" />
-				<img src="images/004.jpg" />
-				<img src="images/005.jpg" />
-				<img src="images/006.jpg" />
-				<img src="images/007.jpg" />
-				<img src="images/008.jpg" />
-				<img src="images/009.jpg" />
-				<img src="images/010.jpg" />				
-			</div>
-			
-			<div id="carousel7">
-				<img src="images/001.jpg" />
-				<img src="images/002.jpg" />
-				<img src="images/003.jpg" />
-				<img src="images/004.jpg" />
-				<img src="images/005.jpg" />
-				<img src="images/006.jpg" />
-				<img src="images/007.jpg" />
-				<img src="images/008.jpg" />
-				<img src="images/009.jpg" />
-				<img src="images/010.jpg" />
-			</div>
-			
-			<div id="carousel8">
-				<img src="images/001.jpg" />
-				<img src="images/002.jpg" />
-				<img src="images/003.jpg" />
-				<img src="images/004.jpg" />
-				<img src="images/005.jpg" />
-				<img src="images/006.jpg" />
-				<img src="images/007.jpg" />
-				<img src="images/008.jpg" />
-				<img src="images/009.jpg" />
-				<img src="images/010.jpg" />				
-			</div>
-
-			<div id="carousel9">
-				<img src="images/001.jpg" />
-				<img src="images/002.jpg" />
-				<img src="images/003.jpg" />
-				<img src="images/004.jpg" />
-				<img src="images/005.jpg" />
-				<img src="images/006.jpg" />
-				<img src="images/007.jpg" />
-				<img src="images/008.jpg" />
-				<img src="images/009.jpg" />
-				<img src="images/010.jpg" />
+			<div id="carousels">
+				<div id="carousel1">
+					<img src="images/001.jpg" />
+					<img src="images/002.jpg" />
+					<img src="images/003.jpg" />
+					<img src="images/004.jpg" />
+					<img src="images/005.jpg" />
+					<img src="images/006.jpg" />
+					<img src="images/007.jpg" />
+					<img src="images/008.jpg" />
+					<img src="images/009.jpg" />
+					<img src="images/010.jpg" />				
+				</div>
+				
+				<div id="carousel2">
+					<img src="images/001.jpg" />
+					<img src="images/002.jpg" />
+					<img src="images/003.jpg" />
+					<img src="images/004.jpg" />
+					<img src="images/005.jpg" />
+					<img src="images/006.jpg" />
+					<img src="images/007.jpg" />
+					<img src="images/008.jpg" />
+					<img src="images/009.jpg" />
+					<img src="images/010.jpg" />				
+				</div>
+				
+				<div id="carousel3">
+					<img src="images/001.jpg" />
+					<img src="images/002.jpg" />
+					<img src="images/003.jpg" />
+					<img src="images/004.jpg" />
+					<img src="images/005.jpg" />
+					<img src="images/006.jpg" />
+					<img src="images/007.jpg" />
+					<img src="images/008.jpg" />
+					<img src="images/009.jpg" />
+					<img src="images/010.jpg" />				
+				</div>
+				
+				<div id="carousel4">
+					<img src="images/001.jpg" />
+					<img src="images/002.jpg" />
+					<img src="images/003.jpg" />
+					<img src="images/004.jpg" />
+					<img src="images/005.jpg" />
+					<img src="images/006.jpg" />
+					<img src="images/007.jpg" />
+					<img src="images/008.jpg" />
+					<img src="images/009.jpg" />
+					<img src="images/010.jpg" />				
+				</div>
+	
+				<div id="carousel5">
+					<img src="images/001.jpg" />
+					<img src="images/002.jpg" />
+					<img src="images/003.jpg" />
+					<img src="images/004.jpg" />
+					<img src="images/005.jpg" />
+					<img src="images/006.jpg" />
+					<img src="images/007.jpg" />
+					<img src="images/008.jpg" />
+					<img src="images/009.jpg" />
+					<img src="images/010.jpg" />				
+				</div>
+				
+				<div id="carousel6">
+					<img src="images/001.jpg" />
+					<img src="images/002.jpg" />
+					<img src="images/003.jpg" />
+					<img src="images/004.jpg" />
+					<img src="images/005.jpg" />
+					<img src="images/006.jpg" />
+					<img src="images/007.jpg" />
+					<img src="images/008.jpg" />
+					<img src="images/009.jpg" />
+					<img src="images/010.jpg" />				
+				</div>
+				
+				<div id="carousel7">
+					<img src="images/001.jpg" />
+					<img src="images/002.jpg" />
+					<img src="images/003.jpg" />
+					<img src="images/004.jpg" />
+					<img src="images/005.jpg" />
+					<img src="images/006.jpg" />
+					<img src="images/007.jpg" />
+					<img src="images/008.jpg" />
+					<img src="images/009.jpg" />
+					<img src="images/010.jpg" />
+				</div>
+				
+				<div id="carousel8">
+					<img src="images/001.jpg" />
+					<img src="images/002.jpg" />
+					<img src="images/003.jpg" />
+					<img src="images/004.jpg" />
+					<img src="images/005.jpg" />
+					<img src="images/006.jpg" />
+					<img src="images/007.jpg" />
+					<img src="images/008.jpg" />
+					<img src="images/009.jpg" />
+					<img src="images/010.jpg" />				
+				</div>
+	
+				<div id="carousel9">
+					<img src="images/001.jpg" />
+					<img src="images/002.jpg" />
+					<img src="images/003.jpg" />
+					<img src="images/004.jpg" />
+					<img src="images/005.jpg" />
+					<img src="images/006.jpg" />
+					<img src="images/007.jpg" />
+					<img src="images/008.jpg" />
+					<img src="images/009.jpg" />
+					<img src="images/010.jpg" />
+				</div>
 			</div>
 		</div>
 
