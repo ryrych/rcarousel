@@ -94,9 +94,11 @@
 			}
 			
 			if ( direction === "prev" ) {
-				$content.prepend( jQueryElement.clone() );
+				
+				// clone event handlers and data as well
+				$content.prepend( jQueryElement.clone(true, true) );
 			} else {
-				$content.append( jQueryElement.clone() );
+				$content.append( jQueryElement.clone(true, true) );
 			}			
 		},
 		
@@ -697,7 +699,9 @@
 			$elements.each(
 				function( i, el ) {
 					$el = $( el );
-					data.paths.push( $el );
+					
+					// keep element’s data and events
+					data.paths.push( $el.clone(true, true) );
 					$el.remove();
 				}
 			);		
