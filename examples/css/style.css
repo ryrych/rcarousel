@@ -1,0 +1,29 @@
+body {
+	font: 16px/1.5 sans-serif;
+
+}
+
+#header {
+	background-color: #FF5C43;
+	color: #fff;
+	text-align: center;
+	padding: 20px;
+	margin-bottom: 20px;
+}
+
+#content {
+	margin: 20px;
+}
+
+h1 {
+	font-size: 2em;
+	margin-bottom: 30px;
+}
+
+a:link, a:visited, a:hover, a:active {
+	color: #fff;
+}
+
+em {
+	font-style: italic;
+}

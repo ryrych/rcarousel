@@ -2,8 +2,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl">
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <title>rcarousel - html content example</title>
+        <title>rcarousel - html content</title>
 		<link href='http://fonts.googleapis.com/css?family=Anton|Ubuntu' rel='stylesheet' type='text/css'>
+        <link type="text/css" rel="stylesheet" href="css/reset.css" />				
+        <link type="text/css" rel="stylesheet" href="css/style.css" />			
         <link type="text/css" rel="stylesheet" href="../widget/css/rcarousel.css" />
 		<style type="text/css">
 			#container {
@@ -150,59 +152,70 @@
 		</style>
 	</head>
 	<body>
-		<div id="container">
-			<div id="carousel">
-				<div id="slide01" class="slide">
-					<img src="images/html_slides/jqueryui.png" alt="jQuery UI logo" />
-					<div class="text">
-						<h1>continuous<br />carousel</h1>
-						<p>driven by jQuery UI</p>
+		<div id="header">
+			<p>
+				This is an example of <em>rcarousel</em> – a jQuery UI continuous carousel.
+				Go back to the <a href="http://ryrych.github.com/rcarousel/">documentation</a>
+			</p>
+		</div>
+		
+		<div id="content">
+			<h1>Any HTML element in slides</h1>
+			
+			<div id="container">
+				<div id="carousel">
+					<div id="slide01" class="slide">
+						<img src="images/html_slides/jqueryui.png" alt="jQuery UI logo" />
+						<div class="text">
+							<h1>continuous<br />carousel</h1>
+							<p>driven by jQuery UI</p>
+						</div>
 					</div>
+					
+					<div id="slide02" class="slide">
+						<img src="images/html_slides/anycontent.png" alt="any content" />
+						<div class="text">
+							<h1>any content</h1>
+							<p>from images to any HTML element</p>
+						</div>
+					</div>
+					
+					<div id="slide03" class="slide">
+						<img src="images/html_slides/horizontalvertical.png" alt="horizontal and vertical carousel" />
+						<div class="text">
+							<h1>horizontal<br />and vertical</h1>
+							<p>carousels just one click away</p>
+						</div>
+					</div>
+					
+					<div id="slide04" class="slide">
+						<img src="images/html_slides/multi.png" alt="multi carousels" />
+						<div class="text">
+							<h1>multi<br />carousels</h1>
+							<p>on a page</p>
+						</div>
+					</div>
+					
+					<div id="slide05" class="slide">
+						<img src="images/html_slides/customization.png" alt="customization" />
+						<div class="text">
+							<h1>highly<br />customizable</h1>
+							<p>style it whatever you like</p>
+						</div>
+					</div>
+					
+					<div id="slide06" class="slide">
+						<img src="images/html_slides/browsers.png" alt="multi browser support" />
+						<div class="text">
+							<h1>multi browser<br />support</h1>
+							<p>supports even old browsers</p>
+						</div>
+					</div>					
 				</div>
-				
-				<div id="slide02" class="slide">
-					<img src="images/html_slides/anycontent.png" alt="any content" />
-					<div class="text">
-						<h1>any content</h1>
-						<p>from images to any HTML element</p>
-					</div>
-				</div>
-				
-				<div id="slide03" class="slide">
-					<img src="images/html_slides/horizontalvertical.png" alt="horizontal and vertical carousel" />
-					<div class="text">
-						<h1>horizontal<br />and vertical</h1>
-						<p>carousels just one click away</p>
-					</div>
-				</div>
-				
-				<div id="slide04" class="slide">
-					<img src="images/html_slides/multi.png" alt="multi carousels" />
-					<div class="text">
-						<h1>multi<br />carousels</h1>
-						<p>on a page</p>
-					</div>
-				</div>
-				
-				<div id="slide05" class="slide">
-					<img src="images/html_slides/customization.png" alt="customization" />
-					<div class="text">
-						<h1>highly<br />customizable</h1>
-						<p>style it whatever you like</p>
-					</div>
-				</div>
-				
-				<div id="slide06" class="slide">
-					<img src="images/html_slides/browsers.png" alt="multi browser support" />
-					<div class="text">
-						<h1>multi browser<br />support</h1>
-						<p>supports even old browsers</p>
-					</div>
-				</div>					
+				<a href="#" id="ui-carousel-next"><span>next</span></a>
+				<a href="#" id="ui-carousel-prev"><span>prev</span></a>
+				<div id="pages"></div>
 			</div>
-			<a href="#" id="ui-carousel-next"><span>next</span></a>
-			<a href="#" id="ui-carousel-prev"><span>prev</span></a>
-			<div id="pages"></div>
 		</div>
 
 		<script type="text/javascript" src="../widget/lib/jquery-1.7.1.js"></script>
