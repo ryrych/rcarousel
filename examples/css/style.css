@@ -24,6 +24,10 @@ a:link, a:visited, a:hover, a:active {
 	color: #fff;
 }
 
+#content a:link, #content a:visited, #content a:hover, #content a:active {
+	color: #ff5c43;
+}
+
 em {
 	font-style: italic;
 }
