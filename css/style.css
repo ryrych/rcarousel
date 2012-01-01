@@ -32,11 +32,6 @@ p, ul, ol, pre, table, .section {
     margin-bottom: 24px;
 }
 
-.section p + p {
-    text-indent: 1em;
-    margin-top: -24px;
-}
-
 h2 + .section {
 	margin-left: 60px
 }
