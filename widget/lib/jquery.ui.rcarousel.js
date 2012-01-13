@@ -34,14 +34,16 @@
 			
 			// handle default event handlers
 			$( options.navigation.next ).click(
-				function() {
+				function( event ) {
 					_self.next();
+					event.preventDefault();
 				}
 			);
 			
 			$( options.navigation.prev ).click(
-				function() {
+				function( event ) {
 					_self.prev();
+					event.preventDefault();
 				}
 			);			
 			
