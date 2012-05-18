@@ -312,7 +312,8 @@
 
 				// continue until you reach the last page
 				// we start from the 2nd page (1st page has been already initiated)
-				while ( !_islastPage(data.pages[data.pages.length - 1]) || _isBeginning ) {
+				// do not start when the number of elements = number of visible elements (fixes issue #34)
+				while ( !_islastPage(data.pages[data.pages.length - 1]) || (_isBeginning && _pathsLen > _visible) ) {
 					_isBeginning = false;
 
 					_end = _start + _visible;
