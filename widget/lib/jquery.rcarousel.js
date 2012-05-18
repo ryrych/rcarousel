@@ -53,16 +53,10 @@
 			// stop on hover feature
 			$root.hover(
 				function() {
-					if ( options.auto.enabled ) {
-						clearInterval( data.interval );
-						data.hoveredOver = true;
-					}
+					_self.pause( true );
 				},
 				function() {
-					if ( options.auto.enabled ) {
-						data.hoveredOver = false;
-						_self._autoMode( options.auto.direction );
-					}
+					_self.pause( false );
 				}
 			);
 			
@@ -242,7 +236,7 @@
 					navigation: {},
 					animated: false,
 					appended: false,
-					hoveredOver: false
+					paused: false
 				}
 			);
 		},
@@ -509,7 +503,7 @@
 					self._removeOldElements( "last", _page.length );
 					data.animated = false;
 
-					if ( !data.hoveredOver && options.auto.enabled ) {
+					if ( !data.paused && options.auto.enabled ) {
 						// if autoMode is on and you change page manually
 						clearInterval( data.interval );
 						
@@ -614,7 +608,7 @@
 					
 					data.animated = false;
 
-					if ( !data.hoveredOver && options.auto.enabled ) {
+					if ( !data.paused && options.auto.enabled ) {
 						// if autoMode is on and you change page manually
 						clearInterval( data.interval );
 						
@@ -648,6 +642,20 @@
 				// move by one element from current index
 				this._goToNextPage( data.pageIndex - data.oldPageIndex );
 				data.oldPageIndex = data.pageIndex;
+			}
+		},
+		
+		pause: function( on ) {
+			if ( this.options.auto.enabled ) {
+				var data = $( this.element ).data( "data" );
+				
+				if ( on ) {
+					data.paused = true;
+					clearInterval( data.interval );
+				} else {
+					data.paused = false;
+					this._autoMode( this.options.auto.direction );
+				}
 			}
 		},
 		
