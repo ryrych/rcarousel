@@ -1,4 +1,4 @@
-.ui-carousel {
+.ryrych-carousel {
 	height: 100px;
 	margin: 0;
 	overflow: auto;
@@ -7,13 +7,13 @@
 	width: 300px
 }
 
-.ui-carousel > .wrapper {
+.ryrych-carousel > .wrapper {
     margin: 0;
     padding: 0;
     width: 9999px;
 }
 
-.ui-carousel > .wrapper > * {
+.ryrych-carousel > .wrapper > * {
 	border: 0;
 	display: block;
 	float: left;

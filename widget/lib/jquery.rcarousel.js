@@ -1,5 +1,5 @@
 (function ($) {
-	$.widget("ui.rcarousel", {
+	$.widget("ryrych.rcarousel", {
 		_create: function() {
 			var data,
 				$root = $( this.element ),
@@ -17,7 +17,7 @@
 
 			// create wrapper inside root element; this is needed for animating
 			$root
-				.addClass( "ui-carousel" )
+				.addClass( "ryrych-carousel" )
 				.children()
 				.wrapAll( "<div class='wrapper'></div>" );
 			
@@ -792,8 +792,8 @@
 			},
 			startAtPage: 0,
 			navigation: {
-				next: "#ui-carousel-next",
-				prev: "#ui-carousel-prev"
+				next: "#ryrych-carousel-next",
+				prev: "#ryrych-carousel-prev"
 			}
 		}
 	});
