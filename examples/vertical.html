@@ -22,7 +22,7 @@
 				border: 0;
 			}
 
-			#ui-carousel-next, #ui-carousel-prev {
+			#ryrych-carousel-next, #ryrych-carousel-prev {
 				width: 100px;
 				height: 50px;
 				background: url(images/arrow-bottom.png) #fff center center no-repeat;
@@ -32,16 +32,16 @@
 				z-index: 100;
 			}
 
-			#ui-carousel-next {
+			#ryrych-carousel-next {
 				top: 0;
 				background-image: url(images/arrow-top.png);
 			}
 
-			#ui-carousel-prev {
+			#ryrych-carousel-prev {
 				bottom: 0;
 			}
 			
-			#ui-carousel-next > span, #ui-carousel-prev > span {
+			#ryrych-carousel-next > span, #ryrych-carousel-prev > span {
 				display: none;
 			}	
 		</style>
@@ -70,23 +70,23 @@
 					<img src="images/009.jpg" />
 					<img src="images/010.jpg" />
 				</div>
-				<a href="#" id="ui-carousel-next"><span>next</span></a>
-				<a href="#" id="ui-carousel-prev"><span>prev</span></a>
+				<a href="#" id="ryrych-carousel-next"><span>next</span></a>
+				<a href="#" id="ryrych-carousel-prev"><span>prev</span></a>
 			</div>
 		</div>
 
-		<script type="text/javascript" src="../widget/lib/jquery-1.7.1.js"></script>
+		<script type="text/javascript" src="../widget/lib/jquery-1.7.2.js"></script>
 		<script type="text/javascript" src="../widget/lib/jquery.ui.core.js"></script>
 		<script type="text/javascript" src="../widget/lib/jquery.ui.widget.js"></script>
-		<script type="text/javascript" src="../widget/lib/jquery.ui.rcarousel.js"></script>
+		<script type="text/javascript" src="../widget/lib/jquery.rcarousel.js"></script>
 		<script type="text/javascript">
 			jQuery(function($) {
 				$("#carousel").rcarousel({
 					orientation: "vertical"
 				});
 				
-				$( "#ui-carousel-next" )
-					.add( "#ui-carousel-prev" )
+				$( "#ryrych-carousel-next" )
+					.add( "#ryrych-carousel-prev" )
 					.hover(
 						function() {
 							$( this ).css( "opacity", 0.7 );
