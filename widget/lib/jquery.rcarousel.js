@@ -53,18 +53,24 @@
 			// stop on hover feature
 			$root.hover(
 				function() {
-					_self.pause( true );
+					if ( options.autoplay.enabled ) {
+						_self.autoplay( false );
+						data.hovered = true;
+					}
 				},
 				function() {
-					_self.pause( false );
+					if ( options.autoplay.enabled || data.hovered ) {
+						_self.autoplay( true );
+						data.hovered = false;
+					}
 				}
 			);
 			
 			this._setStep();
 			
 			// if auto mode is enabled run it
-			if ( options.auto.enabled ) {
-				this._autoMode( options.auto.direction );
+			if ( options.autoplay.enabled ) {
+				this._autoMode( options.autoplay.direction );
 			}
 			
 			// broadcast event
@@ -121,9 +127,20 @@
 				data = $( this.element ).data( "data" );
 
 			if ( direction === "next" ) {
-				data.interval = setTimeout( $.proxy(this.next, this), options.auto.interval );
+				data.interval = setTimeout( $.proxy(this.next, this), options.autoplay.interval );
 			} else {
-				data.interval = setTimeout( $.proxy(this.prev, this), options.auto.interval );
+				data.interval = setTimeout( $.proxy(this.prev, this), options.autoplay.interval );
+			}
+		},
+		
+		autoplay: function( on ) {
+			if ( on ) {
+				this.options.autoplay.enabled = true;
+				clearInterval( data.interval );
+				this._autoMode( this.options.autoplay.direction );
+			} else {
+				this.options.autoplay.enabled = false;
+				clearInterval( data.interval );
 			}
 		},
 		
@@ -198,7 +215,7 @@
 							}
 							break;
 		
-						case "auto":
+						case "autoplay":
 							if ( typeof value.direction !== "string" ) {
 								throw new Error( "direction should be defined as a string" );
 							}
@@ -236,7 +253,7 @@
 					navigation: {},
 					animated: false,
 					appended: false,
-					paused: false
+					hovered: false
 				}
 			);
 		},
@@ -503,11 +520,11 @@
 					self._removeOldElements( "last", _page.length );
 					data.animated = false;
 
-					if ( !data.paused && options.auto.enabled ) {
+					if ( !data.hovered && options.autoplay.enabled ) {
 						// if autoMode is on and you change page manually
 						clearInterval( data.interval );
 						
-						self._autoMode( options.auto.direction );
+						self._autoMode( options.autoplay.direction );
 					}
 
 					// scrolling is finished, send an event
@@ -608,11 +625,11 @@
 					
 					data.animated = false;
 
-					if ( !data.paused && options.auto.enabled ) {
+					if ( !data.hovered && options.autoplay.enabled ) {
 						// if autoMode is on and you change page manually
 						clearInterval( data.interval );
 						
-						self._autoMode( options.auto.direction );
+						self._autoMode( options.autoplay.direction );
 					}
 
 					// scrolling is finished, send an event
@@ -642,20 +659,6 @@
 				// move by one element from current index
 				this._goToNextPage( data.pageIndex - data.oldPageIndex );
 				data.oldPageIndex = data.pageIndex;
-			}
-		},
-		
-		pause: function( on ) {
-			if ( this.options.auto.enabled ) {
-				var data = $( this.element ).data( "data" );
-				
-				if ( on ) {
-					data.paused = true;
-					clearInterval( data.interval );
-				} else {
-					data.paused = false;
-					this._autoMode( this.options.auto.direction );
-				}
 			}
 		},
 		
@@ -730,12 +733,14 @@
 					$.Widget.prototype._setOption.apply( this, arguments );
 					break;
 	
-				case "auto":
-					_newOptions = $.extend( options.auto, value );
+				case "autoplay":
+					_newOptions = $.extend( options.autoplay, value );
 					this._checkOptionsValidity({auto: _newOptions});
 	
-					if ( options.auto.enabled ) {
-						this._autoMode( options.auto.direction );
+					if ( options.autoplay.enabled ) {
+						this.autoplay( true );
+					} else {
+						this.autoplay( false );
 					}
 				}
 
@@ -794,7 +799,7 @@
 			speed: 1000,
 			margin: 0,
 			orientation: "horizontal",
-			auto: {
+			autoplay: {
 				enabled: false,
 				direction: "next",
 				interval: 5000
