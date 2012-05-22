@@ -677,10 +677,10 @@
 
 			for ( var i = 0; i < length; i++ ) {
 				if ( position === "first" ) {
-					$root
+					$(
+						$root
 						.find( "div.wrapper" )
-							.children()
-							.first()
+							.children()[0])
 							.remove();
 				} else {
 					$root
