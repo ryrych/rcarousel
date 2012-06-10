@@ -636,14 +636,16 @@
 			if ( !data.animated ) {
 				data.animated = true;
 				
-				if ( !data.appended  ) {
+				if ( data.pageIndex == data.pages.length - 1 ) {
+					if (options.circular) {
+						data.pageIndex = 0;
+					}
+				}
+				
+				else if ( !data.appended  ) {
 					++data.pageIndex;
 				}				
 				
-				if ( data.pageIndex > data.pages.length - 1 ) {
-					data.pageIndex = 0;
-				}
-
 				// move by one element from current index
 				this._goToNextPage( data.pageIndex - data.oldPageIndex );
 				data.oldPageIndex = data.pageIndex;
@@ -657,14 +659,16 @@
 			if ( !data.animated ) {
 				data.animated = true;
 
-				if ( !data.appended ) {
+                                if ( data.pageIndex == 0 ) {
+                                        if (options.circular) {
+                                        	data.pageIndex = data.pages.length - 1;
+					}
+                                }
+
+				else if ( !data.appended ) {
 					--data.pageIndex;
 				}
 				
-				if ( data.pageIndex < 0 ) {
-					data.pageIndex = data.pages.length - 1;
-				}
-
 				// move left by one element from current index
 				this._goToPrevPage( data.pageIndex - data.oldPageIndex );
 				data.oldPageIndex = data.pageIndex;
@@ -794,7 +798,8 @@
 			navigation: {
 				next: "#ui-carousel-next",
 				prev: "#ui-carousel-prev"
-			}
+			},
+			circular: true
 		}
 	});
 }(jQuery));
