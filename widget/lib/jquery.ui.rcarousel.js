@@ -493,14 +493,19 @@
 			self._loadElements( _page, "prev" );
 
 			// calculate the distance
-			_dist = options.width * _page.length + ( options.margin * _page.length );
+		//	_dist = options.width * _page.length + ( options.margin * _page.length ); //fix by progmax
 
 			if (options.orientation === "horizontal") {
+                            // calculate the distance
+			_dist = options.width * _page.length + ( options.margin * _page.length);//fix by progmax
 				_animOpts = {scrollLeft: 0};
-				$root.scrollLeft( _dist );
+				$root.scrollLeft( _dist);
 			} else {
+                            // calculate the distance
+			_dist = options.height * _page.length + ( options.margin * _page.length);//fix by progmax
+                            
 				_animOpts = {scrollTop: 0};
-				$root.scrollTop( _dist );
+				$root.scrollTop( _dist);
 			}
 
 			$root
@@ -593,11 +598,16 @@
 			this._loadElements( _page, "next" );
 
 			// calculate the distance
-			_dist = options.width * _page.length + ( options.margin * _page.length );
+		//	_dist = options.width * _page.length + ( options.margin * _page.length ); //fix by progmax
 			
-			if ( options.orientation === "horizontal" ) {
+			if ( options.orientation === "horizontal") {
+                            // calculate the distance
+			_dist = options.width * _page.length + ( options.margin * _page.length);  //fix by progmax
 				_animOpts = {scrollLeft: "+=" + _dist};
+                                
 			} else {
+                            // calculate the distance
+			_dist = options.height * _page.length + ( options.margin * _page.length); //fix by progmax
 				_animOpts = {scrollTop: "+=" + _dist};
 			}
 			
