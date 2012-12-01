@@ -632,21 +632,23 @@
 		next: function() {
 			var	options = this.options,
 				data = $( this.element ).data( "data" );
+			//data shouldn't be assumed to exist, element may have been removed (along with it's data)
+			if(typeof data=="object"){
+				if ( !data.animated ) {
+					data.animated = true;
+				
+					if ( !data.appended  ) {
+						++data.pageIndex;
+					}				
+				
+					if ( data.pageIndex > data.pages.length - 1 ) {
+						data.pageIndex = 0;
+					}
 
-			if ( !data.animated ) {
-				data.animated = true;
-				
-				if ( !data.appended  ) {
-					++data.pageIndex;
-				}				
-				
-				if ( data.pageIndex > data.pages.length - 1 ) {
-					data.pageIndex = 0;
+					// move by one element from current index
+					this._goToNextPage( data.pageIndex - data.oldPageIndex );
+					data.oldPageIndex = data.pageIndex;
 				}
-
-				// move by one element from current index
-				this._goToNextPage( data.pageIndex - data.oldPageIndex );
-				data.oldPageIndex = data.pageIndex;
 			}
 		},
 		
@@ -654,20 +656,23 @@
 			var	options = this.options,
 				data = $( this.element ).data( "data" );
 
-			if ( !data.animated ) {
-				data.animated = true;
-
-				if ( !data.appended ) {
-					--data.pageIndex;
+			//data shouldn't be assumed to exist, element may have been removed (along with it's data)
+			if(typeof data=="object"){
+				if ( !data.animated ) {
+					data.animated = true;
+	
+					if ( !data.appended ) {
+						--data.pageIndex;
+					}
+					
+					if ( data.pageIndex < 0 ) {
+						data.pageIndex = data.pages.length - 1;
+					}
+	
+					// move left by one element from current index
+					this._goToPrevPage( data.pageIndex - data.oldPageIndex );
+					data.oldPageIndex = data.pageIndex;
 				}
-				
-				if ( data.pageIndex < 0 ) {
-					data.pageIndex = data.pages.length - 1;
-				}
-
-				// move left by one element from current index
-				this._goToPrevPage( data.pageIndex - data.oldPageIndex );
-				data.oldPageIndex = data.pageIndex;
 			}
 		},
 		
