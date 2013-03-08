@@ -252,6 +252,7 @@
 				options = this.options,
 				data = $( this.element ).data( "data" ),
 				_visible = options.visible,
+				_step = options.step,
 				_pathsLen = data.paths.length;
 			
 			// when the continuous option is not used:
@@ -269,24 +270,32 @@
 			// be sure to test performance, because this is likely to increase your
 			// memory usage for large numbers of elements or steps other than 1
 
+			// A, B, C, D, E visible 3, step 2
+			// [ABC], [CDE], [EAB], [BCD], [DEA]
+			
+			// A, B, C, D, E visible 3, step 4
+			// [ABC], [EAB], [DEA], [CDE], [BCD]
+			
+			// A, B, C, D, E, F, G visible 3 step 2
+			// [ABC], [CDE], [FGA]
 			function _init() {
 				// init creates the last page [FGHIJ] and remembers it
-
 				data.pages = [];
 				data.lastPage = [];
 				data.pages[0] = [];
 
 				// init last page
-				for ( var i = _pathsLen - 1; i >= _pathsLen - _visible; i-- ) {
-					console.log(i);
-					if ( options.continuous ) {
-						data.lastPage.unshift( data.paths[(_pathsLen - 1) % i] );
-					} else {
+				if ( options.continuous ) {				
+					for ( var i = -_step; i < -_step + _visible; i++ ) {
+						data.lastPage.unshift( data.paths[((_pathsLen + i) % _pathsLen)] );
+						console.log("last page item: " + ((_pathsLen + i) % _pathsLen));
+					}			
+				} else {
+					for ( var i = _pathsLen - 1; i >= _pathsLen - _visible; i-- ) {
 						data.lastPage.unshift( data.paths[i] );
 					}
 				}
-				console.log(data);
-				
+								
 				// and first page
 				for ( var i = 0; i < _visible; i++ ) {
 					data.pages[0][data.pages[0].length] = data.paths[i];
@@ -295,16 +304,22 @@
 
 			function _islastPage( page ) {
 				var _isLast = false;
-
-				for ( var i = 0; i < data.lastPage.length; i++ ) {
-					if ( data.lastPage[i].get(0) === page[i].get(0) ) {
+				
+				if ( options.continuous ) {
+					if (data.lastPage === page) {
 						_isLast = true;
-					} else {
-						_isLast = false;
-						break;
+					}
+				} else {
+					for ( var i = 0; i < data.lastPage.length; i++ ) {
+						if ( data.lastPage[i].get(0) === page[i].get(0) ) {
+							_isLast = true;
+						} else {
+							_isLast = false;
+							break;
+						}
 					}
 				}
-				
+
 				return _isLast;
 			}
 
@@ -316,31 +331,52 @@
 				}
 
 				for ( var i = start; i < end; i++ ) {
-					data.pages[_index].push( data.paths[i] );
+					console.log("push: " + i);
+					data.pages[_index].push( data.paths[i % _pathsLen] );
 				}
 				return _index;
 			}
 
 			function _paginate(continuous) {
-			
-				if ( continuous ) {
-					var _indicies;
+				if ( options.continuous ) {
+					var _isBeginning = true,
+					_pathIndex = 0,
+					_indicies;
 					
-		        	for ( var _index = 0; _index < _pathsLen; _index++ ) {
+/* 					for ( var _pathIndex = 0; _pathIndex < _pathsLen; _pathIndex += _step ) { */
+					while ( !_islastPage(data.pages[data.pages.length - 1]) || _isBeginning ) {
+					
+
 			            _indicies = [];
 			
-			            for ( var i = _index; i < _index + _visible; i++ ) {
-			                if ( i >= _pathsLen ) {
+			            for ( var i = _pathIndex; i < _pathIndex + _visible; i++ ) {
+			            	// we might not need this condition
+			                if ( i >= _pathsLen ) { 
 			                    _indicies[_indicies.length] = i % ( _pathsLen );
 			                } else {
 			                    _indicies[_indicies.length] = i;
 			                }
 			
 			            }
-		
-		                data.pages[_index] = [];
+			            
+			            var _pageIndex = _pathIndex / _step;
+			             
+						console.log("indicies:");
+						console.log(_indicies);
+		                data.pages[_pageIndex] = [];
+		               
+		                
 		                for ( var i in _indicies ) {
-		                	data.pages[_index].push( data.paths[_indicies[i]] );
+		                	data.pages[_pageIndex].push( data.paths[_indicies[i]] );
+		               	}
+		               	
+		               	console.log("pages: ");
+		               	console.log(data.pages);
+		               	
+		               	_pathIndex += _step;
+		               	_isBeginning = false;
+		               	if (_pathIndex > 100) {
+		               		return;
 		               	}
 					}
 				} else {
@@ -394,7 +430,7 @@
 
 			// go!
 			_init();
-			_paginate(options.continuous);
+			_paginate();
 		},
 		
 
