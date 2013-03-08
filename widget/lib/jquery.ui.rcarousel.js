@@ -269,32 +269,28 @@
 			// [ABCDE], [BCDEF], [CDEFA], [DEFAB], [EFABC], [FABCD]
 			// be sure to test performance, because this is likely to increase your
 			// memory usage for large numbers of elements or steps other than 1
-
-			// A, B, C, D, E visible 3, step 2
-			// [ABC], [CDE], [EAB], [BCD], [DEA]
-			
-			// A, B, C, D, E visible 3, step 4
-			// [ABC], [EAB], [DEA], [CDE], [BCD]
-			
-			// A, B, C, D, E, F, G visible 3 step 2
-			// [ABC], [CDE], [FGA]
 			function _init() {
 				// init creates the last page [FGHIJ] and remembers it
 				data.pages = [];
 				data.lastPage = [];
 				data.pages[0] = [];
 
-				// init last page
-				if ( options.continuous ) {				
-					for ( var i = -_step; i < -_step + _visible; i++ ) {
+/* 				if ( options.continuous ) {		 */
+					// See if we can merge this	
+					for ( var i = _visible - (_step + 1); i >= -_step; i-- ) { 
+						console.log(i);
 						data.lastPage.unshift( data.paths[((_pathsLen + i) % _pathsLen)] );
-						console.log("last page item: " + ((_pathsLen + i) % _pathsLen));
 					}			
-				} else {
+				/*
+} else {
 					for ( var i = _pathsLen - 1; i >= _pathsLen - _visible; i-- ) {
 						data.lastPage.unshift( data.paths[i] );
 					}
 				}
+*/
+				
+				console.log("last page:");
+				console.log(examinePages ( data.lastPage ) );
 								
 				// and first page
 				for ( var i = 0; i < _visible; i++ ) {
@@ -305,21 +301,15 @@
 			function _islastPage( page ) {
 				var _isLast = false;
 				
-				if ( options.continuous ) {
-					if (data.lastPage === page) {
+				for ( var i = 0; i < data.lastPage.length; i++ ) {
+					if ( data.lastPage[i].get(0) === page[i].get(0) ) {
 						_isLast = true;
-					}
-				} else {
-					for ( var i = 0; i < data.lastPage.length; i++ ) {
-						if ( data.lastPage[i].get(0) === page[i].get(0) ) {
-							_isLast = true;
-						} else {
-							_isLast = false;
-							break;
-						}
+					} else {
+						_isLast = false;
+						break;
 					}
 				}
-
+				
 				return _isLast;
 			}
 
@@ -336,49 +326,55 @@
 				}
 				return _index;
 			}
-
+			
+			function examinePages(pages) {
+				ret = [];	
+				for (var i in pages) {
+					ret.push(examinePage(pages[i]));
+				}
+				return ret;
+			}
+			
+			function examinePage(page) {
+				return page.context.outerHTML;
+			}
+			
 			function _paginate(continuous) {
 				if ( options.continuous ) {
 					var _isBeginning = true,
 					_pathIndex = 0,
 					_indicies;
 					
-/* 					for ( var _pathIndex = 0; _pathIndex < _pathsLen; _pathIndex += _step ) { */
-					while ( !_islastPage(data.pages[data.pages.length - 1]) || _isBeginning ) {
+					var loopCount = 0;
 					
-
+ 					while ( !_islastPage(data.pages[data.pages.length - 1]) || _isBeginning ) {
+ 						loopCount++;
 			            _indicies = [];
-			
+						
+						_pathIndex += _step;
+						var _pageIndex = data.pages.length;
+						data.pages[_pageIndex] = [];
+						var firstLoop = true;
+						
 			            for ( var i = _pathIndex; i < _pathIndex + _visible; i++ ) {
-			            	// we might not need this condition
-			                if ( i >= _pathsLen ) { 
-			                    _indicies[_indicies.length] = i % ( _pathsLen );
-			                } else {
-			                    _indicies[_indicies.length] = i;
-			                }
-			
+			            	if (firstLoop && i % ( _pathsLen ) == 0) {
+			            		console.log("Should be last!");
+			            	}
+			           		console.log("i mod: " + i % ( _pathsLen ));
+			            	data.pages[_pageIndex].push( data.paths[i % ( _pathsLen )] );
+			            	firstLoop = false;
 			            }
 			            
-			            var _pageIndex = _pathIndex / _step;
-			             
-						console.log("indicies:");
-						console.log(_indicies);
-		                data.pages[_pageIndex] = [];
-		               
-		                
-		                for ( var i in _indicies ) {
-		                	data.pages[_pageIndex].push( data.paths[_indicies[i]] );
-		               	}
-		               	
-		               	console.log("pages: ");
-		               	console.log(data.pages);
-		               	
-		               	_pathIndex += _step;
-		               	_isBeginning = false;
-		               	if (_pathIndex > 100) {
-		               		return;
-		               	}
+			            console.log(examinePages(data.pages[data.pages.length - 1]));
+			           	console.log("is last: " + _islastPage(data.pages[data.pages.length - 1]));
+						
+						if (loopCount > 100) {
+							console.log("too many loops");
+							return;
+						}
+						_isBeginning = false;
 					}
+					console.log(data.pages);
 				} else {
 					var _isBeginning = true,
 					_complement = false,
@@ -408,7 +404,7 @@
 						}
 	
 						if ( _complement ) {
-							// first add old elemets; for 3rd page it adds [FGHI…]
+							// first add old elements; for 3rd page it adds [FGHI…]
 							// remember the page we add to (_index)
 							_oldFirstEl = _start - ( _visible - (_end - _start) );
 							_oldLastEl = _oldFirstEl + ( _visible - (_end - _start) );
@@ -425,7 +421,7 @@
 							_start += options.step;
 						}
 					}
-				}
+ 				} 
 			}
 
 			// go!
@@ -500,7 +496,7 @@
 				
 			if ( options.continuous ) {
 				// we are always loading a new page
-				self._trigger("pageLoading", null, {next: true});
+				self._trigger("pageLoading", null, {next: false});
 			}
 
 			// pick pages
@@ -599,7 +595,7 @@
 					self._trigger("pageLoaded", null, {page: _index});
 				});
 				
-			// reset to deafult
+			// reset to default
 			data.appended = false;				
 		},
 		
