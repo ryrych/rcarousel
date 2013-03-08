@@ -223,7 +223,7 @@
 								throw new Error( "margin should be a positive number" );
 							}
 							break;
-						}
+					}
 				}
 			);
 		},
@@ -253,10 +253,21 @@
 				data = $( this.element ).data( "data" ),
 				_visible = options.visible,
 				_pathsLen = data.paths.length;
-				
+			
+			// when the continuous option is not used:
 			// having 10 elements: A, B, C, D, E, F, G, H, I, J the algorithm
 			// creates 3 pages for ‘visible: 5’ and ‘step: 4’:
 			// [ABCDE], [EFGHI], [FGHIJ]
+			// comments below this that refer to pagination or our 'example' 
+			// make the assumption that this continuous option is not set,
+			// or is set to a falsy value
+
+			// when the continuous option is used:
+			// having 6 elements: A, B, C, D, E, F the algorithm
+			// creates 6 pages for 'visible: 1' and 'step: 1':
+			// [ABCDE], [BCDEF], [CDEFA], [DEFAB], [EFABC], [FABCD]
+			// be sure to test performance, because this is likely to increase your
+			// memory usage for large numbers of elements or steps other than 1
 
 			function _init() {
 				// init creates the last page [FGHIJ] and remembers it
@@ -267,8 +278,14 @@
 
 				// init last page
 				for ( var i = _pathsLen - 1; i >= _pathsLen - _visible; i-- ) {
-					data.lastPage.unshift( data.paths[i] );
+					console.log(i);
+					if ( options.continuous ) {
+						data.lastPage.unshift( data.paths[(_pathsLen - 1) % i] );
+					} else {
+						data.lastPage.unshift( data.paths[i] );
+					}
 				}
+				console.log(data);
 				
 				// and first page
 				for ( var i = 0; i < _visible; i++ ) {
@@ -304,61 +321,83 @@
 				return _index;
 			}
 
-			function _paginate() {
-				var _isBeginning = true,
+			function _paginate(continuous) {
+			
+				if ( continuous ) {
+					var _indicies;
+					
+		        	for ( var _index = 0; _index < _pathsLen; _index++ ) {
+			            _indicies = [];
+			
+			            for ( var i = _index; i < _index + _visible; i++ ) {
+			                if ( i >= _pathsLen ) {
+			                    _indicies[_indicies.length] = i % ( _pathsLen );
+			                } else {
+			                    _indicies[_indicies.length] = i;
+			                }
+			
+			            }
+		
+		                data.pages[_index] = [];
+		                for ( var i in _indicies ) {
+		                	data.pages[_index].push( data.paths[_indicies[i]] );
+		               	}
+					}
+				} else {
+					var _isBeginning = true,
 					_complement = false,
 					_start = options.step,
 					_end, _index, _oldFirstEl, _oldLastEl;
 
-				// continue until you reach the last page
-				// we start from the 2nd page (1st page has been already initiated)
-				while ( !_islastPage(data.pages[data.pages.length - 1]) || _isBeginning ) {
-					_isBeginning = false;
-
-					_end = _start + _visible;
-
-					// we cannot exceed _pathsLen
-					if ( _end > _pathsLen ) {
-						_end = _pathsLen;
-					}
-					
-					// when we run ouf of elements (_end - _start < _visible) we must add the difference at the begining
-					// in our example the 3rd page is [FGHIJ] and J element is added in the second step
-					// first we add [FGHI] as old elements
-					// we must assure that we have always ‘visible’ (5 in our example) elements
-					if ( _end - _start < _visible ) {
-						_complement = true;
-					} else {
-						_complement = false;
-					}
-
-					if ( _complement ) {
+					// continue until you reach the last page
+					// we start from the 2nd page (1st page has been already initiated)
+					while ( !_islastPage(data.pages[data.pages.length - 1]) || _isBeginning ) {
+						_isBeginning = false;
+	
+						_end = _start + _visible;
+	
+						// we cannot exceed _pathsLen
+						if ( _end > _pathsLen ) {
+							_end = _pathsLen;
+						}
 						
-						// first add old elemets; for 3rd page it adds [FGHI…]
-						// remember the page we add to (_index)
-						_oldFirstEl = _start - ( _visible - (_end - _start) );
-						_oldLastEl = _oldFirstEl + ( _visible - (_end - _start) );
-						_index = _append( _oldFirstEl, _oldLastEl );
-						
-						// then add new elements; for 3th page it is J element:
-						// [fghiJ]
-						_append( _start, _end, _index );
-
-					} else {
-						
-						// normal pages like [ABCDE], [EFGHI]
-						_append( _start, _end );
-						
-						// next step
-						_start += options.step;
+						// when we run ouf of elements (_end - _start < _visible) we must add the difference at the begining
+						// in our the 3rd page is [FGHIJ] and J element is added in the second step
+						// first we add [FGHI] as old elements
+						// we must assure that we have always ‘visible’ (5 in our example) elements
+						if ( _end - _start < _visible ) {
+							_complement = true;
+						} else {
+							_complement = false;
+						}
+	
+						if ( _complement ) {
+							// first add old elemets; for 3rd page it adds [FGHI…]
+							// remember the page we add to (_index)
+							_oldFirstEl = _start - ( _visible - (_end - _start) );
+							_oldLastEl = _oldFirstEl + ( _visible - (_end - _start) );
+							_index = _append( _oldFirstEl, _oldLastEl );
+							
+							// then add new elements; for 3th page it is J element:
+							// [fghiJ]
+							_append( _start, _end, _index );
+						} else {
+							// normal pages like [ABCDE], [EFGHI]
+							_append( _start, _end );
+							
+							// next step
+							_start += options.step;
+						}
 					}
 				}
 			}
 
 			// go!
 			_init();
-			_paginate();
+			_paginate(options.continuous);
 		},
+		
+
 		
 		getCurrentPage: function() {
 			var data = $( this.element ).data( "data" );
@@ -422,6 +461,11 @@
 				self = this,
 				options = this.options,
 				data = $( this.element ).data( "data" );
+				
+			if ( options.continuous ) {
+				// we are always loading a new page
+				self._trigger("pageLoading", null, {next: true});
+			}
 
 			// pick pages
 			if ( data.appended ) {
@@ -530,6 +574,11 @@
 				data = $root.data( "data" ),				
 				self = this;
 
+			if ( options.continuous ) {
+				// we are always loading a new page
+				self._trigger("pageLoading", null, {next: true});
+			}
+			
 			// pick pages
 			if ( data.appended ) {
 				_oldPage = data.oldPage;
@@ -625,7 +674,7 @@
 
 			});
 				
-			// reset to deafult
+			// reset to default
 			data.appended = false;
 		},
 		
@@ -731,6 +780,7 @@
 				}
 
 		},
+		
 		_setStep: function(s) {
 			// calculate a step
 			var _step,
