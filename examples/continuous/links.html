@@ -48,7 +48,7 @@
 		<div id="header">
 			<p>
 				This is an example of <em>rcarousel</em> – a jQuery UI continuous carousel.
-				Go back to the <a href="../http://ryrych.github.com/rcarousel/">documentation</a>
+				Go back to the <a href="http://ryrych.github.com/rcarousel/">documentation</a>
 			</p>
 		</div>
 		
@@ -57,9 +57,9 @@
 			
 			<div id="container">
 				<div id="carousel">
-					<a href="../http://ryrych.pl"><img src="../images/001.jpg" /></a>
-					<a href="../http://google.pl"><img src="../images/002.jpg" /></a>
-					<a href="../http://niezalezna.pl"><img src="../images/003.jpg" /></a>
+					<a href="http://ryrych.pl"><img src="../images/001.jpg" /></a>
+					<a href="http://google.pl"><img src="../images/002.jpg" /></a>
+					<a href="http://niezalezna.pl"><img src="../images/003.jpg" /></a>
 				</div>
 				<a href="../#" id="ui-carousel-next"><span>next</span></a>
 				<a href="../#" id="ui-carousel-prev"><span>prev</span></a>
@@ -74,7 +74,8 @@
 			jQuery(function($) {
 				$( "#carousel ").rcarousel({
 					visible: 1,
-					step: 1
+					step: 1,
+					seamless: true
 				});
 				
 				$( "#ui-carousel-next" )

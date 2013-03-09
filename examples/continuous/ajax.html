@@ -16,7 +16,7 @@
 		<div id="header">
 			<p>
 				This is an example of <em>rcarousel</em> – a jQuery UI continuous carousel.
-				Go back to the <a href="../http://ryrych.github.com/rcarousel/">documentation</a>
+				Go back to the <a href="http://ryrych.github.com/rcarousel/">documentation</a>
 			</p>
 		</div>
 		
@@ -42,18 +42,18 @@
 				$("#carousel").rcarousel({
 					step: 1,
 					auto: {enabled: true},
-					continuous: true
+					seamless: true
 				});
 				
 				function loadNew() {
 					var $img,
 						$jqElements = $();
 						
-					$.getJSON("../remote.json",
+					$.getJSON("remote.json",
 						function( data ) {
                             $.each(data.paths, function(i, item) {
 								$img = $( "<img />" ).attr( "src", item );
-                               $jqElements = $jqElements.add( $img );
+                            	$jqElements = $jqElements.add( $img );
                             });
 							$( "#carousel" ).rcarousel( "append", $jqElements );							
 						}
