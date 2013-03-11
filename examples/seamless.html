@@ -1,0 +1,329 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pl" xml:lang="pl">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <title>rcarousel – Auto mode</title>
+        <link type="text/css" rel="stylesheet" href="css/reset.css" />		
+        <link type="text/css" rel="stylesheet" href="css/style.css" />		
+        <link type="text/css" rel="stylesheet" href="../widget/css/rcarousel.css" />
+		<style type="text/css">			
+			h2 {
+				margin-left: 8px;
+			}
+			
+			h3 {
+				margin-left: 10px;
+				font-size: 0.8em;
+			}
+				
+			.clear {
+				clear: both;
+			}
+			
+			.container {
+				margin-bottom: 20px;
+				margin-top: 10px;
+			}
+			
+			.carousel img {
+				border: 0;
+			}
+
+			.ui-carousel-next, .ui-carousel-prev {
+				display: block;
+				position: absolute;
+				z-index: 100;
+			}
+			
+			.ui-carousel-next > span, .ui-carousel-prev > span {
+				display: none;
+			}	
+			
+			.bullet {
+				background: url(images/page-off.png) center center no-repeat;
+				display: block;
+				width: 18px;
+				height: 18px;
+				margin: 0;
+				margin-right: 5px;
+				float: left;				
+			}	
+			
+			#container1 {
+				width: 420px;
+				position: relative;
+			}
+			
+			#carousel1 {
+				margin: 0 auto;
+				margin-top: 10px;
+			}
+			
+			#ui-carousel-next1, #ui-carousel-prev1 {
+				width: 60px;
+				height: 100px;
+				background: url(images/arrow-left.png) #fff center center no-repeat;
+				bottom: 0 !important;
+			}
+
+			#ui-carousel-next1 {
+				right: 0;
+				background-image: url(images/arrow-right.png);
+			}
+
+			#ui-carousel-prev1 {
+				left: 0;
+			}
+			
+			#container2 {
+				margin-left: 10px;
+				width: 500px;
+				height: 400px;
+				position: relative;
+			}
+			
+			#carousel2 {
+				position: absolute;
+				top: 50px;
+			}
+			
+			#ui-carousel-next2, #ui-carousel-prev2 {
+				width: 100px;
+				height: 50px;
+				background: url(images/arrow-bottom.png) #fff center center no-repeat;
+				left: 0
+			}
+
+			#ui-carousel-next2 {
+				top: 0;
+				background-image: url(images/arrow-top.png);
+			}
+
+			#ui-carousel-prev2 {
+				bottom: 0;
+			}
+			
+			#container3, #container4 {
+				width: 300px;
+				margin-left: 10px;
+			}
+			
+			#pages3, #pages4 {
+				width: 92px;
+				height: 18px;
+				margin: 5px auto 0 auto;
+			}
+										
+		</style>
+	</head>
+	<body>
+		<div id="header">
+			<p>
+				This is an example of <em>rcarousel</em> – a jQuery UI continuous carousel.
+				Go back to the <a href="http://ryrych.github.com/rcarousel/">documentation</a>
+			</p>
+		</div>
+		
+		<div id="content">
+			<h1>seamless carousels always transition by the same step, even when cycling between the first and last elements</h1>
+			
+			<h2>our autoreverse example with seamless enabled</h2>
+			<h3>compare to <a href="auto_reverse.html">original example</a> <br/>(press "prev" arrow twice after page load)</h3>
+			<div id="container1" class="container">
+				<div id="carousel1" class="carousel">
+					<img src="images/001.jpg" />
+					<img src="images/002.jpg" />
+					<img src="images/003.jpg" />
+					<img src="images/004.jpg" />
+					<img src="images/005.jpg" />
+					<img src="images/006.jpg" />
+					<img src="images/007.jpg" />
+					<img src="images/008.jpg" />
+					<img src="images/009.jpg" />
+					<img src="images/010.jpg" />
+				</div>
+				<a href="#" id="ui-carousel-next1" class="ui-carousel-next"><span>next</span></a>
+				<a href="#" id="ui-carousel-prev1" class="ui-carousel-prev"><span>prev</span></a>
+			</div>
+			
+			<h2>vertical carousel with seamless option enabled</h2>
+			<h3>compare to <a href="vertical.html">original example</a></h3>
+			
+			<div id="container2" class="container">
+				<div id="carousel2" class="carousel">
+					<img src="images/001.jpg" />
+					<img src="images/002.jpg" />
+					<img src="images/003.jpg" />
+					<img src="images/004.jpg" />
+					<img src="images/005.jpg" />
+					<img src="images/006.jpg" />
+					<img src="images/007.jpg" />
+					<img src="images/008.jpg" />
+					<img src="images/009.jpg" />
+					<img src="images/010.jpg" />
+				</div>
+				<a href="#" id="ui-carousel-next2" class="ui-carousel-next"><span>next</span></a>
+				<a href="#" id="ui-carousel-prev2" class="ui-carousel-prev"><span>prev</span></a>
+			</div>
+			
+			<h2>go to page example with USEFUL page count returned by plugin</h2>
+			<h3>compare to <a href="gotopage.html">original example</a></h3>
+			<h3>if our last page starts over again on our first element<br/>
+			(total elements not equally divisible by step)<br/>
+			we cut it off to ensure smooth page transitions</h3>
+			<div id="container3" class="container">
+				<div id="carousel3" class="carousel" data-index="3">
+					<img src="images/001.jpg" />
+					<img src="images/002.jpg" />
+					<img src="images/003.jpg" />
+					<img src="images/004.jpg" />
+					<img src="images/005.jpg" />
+					<img src="images/006.jpg" />
+					<img src="images/007.jpg" />
+					<img src="images/008.jpg" />
+					<img src="images/009.jpg" />
+					<img src="images/010.jpg" />
+				</div>
+				<div id="pages3"></div>
+			</div>
+			
+			<h2>go to page example with HONEST page count returned by plugin</h2>
+			<h3>compare to <a href="gotopage.html">original example</a></h3>
+			<h3>this example, with honest page count enabled, should give a clearer<br/>
+			view of the pages created when you enable seamless page transitions<br/>
+			you will probably only ever need the (default) USEFUL page count<br/>
+			but you can get the actual value if you need it			
+			</h3>
+			<div id="container4" class="container">
+				<div id="carousel4" class="carousel" data-index="4">
+					<img src="images/001.jpg" />
+					<img src="images/002.jpg" />
+					<img src="images/003.jpg" />
+					<img src="images/004.jpg" />
+					<img src="images/005.jpg" />
+					<img src="images/006.jpg" />
+					<img src="images/007.jpg" />
+					<img src="images/008.jpg" />
+					<img src="images/009.jpg" />
+					<img src="images/010.jpg" />
+				</div>
+				<div id="pages4"></div>
+			</div>
+		</div>
+
+		<script type="text/javascript" src="../widget/lib/jquery-1.7.1.js"></script>
+		<script type="text/javascript" src="../widget/lib/jquery.ui.core.js"></script>
+		<script type="text/javascript" src="../widget/lib/jquery.ui.widget.js"></script>
+		<script type="text/javascript" src="../widget/lib/jquery.ui.rcarousel.js"></script>
+		<script type="text/javascript">
+			jQuery(function( $ ) {
+				$( "#carousel1" ).rcarousel({
+					auto: {
+						enabled: true,
+						interval: 3000,
+						direction: "prev"
+					},
+					seamless: {
+						enabled: true,
+						honestPageCount: false
+					},		
+					navigation: { // I'm changing this from the defaults only because I use multiple carousels with prev/next controls below
+						next: "#ui-carousel-next1",
+						prev: "#ui-carousel-prev1"
+					}
+				});
+								
+				$("#carousel2").rcarousel({
+					orientation: "vertical",
+					seamless: {
+						enabled: true
+					},		
+					navigation: {
+						next: "#ui-carousel-next2",
+						prev: "#ui-carousel-prev2"
+					}
+				});
+				
+				$( ".ui-carousel-next" )
+					.add( ".ui-carousel-prev" )
+					.hover(
+						function() {
+							$( this ).css( "opacity", 0.7 );
+						},
+						function() {
+							$( this ).css( "opacity", 1.0 );
+						}
+					);	
+					
+				$( "#carousel3" ).rcarousel({
+					auto: {enabled: true},
+					start: generatePages,
+					pageLoaded: pageLoaded,
+					seamless: {
+						enabled: true
+					}
+				});
+				
+				$( "#carousel4" ).rcarousel({
+					auto: {enabled: true},
+					start: generatePages,
+					pageLoaded: pageLoaded,
+					seamless: {
+						enabled: true,
+						honestPageCount: true
+					}
+				});
+				
+				$( ".bullet" )
+					.hover(
+						function() {
+							$( this ).css( "opacity", 0.7 );
+						},
+						function() {
+							$( this ).css( "opacity", 1.0 );
+						}
+					);				
+					
+				function generatePages() {
+					var _total, i, _link;
+					
+					_total = $( this ).rcarousel( "getTotalPages" );
+					
+					var carousel = this;
+					for ( i = 0; i < _total; i++ ) {
+						_link = $( "<a href='#'></a>" );
+						
+						$(_link)
+							.bind("click", {page: i},
+								function( event ) {
+									$( carousel ).rcarousel( "goToPage", event.data.page );
+									event.preventDefault();
+								}
+							)
+							.addClass( "bullet off" )
+							.appendTo( "#pages" + $(this).data("index") );
+					}
+					
+					// mark first page as active
+					$( "a:eq(0)", "#pages" + $(this).data("index") )
+						.removeClass( "off" )
+						.addClass( "on" )
+						.css( "background-image", "url(images/page-on.png)" );
+
+				}
+
+				function pageLoaded( event, data ) {
+					$( "a.on", "#pages" + $(this).data("index") )
+						.removeClass( "on" )
+						.css( "background-image", "url(images/page-off.png)" );
+
+					$( "a", "#pages" + $(this).data("index") )
+						.eq( data.page )
+						.addClass( "on" )
+						.css( "background-image", "url(images/page-on.png)" );
+				}			
+		
+			});
+		</script
+    </body>
+</html>

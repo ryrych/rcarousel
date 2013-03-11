@@ -217,7 +217,9 @@
 								throw new Error( "interval should be a positive number" );
 							}
 							break;
-		
+						case "auto":
+							
+												
 						case "margin":
 							if ( isNaN(value) || typeof value !== "number" || value < 0 || Math.ceil(value) - value > 0 ) {
 								throw new Error( "margin should be a positive number" );
@@ -267,13 +269,12 @@
 			// be sure to test performance, because this can increase your
 			// memory usage in some cases
 			// for example, 10 elements ([A..J]) with 'visible: 4' and 'step: 3'
-			// will generate 10 pages:
-			// [ABCD], [DEFG] … [HIJA]
+			// will generate 10 pages: [ABCD], [DEFG] … [HIJA]
 			
 			// please note that example comments below refer to
 			// the page set that is created when the seamless option
 			// is disabled, unless otherwise noted
-						
+					
 			function _init() {
 				// init creates the last page [FGHIJ] and remembers it
 				data.pages = [];
@@ -323,7 +324,7 @@
 					data.pages[_index] = [];
 					
 					_start += _step;
-					
+
 					if ( options.seamless.enabled || (data.pages.length * _visible) < _pathsLen ) {
 						// when the seamless option is enabled, we will eventually create the last page in this loop  
 		            	for ( var i = _start; i < _start + _visible; i++ ) {
@@ -357,11 +358,10 @@
 			
 			// we create extra pages to enable seamless scrolling
 			// this breaks demos like 'gotopage' and 'lightbox'
-			// to keep seamless scrolling, we'll only return the
-			// count of pages before we start repeating elements
+			// to keep seamless scrolling, we'll only return the count of pages before we start repeating elements
 			// and round down to cut off partials
 			if ( this.options.seamless.enabled && !this.options.seamless.honestPageCount ) {
-				return Math.floor(data.paths.length / this.options.visible);
+				return Math.floor(data.paths.length / this.options.step);
 			} else {
 				return data.pages.length;
 			}		
@@ -613,7 +613,7 @@
 					if ( !data.hoveredOver && options.auto.enabled ) {
 						// if autoMode is on and you change page manually
 						clearInterval( data.interval );
-						
+
 						self._autoMode( options.auto.direction );
 					}
 
