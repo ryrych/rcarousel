@@ -360,7 +360,7 @@
 			// to keep seamless scrolling, we'll only return the
 			// count of pages before we start repeating elements
 			// and round down to cut off partials
-			if ( !this.options.seamless.honestPageCount ) {
+			if ( this.options.seamless.enabled && !this.options.seamless.honestPageCount ) {
 				return Math.floor(data.paths.length / this.options.visible);
 			} else {
 				return data.pages.length;
@@ -794,7 +794,7 @@
 				prev: "#ui-carousel-prev"
 			},
 			seamless: {
-				enabled: true,
+				enabled: false,
 				honestPageCount: false
 			}
 		}
