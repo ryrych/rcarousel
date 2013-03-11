@@ -280,7 +280,7 @@
 				data.lastPage = [];
 				data.pages[0] = [];
 
-				if ( options.seamless ) {		
+				if ( options.seamless.enabled ) {		
 					for ( var i = _visible - (_step + 1); i >= -_step; i-- ) { 
 						data.lastPage.unshift( data.paths[((_pathsLen + i) % _pathsLen)] );
 					}			
@@ -324,7 +324,7 @@
 					
 					_start += _step;
 					
-					if ( options.seamless || (data.pages.length * _visible) < _pathsLen ) {
+					if ( options.seamless.enabled || (data.pages.length * _visible) < _pathsLen ) {
 						// when the seamless option is enabled, we will eventually create the last page in this loop  
 		            	for ( var i = _start; i < _start + _visible; i++ ) {
 		            		data.pages[_index].push( data.paths[i % ( _pathsLen )] );
@@ -360,7 +360,7 @@
 			// to keep seamless scrolling, we'll only return the
 			// count of pages before we start repeating elements
 			// and round down to cut off partials
-			if (this.options.seamless) {
+			if ( !this.options.seamless.honestPageCount ) {
 				return Math.floor(data.paths.length / this.options.visible);
 			} else {
 				return data.pages.length;
@@ -792,6 +792,10 @@
 			navigation: {
 				next: "#ui-carousel-next",
 				prev: "#ui-carousel-prev"
+			},
+			seamless: {
+				enabled: true,
+				honestPageCount: false
 			}
 		}
 	});
