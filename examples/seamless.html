@@ -110,8 +110,15 @@
 			
 			#pages3, #pages4 {
 				width: 92px;
-				height: 18px;
 				margin: 5px auto 0 auto;
+			}
+			
+			#pages3 {
+				height: 18px;
+			}
+			
+			#pages4 {
+				height: 60px;
 			}
 										
 		</style>
@@ -166,11 +173,14 @@
 				<a href="#" id="ui-carousel-prev2" class="ui-carousel-prev"><span>prev</span></a>
 			</div>
 			
-			<h2>go to page example with USEFUL page count returned by plugin</h2>
+			<h2>go to page example with repeatElements disabled</h2>
 			<h3>compare to <a href="gotopage.html">original example</a></h3>
-			<h3>if our last page starts over again on our first element<br/>
-			(total elements not equally divisible by step)<br/>
-			we cut it off to ensure smooth page transitions</h3>
+			<h3>when repeatElements is disabled, the plugin will stop <br/>
+			creating pages just before the first element is about to be <br/>
+			repeated <br/>
+			this is preferable if page selection controls are used <br/>
+			instead of prev/next
+			</h3>
 			<div id="container3" class="container">
 				<div id="carousel3" class="carousel" data-index="3">
 					<img src="images/001.jpg" />
@@ -187,12 +197,13 @@
 				<div id="pages3"></div>
 			</div>
 			
-			<h2>go to page example with HONEST page count returned by plugin</h2>
+			<h2>go to page example with repeatElements enabled (default)</h2>
 			<h3>compare to <a href="gotopage.html">original example</a></h3>
-			<h3>this example, with honest page count enabled, should give a clearer<br/>
-			view of the pages created when you enable seamless page transitions<br/>
-			you will probably only ever need the (default) USEFUL page count<br/>
-			but you can get the actual value if you need it			
+			<h3>when repeatElements is enabled more pages may<br/>
+			be generated than expected <br/>	
+			this example shows undesirable behavior in cases <br/>
+			where page counts are made known to the user
+			</h3>
 			</h3>
 			<div id="container4" class="container">
 				<div id="carousel4" class="carousel" data-index="4">
@@ -225,7 +236,7 @@
 					},
 					seamless: {
 						enabled: true,
-						honestPageCount: false
+						repeatElements: false
 					},		
 					navigation: { // I'm changing this from the defaults only because I use multiple carousels with prev/next controls below
 						next: "#ui-carousel-next1",
@@ -260,7 +271,8 @@
 					start: generatePages,
 					pageLoaded: pageLoaded,
 					seamless: {
-						enabled: true
+						enabled: true,
+						repeatElements: false
 					}
 				});
 				
@@ -269,8 +281,7 @@
 					start: generatePages,
 					pageLoaded: pageLoaded,
 					seamless: {
-						enabled: true,
-						honestPageCount: true
+						enabled: true
 					}
 				});
 				

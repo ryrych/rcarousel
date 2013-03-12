@@ -281,16 +281,21 @@
 				data.lastPage = [];
 				data.pages[0] = [];
 
-				if ( options.seamless.enabled ) {		
+				if ( options.seamless.enabled && options.seamless.repeatElements ) {		
 					for ( var i = _visible - (_step + 1); i >= -_step; i-- ) { 
 						data.lastPage.unshift( data.paths[((_pathsLen + i) % _pathsLen)] );
-					}			
+					}
+				} else if ( options.seamless.enabled && !options.seamless.repeatElements ) {
+					var _lastElement = _pathsLen - (_pathsLen % _step) - 1;
+					for ( var i = _lastElement; i > _lastElement - _visible; i-- ) { 
+						data.lastPage.unshift( data.paths[i] );
+					}
 				} else {
 					for ( var i = _pathsLen - 1; i >= _pathsLen - _visible; i-- ) {
 						data.lastPage.unshift( data.paths[i] );
 					}
 				}
-								
+						
 				// and first page
 				for ( var i = 0; i < _visible; i++ ) {
 					data.pages[0][data.pages[0].length] = data.paths[i];
@@ -356,15 +361,7 @@
 		getTotalPages: function() {
 			var data = $( this.element ).data( "data" );
 			
-			// we create extra pages to enable seamless scrolling
-			// this breaks demos like 'gotopage' and 'lightbox'
-			// to keep seamless scrolling, we'll only return the count of pages before we start repeating elements
-			// and round down to cut off partials
-			if ( this.options.seamless.enabled && !this.options.seamless.honestPageCount ) {
-				return Math.floor(data.paths.length / this.options.step);
-			} else {
-				return data.pages.length;
-			}		
+			return data.pages.length;	
 		},
 		
 		goToPage: function( page ) {
@@ -795,7 +792,7 @@
 			},
 			seamless: {
 				enabled: false,
-				honestPageCount: false
+				repeatElements: true
 			}
 		}
 	});
