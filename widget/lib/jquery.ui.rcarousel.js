@@ -217,13 +217,15 @@
 								throw new Error( "interval should be a positive number" );
 							}
 							break;
-		
+						case "auto":
+							
+												
 						case "margin":
 							if ( isNaN(value) || typeof value !== "number" || value < 0 || Math.ceil(value) - value > 0 ) {
 								throw new Error( "margin should be a positive number" );
 							}
 							break;
-						}
+					}
 				}
 			);
 		},
@@ -252,24 +254,48 @@
 				options = this.options,
 				data = $( this.element ).data( "data" ),
 				_visible = options.visible,
+				_step = options.step,
 				_pathsLen = data.paths.length;
-				
+			
+			// when the seamless option is not used:
 			// having 10 elements: A, B, C, D, E, F, G, H, I, J the algorithm
 			// creates 3 pages for ‘visible: 5’ and ‘step: 4’:
 			// [ABCDE], [EFGHI], [FGHIJ]
-
+			
+			// when the seamless option is used:
+			// having 6 elements: A, B, C, D, E, F the algorithm
+			// creates 6 pages for 'visible: 1' and 'step: 1':
+			// [ABCDE], [BCDEF], [CDEFA], [DEFAB], [EFABC], [FABCD]
+			// be sure to test performance, because this can increase your
+			// memory usage in some cases
+			// for example, 10 elements ([A..J]) with 'visible: 4' and 'step: 3'
+			// will generate 10 pages: [ABCD], [DEFG] … [HIJA]
+			
+			// please note that example comments below refer to
+			// the page set that is created when the seamless option
+			// is disabled, unless otherwise noted
+					
 			function _init() {
 				// init creates the last page [FGHIJ] and remembers it
-
 				data.pages = [];
 				data.lastPage = [];
 				data.pages[0] = [];
 
-				// init last page
-				for ( var i = _pathsLen - 1; i >= _pathsLen - _visible; i-- ) {
-					data.lastPage.unshift( data.paths[i] );
+				if ( options.seamless.enabled && options.seamless.repeatElements ) {		
+					for ( var i = _visible - (_step + 1); i >= -_step; i-- ) { 
+						data.lastPage.unshift( data.paths[((_pathsLen + i) % _pathsLen)] );
+					}
+				} else if ( options.seamless.enabled && !options.seamless.repeatElements ) {
+					var _lastElement = _pathsLen - (_pathsLen % _step) - 1;
+					for ( var i = _lastElement; i > _lastElement - _visible; i-- ) { 
+						data.lastPage.unshift( data.paths[i] );
+					}
+				} else {
+					for ( var i = _pathsLen - 1; i >= _pathsLen - _visible; i-- ) {
+						data.lastPage.unshift( data.paths[i] );
+					}
 				}
-				
+						
 				// and first page
 				for ( var i = 0; i < _visible; i++ ) {
 					data.pages[0][data.pages[0].length] = data.paths[i];
@@ -278,7 +304,7 @@
 
 			function _islastPage( page ) {
 				var _isLast = false;
-
+				
 				for ( var i = 0; i < data.lastPage.length; i++ ) {
 					if ( data.lastPage[i].get(0) === page[i].get(0) ) {
 						_isLast = true;
@@ -290,68 +316,33 @@
 				
 				return _isLast;
 			}
-
-			function _append( start, end, atIndex ) {
-				var _index = atIndex || data.pages.length;
-
-				if ( !atIndex ) {
-					data.pages[_index] = [];
-				}
-
-				for ( var i = start; i < end; i++ ) {
-					data.pages[_index].push( data.paths[i] );
-				}
-				return _index;
-			}
-
-			function _paginate() {
+			
+			function _paginate(seamless) {
 				var _isBeginning = true,
-					_complement = false,
-					_start = options.step,
-					_end, _index, _oldFirstEl, _oldLastEl;
-
-				// continue until you reach the last page
-				// we start from the 2nd page (1st page has been already initiated)
-				while ( !_islastPage(data.pages[data.pages.length - 1]) || _isBeginning ) {
+				_start = 0,
+				_index;
+							
+				while ( !_islastPage(data.pages[data.pages.length - 1]) || _isBeginning ) {						
 					_isBeginning = false;
-
-					_end = _start + _visible;
-
-					// we cannot exceed _pathsLen
-					if ( _end > _pathsLen ) {
-						_end = _pathsLen;
-					}
+													
+					_index = data.pages.length;		
+					data.pages[_index] = [];
 					
-					// when we run ouf of elements (_end - _start < _visible) we must add the difference at the begining
-					// in our example the 3rd page is [FGHIJ] and J element is added in the second step
-					// first we add [FGHI] as old elements
-					// we must assure that we have always ‘visible’ (5 in our example) elements
-					if ( _end - _start < _visible ) {
-						_complement = true;
-					} else {
-						_complement = false;
-					}
+					_start += _step;
 
-					if ( _complement ) {
-						
-						// first add old elemets; for 3rd page it adds [FGHI…]
-						// remember the page we add to (_index)
-						_oldFirstEl = _start - ( _visible - (_end - _start) );
-						_oldLastEl = _oldFirstEl + ( _visible - (_end - _start) );
-						_index = _append( _oldFirstEl, _oldLastEl );
-						
-						// then add new elements; for 3th page it is J element:
-						// [fghiJ]
-						_append( _start, _end, _index );
-
-					} else {
-						
-						// normal pages like [ABCDE], [EFGHI]
-						_append( _start, _end );
-						
-						// next step
-						_start += options.step;
-					}
+					if ( options.seamless.enabled || (data.pages.length * _visible) < _pathsLen ) {
+						// when the seamless option is enabled, we will eventually create the last page in this loop  
+		            	for ( var i = _start; i < _start + _visible; i++ ) {
+		            		data.pages[_index].push( data.paths[i % ( _pathsLen )] );
+		            	}
+		            } else {
+		            	// otherwise, we can get a quicker match if we recognize when we are about to create a page that 
+						// starts over on the first element (like [FGABC]) and instead create a page containing
+						// the highest possible _visible-length collection of elements (ends with the last element)		
+		            	for ( var i = _visible; i > 0; i-- ) {
+		            		data.pages[_index].push( data.paths[_pathsLen - i] );
+		            	}
+		            }
 				}
 			}
 
@@ -360,6 +351,8 @@
 			_paginate();
 		},
 		
+
+		
 		getCurrentPage: function() {
 			var data = $( this.element ).data( "data" );
 			return data.pageIndex + 1;
@@ -367,7 +360,8 @@
 		
 		getTotalPages: function() {
 			var data = $( this.element ).data( "data" );
-			return data.pages.length;
+			
+			return data.pages.length;	
 		},
 		
 		goToPage: function( page ) {
@@ -519,7 +513,7 @@
 					self._trigger("pageLoaded", null, {page: _index});
 				});
 				
-			// reset to deafult
+			// reset to default
 			data.appended = false;				
 		},
 		
@@ -616,7 +610,7 @@
 					if ( !data.hoveredOver && options.auto.enabled ) {
 						// if autoMode is on and you change page manually
 						clearInterval( data.interval );
-						
+
 						self._autoMode( options.auto.direction );
 					}
 
@@ -625,7 +619,7 @@
 
 			});
 				
-			// reset to deafult
+			// reset to default
 			data.appended = false;
 		},
 		
@@ -731,6 +725,7 @@
 				}
 
 		},
+		
 		_setStep: function(s) {
 			// calculate a step
 			var _step,
@@ -794,6 +789,10 @@
 			navigation: {
 				next: "#ui-carousel-next",
 				prev: "#ui-carousel-prev"
+			},
+			seamless: {
+				enabled: false,
+				repeatElements: true
 			}
 		}
 	});

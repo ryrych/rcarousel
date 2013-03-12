@@ -52,7 +52,7 @@
 						function( data ) {
                             $.each(data.paths, function(i, item) {
 								$img = $( "<img />" ).attr( "src", item );
-                               $jqElements = $jqElements.add( $img );
+                            	$jqElements = $jqElements.add( $img );
                             });
 							$( "#carousel" ).rcarousel( "append", $jqElements );							
 						}
