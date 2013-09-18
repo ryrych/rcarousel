@@ -7,17 +7,17 @@
 	width: 300px
 }
 
-.ui-carousel > .wrapper {
+.ui-carousel > .rcarousel-wrapper {
     margin: 0;
     padding: 0;
     width: 9999px;
 }
 
-.ui-carousel > .wrapper > * {
+.ui-carousel > .rcarousel-wrapper > * {
 	border: 0;
 	display: block;
 	float: left;
 	height: 100px;
 	overflow: hidden;
-	width: 100px;	
+	width: 100px;
 }
